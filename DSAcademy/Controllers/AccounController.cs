@@ -25,7 +25,34 @@ namespace DSAcademy.Controllers
 			_signInManager = signInManager;
 			_userHelper = userHelper;
 		}
-		public IActionResult Index()
+
+		[HttpGet]
+		public IActionResult RegisterAdmin()
+		{
+			return View();
+		}
+
+		[HttpPost]
+		public IActionResult AdminRegisteration()
+		{
+			return View();
+		}
+
+		[HttpGet]
+		public IActionResult RegisterStudent()
+		{
+			return View();
+		}
+
+		[HttpPost]
+		public IActionResult StudentRegisteration()
+		{
+			return View();
+		}
+		
+		
+		[HttpGet]
+		public IActionResult Login()
 		{
 			return View();
 		}
