@@ -1,5 +1,60 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿
 @{
+	ViewData["Title"] = "Login";
+	Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
+<!-- Main Wrapper -->
+<div class="main-wrapper" style="display: flex; justify-content: center; align-items: center; height: 100vh; padding: 20px;">
+    <div class="mb-4 pb-4">
+    </div>
+    <div class="account-content" style="width: 100%; max-width: 400px;">
+        <div class="container">
+            <!-- Account Logo -->
+            <div class="account-logo" style="text-align: center; margin-bottom: 30px;">
+                <img  />
+                <a href="index.html"><img src="~/edu/admin/assets/images/dsa png[3].png" style="max-width: 150px; height: auto;"></a>
+            </div>
+            <!-- /Account Logo -->
+
+            <div class="account-box" style="border: 1px solid #ddd; border-radius: 8px; padding: 20px; background-color: #fff;">
+                <div class="account-wrapper">
+                    <h3 class="account-title" style="text-align: center; margin-bottom: 20px;">Login</h3>
+                    <div class="form-group">
+                        <label>Email Address<span class="text-danger">*</span></label>
+                        <input class="form-control" id="email" required type="text" style="width: 100%; padding: 10px; margin-bottom: 15px;">
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col">
+                                <label>Password<span class="text-danger">*</span></label>
+                            </div>
+                            <div class="col-auto">
+                                <a class="text-muted" href="#" style="cursor: pointer;">
+                                    Forgot password?
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="input-group" style="position: relative;">
+                            <input class="form-control" required id="password" type="password" style="padding-right: 40px;">
+                            <div class="input-group-append" style="position: absolute; z-index: 99; right: 10px; top: 50%; transform: translateY(-50%);">
+                                <span>
+                                    <i class="fa fa-eye d-none" id="passwordHide" onclick="PasswordHide()"></i>
+                                    <i class="fa fa-eye-slash" id="passwordShow" onclick="PasswordShow()"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group text-center">
+                        <button class="btn btn-primary account-btn" id="submit_btn" onclick="login()" type="submit" style="width: 100%; padding: 10px;">Login</button>
+                    </div>
+                    <div class="account-footer" style="text-align: center; margin-top: 20px;">
+                        <p>Don't have an account yet? <a href="#">Register Company</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /Main Wrapper -->

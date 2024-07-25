@@ -42,12 +42,154 @@
 	<link href="~/edu/assets/css/assets.css" rel="stylesheet" />
 	<link href="~/edu/assets/css/shortcodes/shortcodes.css" rel="stylesheet" />
 	<link href="~/edu/assets/css/style.css" rel="stylesheet" />
-	<link href="~/edu/assets/css/color/color-1.css" rel="stylesheet" />
+    <link href="~/edu/assets/css/color/color-1.css" rel="stylesheet" />
+    <link href="~/edu/assets/css/css/sweetalert2.min.css" rel="stylesheet" />
 
 	<!-- Revolution Slider CSS -->
 	<link rel="stylesheet" type="text/css" href="~/edu/assets/vendors/revolution/css/layers.css">
 	<link rel="stylesheet" type="text/css" href="~/edu/assets/vendors/revolution/css/settings.css">
 	<link rel="stylesheet" type="text/css" href="~/edu/assets/vendors/revolution/css/navigation.css">
+
+	<script>
+		function errorAlert(message) {
+			Swal.fire({
+				icon: 'error',
+				text: message,
+				confirmButtonColor: "#0253cc",
+				timer: 30000,
+			})
+		}
+
+		function infoAlert(message) {
+			Swal.fire({
+				icon: 'info',
+				text: message,
+				confirmButtonColor: "#0253cc",
+			})
+		}
+
+		function infoAlertWithStyles(message) {
+			Swal.fire({
+				title: 'Notification',
+				icon: 'info',
+				text: message,
+			})
+		}
+
+		function successAlert(message) {
+			Swal.fire({
+				icon: 'success',
+				text: message,
+				confirmButtonColor: "#0253cc",
+				timer: 30000,
+			})
+		}
+
+		function newErrorAlert(message, url) {
+			Swal.fire({
+				icon: 'error',
+				text: message,
+				confirmButtonColor: "#0253cc",
+			}).then((isConfirm) => {
+				if (isConfirm) {
+					location.reload(url);
+				}
+			})
+		}
+
+
+		function errorAlertWithRedirect(message, url) {
+			Swal.fire({
+				title: "Error",
+				text: message,
+				icon: "error",
+				timer: 30000,
+				confirmButtonColor: "#0253cc",
+				overlay: "background - color: rgba(43, 165, 137, 0.45)",
+			}).then(function () {
+
+				location.href = url;
+			})
+		}
+
+		function newSuccessAlert(message, url) {
+			Swal({
+				icon: 'success',
+				text: message,
+				confirmButtonColor: "#0253cc",
+			}).then((isConfirm) => {
+				if (isConfirm) {
+					location.reload(url);
+				}
+			})
+		}
+
+		function successAlertWithRedirect(message, url) {
+			Swal.fire({
+				title: "Success",
+				text: message,
+				icon: "success",
+				timer: 30000,
+				confirmButtonColor: "#0253cc",
+				overlay: "background - color: rgba(43, 165, 137, 0.45)",
+			}).then(function () {
+
+				location.href = url;
+			})
+		}
+
+		function errorAlertwithTwoButtons(yesUrl, noUrl, newUrl, errorTitle) {
+			Swal.fire({
+				title: errorTitle,
+				text: "",
+				icon: "error",
+				buttons: {
+					cancle: "No",
+					confirmButtonColor: "#0253cc",
+					change: "Yes",
+					new: "Create Pin",
+				},
+			})
+				.then((status) => {
+					debugger;
+					switch (status) {
+						case "change":
+							location.href = yesUrl;
+							break;
+						case "new":
+							location.href = newUrl;
+							break;
+						default:
+							location.href = noUrl;
+					}
+				});
+		}
+
+		function SweeTest(yesUrl, noUrl) {
+			Swal.fire({
+				title: "Unverified E-mail Address",
+				text: "Check your inbox Or Change email",
+				type: "warning",
+				showCancelButton: true,
+				confirmButtonColor: "#0253cc",
+				confirmButtonText: "Resend Email",
+				cancelButtonText: "Change Email",
+				cancelButtonColor: "#D3AF71",
+				closeOnConfirm: false,
+				closeOnCancel: false
+			})
+				.then((result) => {
+					debugger
+					if (result.isConfirmed) {
+						location.href = yesUrl
+					}
+					else {
+						location.href = noUrl
+					}
+
+				});
+		}
+	</script>
 </head>
 <body id="bg">
 	<div class="page-wraper">
@@ -73,12 +215,12 @@
 							<div class="secondary-inner">
 								<ul>
 									<li style="margin-right: 20px;">
-										<a href="login.html" class="btn-link" style="text-decoration: none; color: #000;">
+										<a asp-controller="Accounts" asp-action="Login"  style="text-decoration: none; color: #000;">
 											<i class="fa fa-sign-in" style="margin-right: 5px;background-color: #000000;"></i> Login
 										</a>
 									</li>
 									<li>
-										<a href="register.html" class="btn-link" style="text-decoration: none; color: #000;">
+										<a asp-controller="Accounts" asp-action="RegisterStudent"  style="text-decoration: none; color: #000;">
 											<i class="fa fa-user-plus" style="margin-right: 5px;"></i> Register
 										</a>
 									</li>
@@ -252,7 +394,7 @@
 								<h5 class="footer-title">Sign Up For A Newsletter</h5>
 								<p class="text-capitalize m-b20">Weekly Breaking news analysis and cutting edge advices on job searching.</p>
 								<div class="subscribe-form m-b20">
-									<form class="subscription-form" action="http://educhamp.themetrades.com/demo/assets/script/mailchamp.php" method="post">
+									<form class="subscription-form" method="post">
 										<div class="ajax-message"></div>
 										<div class="input-group">
 											<input name="email" required="required" class="form-control" placeholder="Your Email Address" type="email">
@@ -281,7 +423,7 @@
 									<div class="widget footer_widget">
 										<h5 class="footer-title">Get In Touch</h5>
 										<ul>
-											<li><a href="http://educhamp.themetrades.com/admin/index.html">Dashboard</a></li>
+											<li><a>Dashboard</a></li>
 											<li><a href="blog-classic-grid.html">Blog</a></li>
 											<li><a href="portfolio.html">Portfolio</a></li>
 											<li><a href="event.html">Event</a></li>
@@ -342,7 +484,9 @@
 	<script src="~/edu/assets/vendors/masonry/filter.js"></script>
 	<script src="~/edu/assets/vendors/owl-carousel/owl.carousel.js"></script>
 	<script src="~/edu/assets/js/functions.js"></script>
-	<script src="~/edu/assets/js/contact.js"></script>
+    <script src="~/edu/assets/js/contact.js"></script>
+    <script src="~/edu/assets/css/js/sweetalert2.all.min.js"></script>
+    <script src="~/edu/assets/css/js/sweetalert.min.js"></script>
 	<script src='~/edu/assets/vendors/switcher/switcher.js'></script>
 	<!-- Revolution JavaScripts Files -->
 	<script src="~/edu/assets/vendors/revolution/js/jquery.themepunch.tools.min.js"></script>

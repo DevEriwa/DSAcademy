@@ -476,7 +476,7 @@ Theme Version:	1.0.0
 				/* Function ============ */
 				return {
 					initialHelper:function(){
-						wowAnimation();
+						//wowAnimation();
 						scrollPageLayout();
 						setHeaderHeight();
 						searchBar();

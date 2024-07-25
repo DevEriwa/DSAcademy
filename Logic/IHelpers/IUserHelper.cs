@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Core.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,9 @@ using System.Threading.Tasks;
 
 namespace Logic.IHelpers
 {
-	public interface IUserHelper
-	{
-	}
+    public interface IUserHelper
+    {
+        Task<ApplicationUser> FindByEmailAsync(string email);
+        Task<ApplicationUser> FindByUserNameAsync(string userName);
+    }
 }

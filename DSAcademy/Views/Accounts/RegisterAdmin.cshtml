@@ -1,5 +1,99 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    ViewData["Title"] = "Registration Page";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
+<!-- Page Wrapper -->
+<div class="container mb-5">
+    <!-- Account Logo -->
+    <!-- Page Content -->
+    <div class="mb-4 pb-4">
+
+    </div>
+    <div class="content container-fluid pt-5">
+
+        <div class="card mt-5 p-3">
+            <div class="account-logo" style="text-align: center; margin-bottom: 30px;">
+                <img />
+                <a href="index.html"><img src="~/edu/admin/assets/images/dsa png[3].png" style="max-width: 150px; height: auto;"></a>
+            </div>
+            <div class="row">
+                <div class="col-md-10 m-auto">
+                    <!-- Page Header -->
+                    <div class="page-header">
+                        <div class="row mb-2">
+                            <div class="col-sm-12 mt-4">
+                                <h3 class="page-title text-center">Admin Registration</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /Page Header -->
+                    <div class="row mb-2">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label for="FirstName">First Name <span class="text-danger">*</span></label>
+                                <input class="form-control" id="FirstName" name="FirstName" type="text" value="" required>
+                            </div>
+                            <p class="text-danger" id="fNameVDT" style="display: none;"><b>Enter first name</b></p>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label for="LastName">Last Name <span class="text-danger">*</span></label>
+                                <input class="form-control" id="LastName" name="LastName" type="text" value="LastName" required>
+                            </div>
+                            <p class="text-danger" id="lNameVDT" style="display: none;"><b>Enter last name</b></p>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Phone Number <span class="text-danger">*</span></label>
+                                <input class="form-control" id="phoneNumber" type="number">
+                                <p class="text-danger" id="phoneWarningMsg" hidden></p>
+                            </div>
+                            <p class="text-danger" id="phoneNumberVDT" style="display: none;"><b>phoneNumber not matched</b></p>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Email <span class="text-danger">*</span></label>
+                                <input class="form-control" id="email" type="email">
+                            </div>
+                            <p class="text-danger" id="emailVDT" style="display: none;"><b>Enter email</b></p>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-group">
+                                <label for="Password">Password <span class="text-danger">*</span></label>
+                                <input class="form-control" id="Password" name="Password" type="password" required>
+                            </div>
+                            <p class="text-danger" id="passwrdVDT" style="display: none;"><b>Enter password</b></p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="form-group">
+                                <label for="ConfirmPassword">Confirm Password <span class="text-danger">*</span></label>
+                                <input class="form-control" id="ConfirmPassword" name="ConfirmPassword" type="password" required>
+                            </div>
+                            <p class="text-danger" id="cpasswrdVDT" style="display: none;"><b>Password not matched</b></p>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-10 mb-3">
+                            <div class="form-group">
+                                <label for="Address">Address</label>
+                                <input class="form-control" id="Address" name="Address" type="text" value="Address">
+                            </div>
+                        </div>
+                       
+                    </div>
+                    <div class="submit-section mb-3" style="display: flex; justify-content: center;">
+                        <button class="btn btn-primary submit-btn text-center" id="submit" onclick="RegisterAdmin()">SaveData</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Page Content -->
+</div>
+<!-- /Page Wrapper -->
