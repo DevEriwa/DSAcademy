@@ -79,6 +79,7 @@ namespace Logic.Helpers
                     PhoneNumber = applicationUserViewModel.PhoneNumber,
                     Address = applicationUserViewModel.Address,
                     HowDoYouIntendToCopeStatement = "Default coping statement",
+                    Role = "Admin",
                     Deactivated = false,
                     IsAdmin = true,
                     DateRegistered = DateTime.Now

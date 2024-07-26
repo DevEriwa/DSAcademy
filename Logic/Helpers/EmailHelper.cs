@@ -48,14 +48,14 @@ namespace Logic.Helpers
                 if (applicantEmail != null)
                 {
                     string toEmail = applicantEmail;
-                    string subject = "Verify your account - Bivisoft Academy ";
-                    string message = "Thank you for registering! You’re only one click away from accessing your Bivisoft Academy account." + "<br/>" + "<br/>" +
+                    string subject = "Verify your account - Digital Skills Academy ";
+                    string message = "Thank you for registering! You’re only one click away from accessing your Digital skills academy account." + "<br/>" + "<br/>" +
                         "<a  href='" + linkToClick + "' target='_blank'>" + "<button style='color:white; background-color:#0C2B4B; padding:10px; border:10px;'>Verify Me Now</button>" + "</a>" + "<br/>" +
                         "If the link does not work copy the link here to your browser: " + linkToClick + "<br/>" +
                         "Need help? We’re here for you.Simply reply to this email to contact us. <br/>" +
 
                         "Kind regards,<br/>" +
-                        "Bivisoft Limited Group.";
+                        "Digital Skills Academy Support.";
                     _emailService.SendEmail(toEmail, subject, message);
                     return true;
                 };
