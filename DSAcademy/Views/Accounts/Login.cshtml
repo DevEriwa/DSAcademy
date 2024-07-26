@@ -1,14 +1,14 @@
 ﻿
 @{
 	ViewData["Title"] = "Login";
-	Layout = "~/Views/Shared/_Layout.cshtml";
+	Layout = "~/Views/Shared/_AccountLayout.cshtml";
 }
 
 <!-- Main Wrapper -->
 <div class="main-wrapper" style="display: flex; justify-content: center; align-items: center; height: 100vh; padding: 20px;">
     <div class="mb-4 pb-4">
     </div>
-    <div class="account-content" style="width: 100%; max-width: 400px;">
+    <div class="account-content" style="width: 100%; max-width: 500px; margin-top:10%;">
         <div class="container">
             <!-- Account Logo -->
             <div class="account-logo" style="text-align: center; margin-bottom: 30px;">
@@ -16,7 +16,6 @@
                 <a href="index.html"><img src="~/edu/admin/assets/images/dsa png[3].png" style="max-width: 150px; height: auto;"></a>
             </div>
             <!-- /Account Logo -->
-
             <div class="account-box" style="border: 1px solid #ddd; border-radius: 8px; padding: 20px; background-color: #fff;">
                 <div class="account-wrapper">
                     <h3 class="account-title" style="text-align: center; margin-bottom: 20px;">Login</h3>
@@ -50,7 +49,7 @@
                         <button class="btn btn-primary account-btn" id="submit_btn" onclick="login()" type="submit" style="width: 100%; padding: 10px;">Login</button>
                     </div>
                     <div class="account-footer" style="text-align: center; margin-top: 20px;">
-                        <p>Don't have an account yet? <a href="#">Register Company</a></p>
+                        <p>Don't have an account yet? <a asp-controller="Accounts" asp-action="RegisterStudent">Register Company</a></p>
                     </div>
                 </div>
             </div>

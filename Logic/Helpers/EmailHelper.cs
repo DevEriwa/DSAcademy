@@ -1,15 +1,8 @@
 ﻿using Core.Config;
 using Core.Db;
-using Core.Enum;
 using Core.Models;
-using Core.ViewModels;
 using Logic.IHelpers;
 using Logic.SmtpMailServices;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Logic.Helpers
 {
@@ -61,7 +54,6 @@ namespace Logic.Helpers
                 };
                 return false;
             }
-
             catch (Exception)
             {
                 throw;

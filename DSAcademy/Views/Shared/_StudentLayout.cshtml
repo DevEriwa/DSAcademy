@@ -1,32 +1,5 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
-@* <head>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>@ViewData["Title"] - DSAcademy</title>
-	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-	
-	<link rel="icon" href="@Url.Content("~/edu/assets/images/dsa-png-4.png")" type="image/png" />
-	<link rel="shortcut icon" href="@Url.Content("~/edu/assets/images/dsa-png-4.png")" type="image/png" />
-	<img src="~/edu/admin/assets/images/dsa png[3].png" />
-
-	<link href="~/edu/assets/css/typography.css" rel="stylesheet" />
-	<link href="~/edu/assets/css/assets.css" rel="stylesheet" />
-	<link href="~/edu/assets/css/shortcodes/shortcodes.css" rel="stylesheet" />
-	<link href="~/edu/assets/css/style.css" rel="stylesheet" />
-	<link href="~/edu/assets/css/color/color-1.css" rel="stylesheet" />
-
-
-	<!-- REVOLUTION SLIDER CSS ============================================= -->
-	<link rel="stylesheet" type="text/css" href="~/edu/assets/vendors/revolution/css/layers.css">
-	<link rel="stylesheet" type="text/css" href="~/edu/assets/vendors/revolution/css/settings.css">
-	<link rel="stylesheet" type="text/css" href="~/edu/assets/vendors/revolution/css/navigation.css">
-	<!-- REVOLUTION SLIDER END -->
-
-</head> *@
-
-
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -49,7 +22,6 @@
 	<link rel="stylesheet" type="text/css" href="~/edu/assets/vendors/revolution/css/layers.css">
 	<link rel="stylesheet" type="text/css" href="~/edu/assets/vendors/revolution/css/settings.css">
 	<link rel="stylesheet" type="text/css" href="~/edu/assets/vendors/revolution/css/navigation.css">
-
 	<script>
 		function errorAlert(message) {
 			Swal.fire({
@@ -215,15 +187,10 @@
 							<div class="secondary-inner">
 								<ul>
 									<li style="margin-right: 20px;">
-										<a asp-controller="Accounts" asp-action="Login"  style="text-decoration: none; color: #000;">
-											<i class="fa fa-sign-in" style="margin-right: 5px;background-color: #000000;"></i> Login
+										<a asp-controller="Accounts" asp-action="LogOut" style="text-decoration: none; color: #000;">
+											<i class="fa fa-sign-in" style="margin-right: 5px;background-color: #000000;"></i> LogOut
 										</a>
 									</li>
-									@* <li>
-										<a asp-controller="Accounts" asp-action="RegisterStudent"  style="text-decoration: none; color: #000;">
-											<i class="fa fa-user-plus" style="margin-right: 5px;"></i> Register
-										</a>
-									</li> *@
 								</ul>
 							</div>
 						</div>

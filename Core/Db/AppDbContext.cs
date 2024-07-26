@@ -14,6 +14,8 @@ namespace Core.Db
 		public DbSet<TrainingCourse> TrainingCourse { get; set; }
 		public DbSet<TrainingVideo> TrainingVideos { get; set; }
 		public DbSet<Payments> Payments { get; set; }
-		public DbSet<UserVerification> userVerifications { get; set; }
+		public DbSet<TestResult> TestResults { get; set; }
+		public DbSet<CommonDropDown> CommonDropDown { get; set; }
+		public DbSet<UserVerification> UserVerifications { get; set; }
 	}
 }

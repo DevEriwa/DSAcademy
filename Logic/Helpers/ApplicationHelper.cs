@@ -4,6 +4,7 @@ using Core.Models;
 using Core.ViewModels;
 using Logic.IHelpers;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,34 +35,92 @@ namespace Logic.Helpers
             _context = context;
         }
 
+        //public async Task<ApplicationUser> RegisterApplicantService(ApplicationUserViewModel applicationUserViewModel)
+        //{
+        //    if (applicationUserViewModel != null)
+        //    {
+        //        var newInstanceOfApplicantModelAboutToBCreated = new ApplicationUser
+        //        {
+        //            FirstName = applicationUserViewModel.FirstName,
+        //            LastName = applicationUserViewModel.LastName,
+        //            Email = applicationUserViewModel.Email,
+        //            PhoneNumber = applicationUserViewModel.PhoneNumber,
+        //            UserName = applicationUserViewModel.Email,
+        //            Address = applicationUserViewModel.Address,
+        //            HasLaptop = applicationUserViewModel.HasLaptop,
+        //            HasAnyProgrammingExp = applicationUserViewModel.HasAnyProgrammingExp,
+        //            ProgrammingLanguagesExps = applicationUserViewModel.ProgrammingLanguagesExps,
+        //            ApplicantResideInEnugu = applicationUserViewModel.ApplicantResideInEnugu,
+        //            ReasonForProgramming = applicationUserViewModel.ReasonForProgramming,
+        //            HowDoYouIntendToCopeStatement = applicationUserViewModel.HowDoYouIntendToCopeStatement,
+        //            Deactivated = false,
+        //            IsAdmin = false,
+        //            Status = ApplicationStatus.Pending,
+        //            DateRegistered = DateTime.Now,
+        //        };
+        //        var result = await _userManager.CreateAsync(newInstanceOfApplicantModelAboutToBCreated, applicationUserViewModel.Password).ConfigureAwait(false);
+        //        if (result.Succeeded)
+        //        {
+        //            return newInstanceOfApplicantModelAboutToBCreated;
+        //        }
+        //    }
+        //    return null;
+        //}
         public async Task<ApplicationUser> RegisterApplicantService(ApplicationUserViewModel applicationUserViewModel)
         {
-            if (applicationUserViewModel != null)
+            if (applicationUserViewModel == null)
             {
-                var newInstanceOfApplicantModelAboutToBCreated = new ApplicationUser
-                {
-                    FirstName = applicationUserViewModel.FirstName,
-                    LastName = applicationUserViewModel.LastName,
-                    Email = applicationUserViewModel.Email,
-                    PhoneNumber = applicationUserViewModel.PhoneNumber,
-                    UserName = applicationUserViewModel.UserName,
-                    Address = applicationUserViewModel.Address,
-                    HasLaptop = applicationUserViewModel.HasLaptop,
-                    HasAnyProgrammingExp = applicationUserViewModel.HasAnyProgrammingExp,
-                    ProgrammingLanguagesExps = applicationUserViewModel.ProgrammingLanguagesExps,
-                    ApplicantResideInEnugu = applicationUserViewModel.ApplicantResideInEnugu,
-                    ReasonForProgramming = applicationUserViewModel.ReasonForProgramming,
-                    HowDoYouIntendToCopeStatement = applicationUserViewModel.HowDoYouIntendToCopeStatement,
-                    Deactivated = false,
-                    IsAdmin = false,
-                    Status = ApplicationStatus.Pending,
-                    DateRegistered = DateTime.Now,
-                };
-                var result = await _userManager.CreateAsync(newInstanceOfApplicantModelAboutToBCreated, applicationUserViewModel.Password);
+                // Log the error
+                Console.WriteLine("Application is null.");
+                return null;
+            }
+            var newInstanceOfApplicantModelAboutToBCreated = new ApplicationUser
+            {
+                FirstName = applicationUserViewModel.FirstName,
+                LastName = applicationUserViewModel.LastName,
+                Email = applicationUserViewModel.Email,
+                PhoneNumber = applicationUserViewModel.PhoneNumber,
+                UserName = applicationUserViewModel.Email,
+                Address = applicationUserViewModel.Address,
+                HasLaptop = applicationUserViewModel.HasLaptop,
+                HasAnyProgrammingExp = applicationUserViewModel.HasAnyProgrammingExp,
+                ProgrammingLanguagesExps = applicationUserViewModel.ProgrammingLanguagesExps,
+                ApplicantResideInEnugu = applicationUserViewModel.ApplicantResideInEnugu,
+                ReasonForProgramming = applicationUserViewModel.ReasonForProgramming,
+                HowDoYouIntendToCopeStatement = applicationUserViewModel.HowDoYouIntendToCopeStatement,
+                IsDeactivated = false,
+                IsActivated = true,
+                IsAdmin = false,
+                Status = ApplicationStatus.Pending,
+                DateRegistered = DateTime.Now,
+            };
+            try
+            {
+                var result = await _userManager.CreateAsync(newInstanceOfApplicantModelAboutToBCreated, applicationUserViewModel.Password).ConfigureAwait(false);
                 if (result.Succeeded)
                 {
                     return newInstanceOfApplicantModelAboutToBCreated;
                 }
+                else
+                {
+                    // Log detailed errors
+                    foreach (var error in result.Errors)
+                    {
+                        Console.WriteLine($"Error Code: {error.Code}, Description: {error.Description}");
+                    }
+                }
+            }
+            catch (DbUpdateException dbEx)
+            {
+                // Log detailed DbUpdateException errors
+                Console.WriteLine($"DbUpdateException: {dbEx.InnerException?.Message ?? dbEx.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                // Log other exceptions
+                Console.WriteLine($"An unexpected error occurred: {ex.InnerException?.Message ?? ex.Message}");
+                throw;
             }
             return null;
         }
@@ -80,7 +139,7 @@ namespace Logic.Helpers
                     Address = applicationUserViewModel.Address,
                     HowDoYouIntendToCopeStatement = "Default coping statement",
                     Role = "Admin",
-                    Deactivated = false,
+                    IsDeactivated = false,
                     IsAdmin = true,
                     DateRegistered = DateTime.Now
                 };
@@ -131,12 +190,12 @@ namespace Logic.Helpers
             return null;
         }
 
-        public async Task<ApplicationUser> AuthenticateUser(LoginViewModel loginDetail)
+        public async Task<ApplicationUser> AuthenticateUser(string email, string password)
         {
-            var user = await _userManager.FindByEmailAsync(loginDetail.Email);
-            if (user != null && user.Deactivated != true)
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user != null && user.IsDeactivated != true)
             {
-                var logger = _signInManager.PasswordSignInAsync(user.UserName, loginDetail.Password, isPersistent = false, lockoutOnFailure = false).Result;
+                var logger = _signInManager.PasswordSignInAsync(user.UserName, password, isPersistent = false, lockoutOnFailure = false).Result;
                 if (logger.Succeeded)
                 {
                     return user;

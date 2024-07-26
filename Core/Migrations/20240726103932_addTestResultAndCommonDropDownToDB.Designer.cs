@@ -4,6 +4,7 @@ using Core.Db;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Core.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240726103932_addTestResultAndCommonDropDownToDB")]
+    partial class addTestResultAndCommonDropDownToDB
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -31,9 +33,10 @@ namespace Core.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Address")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ApplicantResideInEnugu")
+                    b.Property<int>("ApplicantResideInEnugu")
                         .HasColumnType("int");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -43,6 +46,9 @@ namespace Core.Migrations
                     b.Property<DateTime>("DateRegistered")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("Deactivated")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -51,19 +57,18 @@ namespace Core.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("FirstName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("HasAnyProgrammingExp")
+                    b.Property<int>("HasAnyProgrammingExp")
                         .HasColumnType("int");
 
-                    b.Property<int?>("HasLaptop")
+                    b.Property<int>("HasLaptop")
                         .HasColumnType("int");
 
                     b.Property<string>("HowDoYouIntendToCopeStatement")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActivated")
-                        .HasColumnType("bit");
 
                     b.Property<bool>("IsAdmin")
                         .HasColumnType("bit");
@@ -71,13 +76,11 @@ namespace Core.Migrations
                     b.Property<bool>("IsApproved")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsDeactivated")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("IsEnrolled")
                         .HasColumnType("bit");
 
                     b.Property<string>("LastName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
@@ -110,12 +113,13 @@ namespace Core.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Role")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("Status")
+                    b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.Property<bool>("TwoFactorEnabled")
@@ -162,34 +166,28 @@ namespace Core.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int?>("CourseId")
+                    b.Property<int>("CourseId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("DateCreated")
+                    b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("InvoiceNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ProveOfPayment")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("Source")
+                    b.Property<int>("Source")
                         .HasColumnType("int");
 
-                    b.Property<int?>("Status")
+                    b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -210,24 +208,13 @@ namespace Core.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<int?>("CourseId")
+                        .IsRequired()
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("ResultOne")
+                    b.Property<int>("ResultOne")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ResultTwo")
+                    b.Property<int>("ResultTwo")
                         .HasColumnType("int");
 
                     b.Property<bool>("TestOneChecker")
@@ -236,10 +223,11 @@ namespace Core.Migrations
                     b.Property<bool>("TestTwoChecker")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("Total")
+                    b.Property<int>("Total")
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -259,16 +247,18 @@ namespace Core.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<decimal?>("Amount")
+                    b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Duration")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
@@ -278,35 +268,28 @@ namespace Core.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Logo")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("TestDuration")
+                    b.Property<int>("TestDuration")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("TrainingCourse");
                 });
 
             modelBuilder.Entity("Core.Models.TrainingVideo", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int?>("CourseId")
-                        .IsRequired()
+                    b.Property<int>("CourseId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("DateCreated")
@@ -316,12 +299,15 @@ namespace Core.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Outline")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("VideoLink")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("VideoPath")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -329,28 +315,6 @@ namespace Core.Migrations
                     b.HasIndex("CourseId");
 
                     b.ToTable("TrainingVideos");
-                });
-
-            modelBuilder.Entity("Core.Models.UserVerification", b =>
-                {
-                    b.Property<Guid?>("Token")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("DateUsed")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("Used")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Token");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserVerifications");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -490,39 +454,38 @@ namespace Core.Migrations
                 {
                     b.HasOne("Core.Models.TrainingCourse", "Courses")
                         .WithMany()
-                        .HasForeignKey("CourseId");
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("Core.Models.ApplicationUser", "User")
+                    b.HasOne("Core.Models.ApplicationUser", "Student")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Courses");
 
-                    b.Navigation("User");
+                    b.Navigation("Student");
                 });
 
             modelBuilder.Entity("Core.Models.TestResult", b =>
                 {
                     b.HasOne("Core.Models.TrainingCourse", "Course")
                         .WithMany()
-                        .HasForeignKey("CourseId");
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("Core.Models.ApplicationUser", "User")
+                    b.HasOne("Core.Models.ApplicationUser", "Student")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Course");
 
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Core.Models.TrainingCourse", b =>
-                {
-                    b.HasOne("Core.Models.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("User");
+                    b.Navigation("Student");
                 });
 
             modelBuilder.Entity("Core.Models.TrainingVideo", b =>
@@ -534,15 +497,6 @@ namespace Core.Migrations
                         .IsRequired();
 
                     b.Navigation("Course");
-                });
-
-            modelBuilder.Entity("Core.Models.UserVerification", b =>
-                {
-                    b.HasOne("Core.Models.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

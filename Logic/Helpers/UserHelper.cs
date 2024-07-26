@@ -50,7 +50,7 @@ namespace Logic.Helpers
         public List<ApplicationUserViewModel> GetAllOnboardApplicantsFromDB()
         {
             var applicantsList = new List<ApplicationUserViewModel>();
-            var allApplicants = _context.ApplicationUsers.Where(b => b.Deactivated == false && b.IsAdmin == false).OrderByDescending(d => d.DateRegistered).ToList();
+            var allApplicants = _context.ApplicationUsers.Where(b => b.IsDeactivated == false && b.IsAdmin == false).OrderByDescending(d => d.DateRegistered).ToList();
             if (allApplicants.Any())
             {
                 applicantsList = allApplicants.Select(s => new ApplicationUserViewModel()
@@ -64,10 +64,8 @@ namespace Logic.Helpers
                     Email = s.Email,
                     ApplicantResideInEnugu = s.ApplicantResideInEnugu,
                     HasLaptop = s.HasLaptop,
-                   
                     HasAnyProgrammingExp = s.HasAnyProgrammingExp,
                     ProgrammingLanguagesExps = s.ProgrammingLanguagesExps,
-               
                     ReasonForProgramming = s.ReasonForProgramming,
                     Status = s.Status,
                 }).ToList();
@@ -75,62 +73,60 @@ namespace Logic.Helpers
             }
             return applicantsList;
         }
-        //public async Task<UserVerification> CreateUserToken(string userEmail)
-        //{
-        //    try
-        //    {
-        //        var user = await FindByEmailAsync(userEmail);
-        //        if (user != null)
-        //        {
-        //            UserVerification userVerification = new UserVerification()
-        //            {
-        //                UserId = user.Id,
-        //            };
-        //            await _context.AddAsync(userVerification);
-        //            await _context.SaveChangesAsync();
-        //            return userVerification;
-        //        }
-        //        else
-        //        {
-        //            return null;
-        //        }
+        public async Task<UserVerification> CreateUserToken(string userEmail)
+        {
+            try
+            {
+                var user = await FindByEmailAsync(userEmail);
+                if (user != null)
+                {
+                    UserVerification userVerification = new UserVerification()
+                    {
+                        UserId = user.Id,
+                    };
+                    await _context.AddAsync(userVerification);
+                    await _context.SaveChangesAsync();
+                    return userVerification;
+                }
+                else
+                {
+                    return null;
+                }
 
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw ex;
-        //    }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
 
-        //}
-        //public async Task<UserVerification> GetUserToken(Guid token)
-        //{
-        //    return await _context.UserVerifications.Where(t => !t.Used && t.Token == token)?.Include(s => s.User).FirstOrDefaultAsync();
-
-        //}
-        //public async Task<bool> MarkTokenAsUsed(UserVerification userVerification)
-        //{
-        //    try
-        //    {
-        //        var VerifiedUser = _context.UserVerifications.Where(s => s.UserId == userVerification.User.Id && s.Used != true).FirstOrDefault();
-        //        if (VerifiedUser != null)
-        //        {
-        //            userVerification.Used = true;
-        //            userVerification.DateUsed = DateTime.Now;
-        //            _context.Update(userVerification);
-        //            await _context.SaveChangesAsync();
-        //            return true;
-        //        }
-        //        else
-        //        {
-        //            return false;
-        //        }
-        //    }
-
-        //    catch (Exception ex)
-        //    {
-        //        throw ex;
-        //    }
-        //}
+        }
+        public async Task<UserVerification> GetUserToken(Guid token)
+        {
+            return await _context.UserVerifications.Where(t => !t.Used && t.Token == token)?.Include(s => s.User).FirstOrDefaultAsync();
+        }
+        public async Task<bool> MarkTokenAsUsed(UserVerification userVerification)
+        {
+            try
+            {
+                var VerifiedUser = _context.UserVerifications.Where(s => s.UserId == userVerification.User.Id && s.Used != true).FirstOrDefault();
+                if (VerifiedUser != null)
+                {
+                    userVerification.Used = true;
+                    userVerification.DateUsed = DateTime.Now;
+                    _context.Update(userVerification);
+                    await _context.SaveChangesAsync();
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         public List<TrainingCourse> GetAllTrainingCourseFromDB()
         {
             var allTrainingCourse = _context.TrainingCourse.Where(t => !t.IsDeleted).ToList();
@@ -151,7 +147,7 @@ namespace Logic.Helpers
         }
         public Payments GetPaymentById(int? Id)
         {
-            var payment = _context.Payments.Where(t => t.Id == Id).Include(c => c.Courses).Include(s => s.Student).FirstOrDefault();
+            var payment = _context.Payments.Where(t => t.Id == Id).Include(c => c.Courses).Include(s => s.User).FirstOrDefault();
             if (payment != null)
             {
                 return payment;
@@ -160,7 +156,7 @@ namespace Logic.Helpers
         }
         public List<Payments> GetPaymentList()
         {
-            var allPayments = _context.Payments.Include(p => p.Student).Include(p => p.Courses).OrderByDescending(d => d.Date).ToList();
+            var allPayments = _context.Payments.Include(p => p.User).Include(p => p.Courses).OrderByDescending(d => d.DateCreated).ToList();
             if (allPayments.Any())
             {
                 return allPayments;
@@ -189,9 +185,9 @@ namespace Logic.Helpers
             }
             return null;
         }
-        public List<int> GetListOfCourseIdStudentPaid4(string userID)
+        public List<int?> GetListOfCourseIdStudentPaid4(string userID)
         {
-            var list = new List<int>();
+            var list = new List<int?>();
             var getListOfCourseStudentPaidFor = _context.Payments.Where(t => t.UserId == userID && t.Status == PaymentStatus.Approved).ToList();
             var paidCourseIDs = getListOfCourseStudentPaidFor.Select(x => x.CourseId).ToList();
             if (paidCourseIDs.Any())
@@ -210,5 +206,6 @@ namespace Logic.Helpers
             }
             return videos;
         }
+
     }
 }
