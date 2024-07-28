@@ -11,15 +11,15 @@ namespace Core.Models
 	public class TrainingVideo
 	{
 		[Key]
-		public Guid Id { get; set; }
+		public Guid? Id { get; set; }
 
 		[Required]
-		public int CourseId { get; set; }
+		public int? CourseId { get; set; }
 		[ForeignKey("CourseId")]
-		public virtual TrainingCourse Course { get; set; } 
-		public string VideoLink { get; set; }
-		public string VideoPath { get; set; }
-		public string Outline { get; set; }
+		public virtual TrainingCourse? Course { get; set; } 
+		public string? VideoLink { get; set; }
+		public string? VideoPath { get; set; }
+		public string? Outline { get; set; }
 		public bool IsActive { get; set; }
 		public DateTime DateCreated { get; set; }
 	}

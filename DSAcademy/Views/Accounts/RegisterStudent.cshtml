@@ -1,7 +1,7 @@
 ﻿@model Core.Models.ApplicationUser
 @{
     ViewData["Title"] = "Registration Page";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_AccountLayout.cshtml";
 }
 
 <!-- Page Wrapper -->
@@ -32,13 +32,13 @@
                         <div class="col-sm-6">
                             <div class="form-group">
                                 <label for="FirstName">First Name <span class="text-danger">*</span></label>
-                                <input class="form-control" id="FirstName" name="FirstName" type="text" value="" required>
+                                <input class="form-control" id="studentFirstName" name="FirstName" type="text" value="" required>
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="form-group">
                                 <label for="LastName">Last Name <span class="text-danger">*</span></label>
-                                <input class="form-control" id="LastName" name="LastName" type="text" value="LastName" required>
+                                <input class="form-control" id="studentLastName" name="LastName" type="text" value="" required>
                             </div>
                         </div>
                     </div>
@@ -46,14 +46,14 @@
                         <div class="col-sm-6">
                             <div class="form-group">
                                 <label>Phone Number <span class="text-danger">*</span></label>
-                                <input class="form-control" id="phoneNumber" type="number">
+                                <input class="form-control" id="studentPhoneNumber" type="number" required>
                                 <p class="text-danger" id="phoneWarningMsg" hidden></p>
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="form-group">
                                 <label>Email <span class="text-danger">*</span></label>
-                                <input class="form-control" id="email" type="email">
+                                <input class="form-control" id="studentEmail" type="email" required>
                             </div>
                         </div>
                     </div>
@@ -61,70 +61,67 @@
                         <div class="col-md-6 mb-3">
                             <div class="form-group">
                                 <label for="Password">Password <span class="text-danger">*</span></label>
-                                <input class="form-control" id="Password" name="Password" type="password" required>
+                                <input class="form-control" id="studentPassword" name="Password" type="password" required>
                             </div>
                         </div>
                         <div class="col-md-6 mb-3">
                             <div class="form-group">
                                 <label for="ConfirmPassword">Confirm Password <span class="text-danger">*</span></label>
-                                <input class="form-control" id="ConfirmPassword" name="ConfirmPassword" type="password" required>
+                                <input class="form-control" id="studentConfirmPassword" name="ConfirmPassword" type="password" required>
                             </div>
                         </div>
                     </div>
                     <div class="row mb-2">
                         <div class="col-md-6 mb-3">
                             <div class="form-group">
-                                <label for="Address">Address</label>
-                                <input class="form-control" id="Address" name="Address" type="text" value="Address">
+                                <label for="ProgrammingLanguagesExps">Programming Languages Experience</label>
+                                <input class="form-control" id="studentProgrammingLanguagesExps" name="ProgrammingLanguagesExps" type="text" value="">
                             </div>
                         </div>
+                       
                         <div class="col-md-6 mb-3">
                             <div class="form-group">
                                 <label for="HasAnyProgrammingExp">Do you have any programming experience? <span class="text-danger">*</span></label>
-                                <select class="form-control" id="HasAnyProgrammingExp" name="HasAnyProgrammingExp">
-                                    @* <option value="Yes" @(Model.HasAnyProgrammingExp == YesNoEnum.Yes ? "selected" : "")>Yes</option>
-                                    <option value="No" @(Model.HasAnyProgrammingExp == YesNoEnum.No ? "selected" : "")>No</option> *@
+                                <select class="form-control" id="studentHasAnyProgrammingExp" name="HasAnyProgrammingExp" required asp-items="@(new SelectList(@ViewBag.YesOrNo,  "Id", "Name" ))">
                                 </select>
                             </div>
                         </div>
                     </div>
-                    <div class="row mb-2">
-                        <div class="col-md-6 mb-3">
-                            <div class="form-group">
-                                <label for="ReasonForProgramming">Reason for Programming</label>
-                                <textarea class="form-control" id="ReasonForProgramming" name="ReasonForProgramming">ReasonForProgramming</textarea>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <div class="form-group">
-                                <label for="ProgrammingLanguagesExps">Programming Languages Experience</label>
-                                <input class="form-control" id="ProgrammingLanguagesExps" name="ProgrammingLanguagesExps" type="text" value="ProgrammingLanguagesExps">
-                            </div>
-                        </div>
-                    </div>
+                   
                     <div class="row mb-2">
                         <div class="col-md-6 mb-3">
                             <div class="form-group">
                                 <label for="ApplicantResideInEnugu">Do you reside in Enugu? <span class="text-danger">*</span></label>
-                                <select class="form-control" id="ApplicantResideInEnugu" name="ApplicantResideInEnugu">
-                                    @*  <option value="Yes" @(Model.ApplicantResideInEnugu == YesNoEnum.Yes ? "selected" : "")>Yes</option>
-                                    <option value="No" @(Model.ApplicantResideInEnugu == YesNoEnum.No ? "selected" : "")>No</option> *@
+                                <select class="form-control" id="studentApplicantResideInEnugu" name="ApplicantResideInEnugu" required asp-items="@(new SelectList(@ViewBag.YesOrNo,  "Id", "Name" ))">
                                 </select>
                             </div>
                         </div>
                         <div class="col-md-6 mb-3">
                             <div class="form-group">
                                 <label for="HasLaptop">Do you have a laptop? <span class="text-danger">*</span></label>
-                                <select class="form-control" id="HasLaptop" name="HasLaptop">
-                                    <@* option value="Yes" @(Model.HasLaptop == YesNoEnum.Yes ? "selected" : "")>Yes</option>
-                                        <option value="No" @(Model.HasLaptop == YesNoEnum.No ? "selected" : "")>No</option> *@
+                                <select class="form-control" id="studentHasLaptop" name="HasLaptop" required asp-items="@(new SelectList(@ViewBag.YesOrNo,  "Id", "Name" ))">
                                 </select>
                             </div>
                         </div>
                        
                     </div>
-                   
+                    <div class="row mb-2">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-group">
+                                <label for="Address">Address</label>
+                                <textarea class="form-control" id="studentAddress" name="Address" required></textarea>
+                                @*  <input class="form-control" id="Address" name="Address" type="text" value="Address"> *@
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="form-group">
+                                <label for="ReasonForProgramming">Reason for Programming</label>
+                                <textarea class="form-control" id="studentReasonForProgramming" name="ReasonForProgramming" required></textarea>
+                            </div>
+                        </div>
+
+
+                    </div>
                     <div class="tacbox row mt-3">
                         <div class="col">
                             <input id="termsCondition" type="checkbox" required>
@@ -134,8 +131,8 @@
                             <span>Already have an account? <a asp-action="Login" asp-controller="Accounts">Login Instead</a></span>
                         </div>
                     </div>
-                    <div class="submit-section mb-3">
-                        <button class="btn btn-primary submit-btn" id="submit" onclick="registerCompany()">Save</button>
+                    <div class="submit-section mb-3" style="margin-left:40%;">
+                        <button class="btn btn-primary submit-btn" id="submit_btn" onclick="registerStudent()" style="background-color:#840170;">Save</button>
                     </div>
                 </div>
             </div>

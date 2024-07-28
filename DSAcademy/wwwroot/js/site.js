@@ -3054,3 +3054,92 @@ function editApplicantDocumentation(Id) {
 }
 // <!======/EDIT APPLICANT DOCUMENTS==========>
 
+// APPLICATION REQUEST 
+function registerStudent() {
+    var defaultBtnValue = $('#submit_btn').html();
+    $('#submit_btn').html("Please wait...");
+    $('#submit_btn').attr("disabled", true);
+    var data = {};
+    data.FirstName = $('#studentFirstName').val();
+    data.LastName = $('#studentLastName').val();
+    data.PhoneNumber = $('#studentPhoneNumber').val();
+    data.Email = $('#studentEmail').val();
+    data.PassWord = $('#studentPassword').val();
+    data.ConfirmPassword = $('#studentConfirmPassword').val();
+    data.ProgrammingLanguagesExps = $('#studentProgrammingLanguagesExps').val();
+    data.HasAnyProgrammingExp = $('#studentHasAnyProgrammingExp').val();
+    data.ApplicantResideInEnugu = $('#studentApplicantResideInEnugu').val();
+    data.HasLaptop = $('#studentHasLaptop').val();
+    data.ReasonForProgramming = $('#studentReasonForProgramming').val();
+    data.Address = $('#studentAddress').val();
+    data.IsAdmin = false;
+    data.CheckBox = $('#termsCondition').is(":checked");
+    let userDetails = JSON.stringify(data);
+    $.ajax({
+        type: 'Post',
+        url: '/Accounts/StudentRegisteration',
+        dataType: 'json',
+        data:
+        {
+            userDetails: userDetails,
+        },
+        success: function (result) {
+            if (!result.isError) {
+                var url = '/Accounts/Login';
+                successAlertWithRedirect(result.msg, url);
+                $('#submit_btn').html(defaultBtnValue);
+            }
+            else {
+                $('#submit_btn').html(defaultBtnValue);
+                $('#submit_btn').attr("disabled", false);
+                errorAlert(result.msg);
+            }
+        },
+        error: function (ex) {
+            $('#submit_btn').html(defaultBtnValue);
+            $('#submit_btn').attr("disabled", false);
+            errorAlert("An error has occurred, try again. Please contact support if the error persists");
+        }
+    });
+}
+
+
+///For LogIn
+function login() {
+    $('#loader').show();
+    $('#loader-wrapper').show();
+    var defaultBtnValue = $('#submit_btn').html();
+    $('#submit_btn').html("Please wait...");
+    $('#submit_btn').attr("disabled", true);
+    var email = $('#email').val();
+    var password = $('#password').val();
+    $.ajax({
+        type: 'Post',
+        url: '/Accounts/Login',
+        dataType: 'json',
+        data:
+        {
+            email: email,
+            password: password
+        },
+        success: function (result) {
+            if (result.isNotVerified) {
+                $("#loader").fadeOut(3000);
+                errorAlert(result.msg)
+            }
+            else if (!result.isError) {
+                $("#loader").fadeOut(3000);
+                successAlertWithRedirect(result.msg, result.dashboard)
+            }
+            else {
+                $("#loader").fadeOut(3000);
+                errorAlert(result.msg)
+            }
+        },
+        error: function (ex) {
+            $('#submit_btn').html(defaultBtnValue);
+            $('#submit_btn').attr("disabled", false);
+            errorAlert("An error has occurred, try again. Please contact support if the error persists");
+        }
+    });
+}
