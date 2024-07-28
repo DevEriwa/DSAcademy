@@ -73,7 +73,7 @@ namespace Logic.Helpers
                     string message = "Your Email has been verified.Thank you for applying with Bivisoft Academy.<br/> " +
                         "<br/>" + "<br/>" + "Need help? We’re always here for you.Simply reply to this email to reach us. <br/>" + "<br/>" +
                     "Kind regards,<br/>" +
-                    "<b>Bivisoft Limited.</b>";
+                    "<b>Digital Skills Academy.</b>";
                     _emailService.SendEmail(toEmail, subject, message);
                     return true;
                 };
@@ -93,7 +93,7 @@ namespace Logic.Helpers
             if (userEmail != null)
             {
                 string toEmail = userEmail.Email;
-                string subject = "Reset your Email - Bivisoft Academy ";
+                string subject = "Reset your Email - Digital Skills Academy ";
                 string message = "Hi!" + " " + userEmail.FirstName + "," + "<br/>" + "<br/>" +
                     "You requested for a password reset. please click on the link below to create a new password," + "<br/>" +
                     "<a  href='" + linkToClick + "' target='_blank'>" + "<button style='color:white; background-color:#0C2B4B; padding:10px; border:10px;'>Password Reset</button>" + "</a>" + "<br/>" +
@@ -102,7 +102,7 @@ namespace Logic.Helpers
                     "Need help? We’re here for you.Simply reply to this email to contact us. <br/>" +
 
                     "Kind regards,<br/>" +
-                    "Bivisoft Limited Group.";
+                    "Digital Skills Academy.";
                 _emailService.SendEmail(toEmail, subject, message);
 
             }
@@ -115,15 +115,15 @@ namespace Logic.Helpers
             if (userEmail != null)
             {
                 string toEmail = userEmail.Email;
-                string subject = "Reset your Email - Bivisoft Academy ";
+                string subject = "Reset your Email - Digital Skills Academy ";
                 string message = "Hi!" + userEmail.FirstName + "," + "<br/>" + "<br/>" +
-                "You requested for a password reset." + "Your password has been changed.If you did not make this change please email us at support@safecash.com<br> Regards" + " < br/>" +
+                "You requested for a password reset." + "Your password has been changed.If you did not make this change please email us at dskillacademy1@gmail.com<br> Regards" + " < br/>" +
                     "<a  href='" + linkToClick + "' target='_blank'>" + "<button style='color:white; background-color:#0C2B4B; padding:10px; border:10px;'>Verify Me Now</button>" + "</a>" + "<br/>" +
                    "If you have any trouble with your account, you can always email us at hello@bivisoft.com," + "<br/>" +
                     "Need help? We’re here for you.Simply reply to this email to contact us. <br/>" +
 
                     "Kind regards,<br/>" +
-                    "Bivisoft Limited Group.";
+                    "Digital Skills Academy.";
                 _emailService.SendEmail(toEmail, subject, message);
 
             }
@@ -133,7 +133,7 @@ namespace Logic.Helpers
         {
             string toEmail = userDetail.Email;
             string subject = "PASSWORD CHANGE ALERT";
-            string message = "Dear " + userDetail.FirstName + "," + "<br>" + "<br>" + "Your password has been changed successfully. If you did not make this change please email us at academy@bivisoft.com" + "<br>" + "<br>" + "Regards";
+            string message = "Dear " + userDetail.FirstName + "," + "<br>" + "<br>" + "Your password has been changed successfully. If you did not make this change please email us at dskillacademy1@gmail.com" + "<br>" + "<br>" + "Regards";
             _emailService.SendEmail(toEmail, subject, message);
 
             ChangePasswordMailTemlate(userDetail, loginLink);
@@ -150,7 +150,7 @@ namespace Logic.Helpers
             return true;
         }
         //public bool ApprovedProjectTopicMailTemlate(ApplicationUser userDetail, ProjectTopic topicOwer)
-        //{
+        //{ 
         //    string toEmail = userDetail.Email;
         //    string subject = "PROJECT TOPIC APPROVAL";
         //    string message = "Dear " + userDetail.FirstName + ", " + "<br>" + "<br>" + "<b>" + topicOwer.Title + "</b>" + " has been approved for your project. Make Sure you Update your project to GitHub." + "<br>" + "<br>" + "Good luck!!!" + "<br>" + "<br>";

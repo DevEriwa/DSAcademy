@@ -14,9 +14,9 @@ namespace Logic.IHelpers
         Task<UserVerification> CreateUserToken(string userEmail);
         bool DeclineApplicant(string userEmail);
         void ForgotPasswordTemplateEmailer(ApplicationUser userEmail, string linkToClick);
+        bool Gratitude(string applicantEmail);
         bool InformApplicantAboutWrittenInterview(string userEmail);
         bool SendMailToApplicant(ApplicationUser userDetail, string linkToClick);
         bool VerificationEmail(string applicantEmail, string linkToClick);
-        bool Gratitude(string applicantEmail);
     }
 }
