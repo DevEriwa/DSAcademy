@@ -1,0 +1,234 @@
+﻿@{
+    ViewData["Title"] = "Admin Dashboard";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<!-- Main container start -->
+<div style="display: flex; flex-direction: row;">
+   
+
+    <!--Main container start -->
+    <main class="ttr-wrapper mb-3" style="flex-grow: 1; padding: 15px;">
+        <div class="container-fluid">
+            <div class="db-breadcrumb" style="margin-bottom: 15px;">
+                <h4 class="breadcrumb-title">Dashboard</h4>
+                <ul class="db-breadcrumb-list" style="list-style: none; padding-left: 0; display: flex;">
+                    <li style="margin-right: 10px;"><a href="#"><i class="fa fa-home"></i>Home</a></li>
+                    <li>Dashboard</li>
+                </ul>
+            </div>
+            <!-- Card -->
+            <!-- Card -->
+            <div class="row mb-5" style="margin-right: -15px; margin-left: -15px;">
+                <div class="col-md-6 col-lg-3" style="padding-right: 15px; padding-left: 15px; margin-bottom: 15px;">
+                    <div class="card text-white" style="background-color: #007bff;">
+                        <div class="card-header">Total Profit</div>
+                        <div class="card-body">
+                            <h5 class="card-title">All Customs Value</h5>
+                            <p class="card-text">$<span class="counter">18</span>M</p>
+                            <div class="progress" style="height: 10px;">
+                                <div class="progress-bar" role="progressbar" style="width: 78%;" aria-valuenow="78" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <p class="mt-2 mb-0">Change: 78%</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3" style="padding-right: 15px; padding-left: 15px; margin-bottom: 15px;">
+                    <div class="card text-white" style="background-color: #28a745;">
+                        <div class="card-header">New Feedbacks</div>
+                        <div class="card-body">
+                            <h5 class="card-title">Customer Review</h5>
+                            <p class="card-text counter">120</p>
+                            <div class="progress" style="height: 10px;">
+                                <div class="progress-bar" role="progressbar" style="width: 88%;" aria-valuenow="88" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <p class="mt-2 mb-0">Change: 88%</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3" style="padding-right: 15px; padding-left: 15px; margin-bottom: 15px;">
+                    <div class="card text-white" style="background-color: #ffc107;">
+                        <div class="card-header">New Orders</div>
+                        <div class="card-body">
+                            <h5 class="card-title">Fresh Order Amount</h5>
+                            <p class="card-text counter">772</p>
+                            <div class="progress" style="height: 10px;">
+                                <div class="progress-bar" role="progressbar" style="width: 65%;" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <p class="mt-2 mb-0">Change: 65%</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3" style="padding-right: 15px; padding-left: 15px; margin-bottom: 15px;">
+                    <div class="card text-white" style="background-color: #dc3545;">
+                        <div class="card-header">New Users</div>
+                        <div class="card-body">
+                            <h5 class="card-title">Joined New User</h5>
+                            <p class="card-text counter">350</p>
+                            <div class="progress" style="height: 10px;">
+                                <div class="progress-bar" role="progressbar" style="width: 90%;" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <p class="mt-2 mb-0">Change: 90%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Card END -->
+            <!-- Charts -->
+            <div class="row">
+                <!-- Your Profile Views Chart -->
+                <div class="col-lg-12 m-b30">
+                    <div class="widget-box">
+                        <div class="wc-title">
+                            <h4>Your Profile Views</h4>
+                        </div>
+                        <div class="widget-inner">
+                            <canvas id="chart" width="100" height="45"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <!-- Your Profile Views Chart END-->
+
+                <div class="col-lg-6 m-b30">
+                    <div class="widget-box">
+                        <div class="wc-title">
+                            <h4>New Users</h4>
+                        </div>
+                        <div class="widget-inner">
+                            <div class="new-user-list">
+                                <ul>
+                                    <li>
+                                        <span class="new-users-pic">
+                                            <img src="assets/images/testimonials/pic1.jpg" alt="" />
+                                        </span>
+                                        <span class="new-users-text">
+                                            <a href="#" class="new-users-name">Anna Strong </a>
+                                            <span class="new-users-info">Visual Designer,Google Inc </span>
+                                        </span>
+                                        <span class="new-users-btn">
+                                            <a href="#" class="btn button-sm outline">Follow</a>
+                                        </span>
+                                    </li>
+                                    <li>
+                                        <span class="new-users-pic">
+                                            <img src="assets/images/testimonials/pic2.jpg" alt="" />
+                                        </span>
+                                        <span class="new-users-text">
+                                            <a href="#" class="new-users-name"> Milano Esco </a>
+                                            <span class="new-users-info">Product Designer, Apple Inc </span>
+                                        </span>
+                                        <span class="new-users-btn">
+                                            <a href="#" class="btn button-sm outline">Follow</a>
+                                        </span>
+                                    </li>
+                                    <li>
+                                        <span class="new-users-pic">
+                                            <img src="assets/images/testimonials/pic1.jpg" alt="" />
+                                        </span>
+                                        <span class="new-users-text">
+                                            <a href="#" class="new-users-name">Nick Bold  </a>
+                                            <span class="new-users-info">Web Developer, Facebook Inc </span>
+                                        </span>
+                                        <span class="new-users-btn">
+                                            <a href="#" class="btn button-sm outline">Follow</a>
+                                        </span>
+                                    </li>
+                                    <li>
+                                        <span class="new-users-pic">
+                                            <img src="assets/images/testimonials/pic2.jpg" alt="" />
+                                        </span>
+                                        <span class="new-users-text">
+                                            <a href="#" class="new-users-name">Wiltor Delton </a>
+                                            <span class="new-users-info">Project Manager, Amazon Inc </span>
+                                        </span>
+                                        <span class="new-users-btn">
+                                            <a href="#" class="btn button-sm outline">Follow</a>
+                                        </span>
+                                    </li>
+                                    <li>
+                                        <span class="new-users-pic">
+                                            <img src="assets/images/testimonials/pic3.jpg" alt="" />
+                                        </span>
+                                        <span class="new-users-text">
+                                            <a href="#" class="new-users-name">Nick Stone </a>
+                                            <span class="new-users-info">Project Manager, Amazon Inc  </span>
+                                        </span>
+                                        <span class="new-users-btn">
+                                            <a href="#" class="btn button-sm outline">Follow</a>
+                                        </span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 m-b30">
+                    <div class="widget-box">
+                        <div class="wc-title">
+                            <h4>Orders</h4>
+                        </div>
+                        <div class="widget-inner">
+                            <div class="orders-list">
+                                <ul>
+                                    <li>
+                                        <span class="orders-title">
+                                            <a href="#" class="orders-title-name">Anna Strong </a>
+                                            <span class="orders-info">Order #02357 | Date 12/08/2019</span>
+                                        </span>
+                                        <span class="orders-btn">
+                                            <a href="#" class="btn button-sm red">Unpaid</a>
+                                        </span>
+                                    </li>
+                                    <li>
+                                        <span class="orders-title">
+                                            <a href="#" class="orders-title-name">Revenue</a>
+                                            <span class="orders-info">Order #02357 | Date 12/08/2019</span>
+                                        </span>
+                                        <span class="orders-btn">
+                                            <a href="#" class="btn button-sm red">Unpaid</a>
+                                        </span>
+                                    </li>
+                                    <li>
+                                        <span class="orders-title">
+                                            <a href="#" class="orders-title-name">Anna Strong </a>
+                                            <span class="orders-info">Order #02357 | Date 12/08/2019</span>
+                                        </span>
+                                        <span class="orders-btn">
+                                            <a href="#" class="btn button-sm green">Paid</a>
+                                        </span>
+                                    </li>
+                                    <li>
+                                        <span class="orders-title">
+                                            <a href="#" class="orders-title-name">Revenue</a>
+                                            <span class="orders-info">Order #02357 | Date 12/08/2019</span>
+                                        </span>
+                                        <span class="orders-btn">
+                                            <a href="#" class="btn button-sm green">Paid</a>
+                                        </span>
+                                    </li>
+                                    <li>
+                                        <span class="orders-title">
+                                            <a href="#" class="orders-title-name">Anna Strong </a>
+                                            <span class="orders-info">Order #02357 | Date 12/08/2019</span>
+                                        </span>
+                                        <span class="orders-btn">
+                                            <a href="#" class="btn button-sm green">Paid</a>
+                                        </span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <div class="ttr-overlay"></div>
+    <!--Main container end -->
+</div>
+
+
+
+
+
+

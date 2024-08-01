@@ -850,21 +850,16 @@ function resetPassword() {
 }
 
 function CreateTrainingCourse(action) {
-
+    debugger
     var data = {};
-    var logo = document.getElementById("Logo").files;
     data.Title = $('#Title').val();
     data.Description = $('#Description').val();
     data.Amount = $('#Cost').val();
     data.Duration = $('#Duration').val();
     data.TestDuration = $('#TestDuration').val();
     data.ActionType = action;
-    if (logo[0] == null || data.Title == "" || data.Description == "" || data.Amount == "" || data.Duration == "" || data.TestDuration == "") {
-        if (logo[0] != null) {
-            document.querySelector("#logoVDT").style.display = "block";
-        } else {
-            document.querySelector("#logoVDT").style.display = "none";
-        }
+    if ( data.Title == "" || data.Description == "" || data.Amount == "" || data.Duration == "" || data.TestDuration == "") {
+       
         if (data.Title == "") {
             document.querySelector("#titleVDT").style.display = "block";
         } else {
@@ -897,19 +892,10 @@ function CreateTrainingCourse(action) {
         document.querySelector("#amtcVDT").style.display = "none";
         document.querySelector("#durationVDT").style.display = "none";
         document.querySelector("#testDurationVDT").style.display = "none";
-        document.querySelector("#logoVDT").style.display = "none";
-
+       
         $('#loader').show();
         $('#loader-wrapper').show();
-
-        const reader = new FileReader();
-        reader.readAsDataURL(logo[0]);
-
-        reader.onload = function () {
-            data.Logo = reader.result;
-
-            SendTrainingCourseToController(data);
-        }
+        SendTrainingCourseToController(data);
     }
 }
 
@@ -936,8 +922,8 @@ function EditTrainingCourse(action) {
 }
 
 function SendTrainingCourseToController(data) {
+    debugger;
     let collectedData = JSON.stringify(data);
-
     $.ajax({
         type: 'Post',
         dataType: 'json',

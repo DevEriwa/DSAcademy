@@ -206,6 +206,79 @@ namespace Logic.Helpers
             }
             return videos;
         }
+		public TestQuestions GetQuestionsById(int? Id)
+		{
+			var question = _context.TestQuestions.Where(t => t.Id == Id && !t.IsDeleted).FirstOrDefault();
+			if (question != null)
+			{
+				return question;
+			}
+			return question;
+		}
+		public List<TestQuestions> GetTestQuestions()
+		{
+			var allQuestions = _context.TestQuestions.Where(q => !q.IsDeleted).OrderByDescending(a => a.Id).Include(c => c.Course).ToList();
+			if (allQuestions.Any())
+			{
+				return allQuestions;
+			}
+			return allQuestions;
+		}
+		public List<TestQuestionsViewModel> GetTestQuestionsForPage1(int? Id)
+		{
+			var result = new List<TestQuestionsViewModel>();
+			var testQuestion4Page1 = _context.TestQuestions.Where(q => q.CourseId == Id && q.IsActive && !q.IsDeleted).Include(c => c.Course).OrderBy(q => q.Id).Take(10).ToList();
+			if (testQuestion4Page1.Any())
+			{
+				result = testQuestion4Page1.Select(x => new TestQuestionsViewModel()
+				{
+					OptionList = GetOptListByQuestionIds(x.Id),
+					Question = x.Question,
+					Answer = x.Answer,
+					CourseId = (int)x.CourseId,
+					Id = x.Id,
+					IsActive = x.IsActive,
+					IsDeleted = x.IsDeleted,
+					DateCreated = x.DateCreated
 
-    }
+				}).ToList();
+				return result;
+			}
+			return result;
+		}
+		public List<TestQuestionsViewModel> GetTestQuestionsForPage2(int? Id)
+		{
+			var result = new List<TestQuestionsViewModel>();
+			var testQuestion4Page2 = _context.TestQuestions.Where(q => q.CourseId == Id && q.IsActive && !q.IsDeleted).Include(c => c.Course).OrderByDescending(q => q.Id).Take(10).ToList();
+			if (testQuestion4Page2.Any())
+			{
+				result = testQuestion4Page2.Select(x => new TestQuestionsViewModel()
+				{
+					OptionList = GetOptListByQuestionIds(x.Id),
+					Question = x.Question,
+					Answer = x.Answer,
+					CourseId = (int)x.CourseId,
+					Id = x.Id,
+					IsActive = x.IsActive,
+					IsDeleted = x.IsDeleted,
+					DateCreated = x.DateCreated
+				}).ToList();
+				return result;
+			}
+			return result;
+		}
+
+		public List<string> GetOptListByQuestionIds(int id)
+		{
+			var optList = new List<string>();
+			var optListDetails = _context.AnswerOptions.Where(a => a.QuestionId == id).ToList();
+			if (optListDetails.Any())
+			{
+				optList = optListDetails.Select(a => a.Option).ToList();
+				return optList;
+			}
+			return null;
+		}
+
+	}
 }

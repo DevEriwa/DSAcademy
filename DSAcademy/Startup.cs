@@ -62,7 +62,8 @@ public class Startup
                 .AddScoped<IEmailHelper, EmailHelper>()
                 .AddScoped<IApplicationHelper, ApplicationHelper>()
                 .AddScoped<IDropdownHelper, DropdownHelper>()
-                .AddScoped<IStudentHelper, StudentHelper>();
+                .AddScoped<IStudentHelper, StudentHelper>()
+                .AddScoped<IAdminHelper, AdminHelper>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

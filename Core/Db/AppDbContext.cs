@@ -17,5 +17,7 @@ namespace Core.Db
 		public DbSet<TestResult> TestResults { get; set; }
 		public DbSet<CommonDropDown> CommonDropDown { get; set; }
 		public DbSet<UserVerification> UserVerifications { get; set; }
+		public DbSet<TestQuestions> TestQuestions { get; set; }
+		public DbSet<AnswerOptions> AnswerOptions { get; set; }
 	}
 }
