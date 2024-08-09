@@ -35,7 +35,7 @@ namespace Logic.Helpers
 			_generalConfiguration = generalConfiguration;
 		}
 
-		public TrainingCourse AddTrainignCostServices(TrainingCourseViewModel collectedData)
+		public TrainingCourse AddTrainignCostServices(TrainingCourseViewModel collectedData, string base64)
 		{
 			if (collectedData != null)
 			{
@@ -43,7 +43,7 @@ namespace Logic.Helpers
 				{
 					Title = collectedData.Title,
 					Description = collectedData.Description,
-					Logo = collectedData.Logo,
+					Logo = base64,
 					Duration = collectedData.Duration,
 					TestDuration = collectedData.TestDuration,
 					Amount = Convert.ToDecimal(collectedData.Amount),

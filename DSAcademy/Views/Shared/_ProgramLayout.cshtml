@@ -1,0 +1,245 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>@ViewData["Title"] - DSAcademy</title>
+	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+	<!-- Favicon -->
+	<link rel="icon" href="~/edu/admin/assets/images/dsa-png-4.png" type="image/png" />
+	<link rel="shortcut icon" href="~/edu/admin/assets/images/dsa-png-4.png" type="image/png" />
+
+	<!-- Custom Styles -->
+	<link href="~/edu/admin/assets/css/typography.css" rel="stylesheet" />
+	<link href="~/edu/admin/assets/css/assets.css" rel="stylesheet" />
+	<link href="~/edu/admin/assets/css/shortcodes/shortcodes.css" rel="stylesheet" />
+	<link href="~/edu/admin/assets/css/style.css" rel="stylesheet" />
+	<link href="~/edu/admin/assets/css/color/color-1.css" rel="stylesheet" />
+	<link href="~/edu/admin/assets/css/css/sweetalert2.min.css" rel="stylesheet" />
+
+	<link rel="stylesheet" type="text/css" href="~/edu/admin/assets/vendors/calendar/fullcalendar.css">
+	<link rel="stylesheet" type="text/css" href="~/edu/admin/assets/css/dashboard.css">
+
+	<script>
+		function errorAlert(message) {
+			Swal.fire({
+				icon: 'error',
+				text: message,
+				confirmButtonColor: "#0253cc",
+				timer: 30000,
+			})
+		}
+
+		function infoAlert(message) {
+			Swal.fire({
+				icon: 'info',
+				text: message,
+				confirmButtonColor: "#0253cc",
+			})
+		}
+
+		function infoAlertWithStyles(message) {
+			Swal.fire({
+				title: 'Notification',
+				icon: 'info',
+				text: message,
+			})
+		}
+
+		function successAlert(message) {
+			Swal.fire({
+				icon: 'success',
+				text: message,
+				confirmButtonColor: "#0253cc",
+				timer: 30000,
+			})
+		}
+
+		function newErrorAlert(message, url) {
+			Swal.fire({
+				icon: 'error',
+				text: message,
+				confirmButtonColor: "#0253cc",
+			}).then((isConfirm) => {
+				if (isConfirm) {
+					location.reload(url);
+				}
+			})
+		}
+
+
+		function errorAlertWithRedirect(message, url) {
+			Swal.fire({
+				title: "Error",
+				text: message,
+				icon: "error",
+				timer: 30000,
+				confirmButtonColor: "#0253cc",
+				overlay: "background - color: rgba(43, 165, 137, 0.45)",
+			}).then(function () {
+
+				location.href = url;
+			})
+		}
+
+		function newSuccessAlert(message, url) {
+			Swal({
+				icon: 'success',
+				text: message,
+				confirmButtonColor: "#0253cc",
+			}).then((isConfirm) => {
+				if (isConfirm) {
+					location.reload(url);
+				}
+			})
+		}
+
+		function successAlertWithRedirect(message, url) {
+			Swal.fire({
+				title: "Success",
+				text: message,
+				icon: "success",
+				timer: 30000,
+				confirmButtonColor: "#0253cc",
+				overlay: "background - color: rgba(43, 165, 137, 0.45)",
+			}).then(function () {
+
+				location.href = url;
+			})
+		}
+
+		function errorAlertwithTwoButtons(yesUrl, noUrl, newUrl, errorTitle) {
+			Swal.fire({
+				title: errorTitle,
+				text: "",
+				icon: "error",
+				buttons: {
+					cancle: "No",
+					confirmButtonColor: "#0253cc",
+					change: "Yes",
+					new: "Create Pin",
+				},
+			})
+				.then((status) => {
+					debugger;
+					switch (status) {
+						case "change":
+							location.href = yesUrl;
+							break;
+						case "new":
+							location.href = newUrl;
+							break;
+						default:
+							location.href = noUrl;
+					}
+				});
+		}
+
+		function SweeTest(yesUrl, noUrl) {
+			Swal.fire({
+				title: "Unverified E-mail Address",
+				text: "Check your inbox Or Change email",
+				type: "warning",
+				showCancelButton: true,
+				confirmButtonColor: "#0253cc",
+				confirmButtonText: "Resend Email",
+				cancelButtonText: "Change Email",
+				cancelButtonColor: "#D3AF71",
+				closeOnConfirm: false,
+				closeOnCancel: false
+			})
+				.then((result) => {
+					debugger
+					if (result.isConfirmed) {
+						location.href = yesUrl
+					}
+					else {
+						location.href = noUrl
+					}
+
+				});
+		}
+	</script>
+</head>
+<body class="ttr-opened-sidebar ttr-pinned-sidebar">
+	@* <div class=""> *@
+
+	<!-- header start -->
+	<header class="ttr-header">
+		<div class="ttr-header-wrapper">
+			<!--sidebar menu toggler start -->
+			<div class="ttr-toggle-sidebar ttr-material-button">
+				<i class="ti-close ttr-open-icon"></i>
+				<i class="ti-menu ttr-close-icon"></i>
+			</div>
+			<!--sidebar menu toggler end -->
+			<!--logo start -->
+			<div class="ttr-logo-box">
+				<div class="menu-logo">
+					<a asp-action="Index" asp-controller="Home" class="ttr-logo"><img src="~/edu/admin/assets/images/dsa png[3].png" alt="Logo" /></a>
+				</div>
+			</div>
+			<!--logo end -->
+			<div class="ttr-header-menu">
+				<!-- header left menu start -->
+				<ul class="ttr-header-navigation">
+					<li>
+						<a asp-action="Index" asp-controller="Home" class="ttr-material-button ttr-submenu-toggle">HOME</a>
+					</li>
+
+				</ul>
+				<!-- header left menu end -->
+			</div>
+			<div class="ttr-header-right ttr-with-seperator">
+				<!-- header right menu start -->
+				<ul class="ttr-header-navigation">
+					<li>
+						<div class="ttr-header-submenu">
+							<ul>
+								@* <li><a asp-action="Index" asp-controller="Home">My profile</a></li> *@
+								<li><a asp-action="Login" asp-controller="Accounts">Logout</a></li>
+							</ul>
+						</div>
+					</li>
+				</ul>
+				<!-- header right menu end -->
+			</div>
+		</div>
+	</header>
+
+
+	<div class="container">
+		<main role="main" class="" style="padding:7%;">
+			@RenderBody()
+		</main>
+	</div>
+
+	@* </div> *@
+	<script src="~/lib/jquery/dist/jquery.min.js"></script>
+	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="~/js/site.js" asp-append-version="true"></script>
+
+
+	<script src="~/edu/admin/assets/js/jquery.min.js"></script>
+	<script src="~/edu/admin/assets/vendors/bootstrap/js/popper.min.js"></script>
+	<script src="~/edu/admin/assets/vendors/bootstrap/js/bootstrap.min.js"></script>
+	<script src="~/edu/admin/assets/vendors/bootstrap-select/bootstrap-select.min.js"></script>
+	<script src="~/edu/admin/assets/vendors/bootstrap-touchspin/jquery.bootstrap-touchspin.js"></script>
+	<script src="~/edu/admin/assets/vendors/magnific-popup/magnific-popup.js"></script>
+	<script src="~/edu/admin/assets/vendors/counter/waypoints-min.js"></script>
+	<script src="~/edu/admin/assets/vendors/counter/counterup.min.js"></script>
+	<script src="~/edu/admin/assets/vendors/imagesloaded/imagesloaded.js"></script>
+	<script src="~/edu/admin/assets/vendors/masonry/masonry.js"></script>
+	<script src="~/edu/admin/assets/vendors/masonry/filter.js"></script>
+	<script src="~/edu/admin/assets/vendors/owl-carousel/owl.carousel.js"></script>
+	<script src='~/edu/admin/assets/vendors/scroll/scrollbar.min.js'></script>
+	<script src="~/edu/admin/assets/js/functions.js"></script>
+	<script src="~/edu/admin/assets/vendors/chart/chart.min.js"></script>
+	<script src="~/edu/admin/assets/js/admin.js"></script>
+	<script src='~/edu/admin/assets/vendors/switcher/switcher.js'></script>
+	<!-- External JavaScripts -->
+	@await RenderSectionAsync("Scripts", required: false)
+</body>
+
+</html>

@@ -293,7 +293,7 @@
 						</a>
 					</li>
 					<li>
-						<a href="courses.html" class="ttr-material-button">
+						<a asp-action="TrainingCourse" asp-controller="Admin" class="ttr-material-button">
 							<span class="ttr-icon"><i class="ti-book"></i></span>
 							<span class="ttr-label">Courses</span>
 						</a>
@@ -497,7 +497,7 @@
 									<li><a href="user-profile.html">My profile</a></li>
 									<li><a href="list-view-calendar.html">Activity</a></li>
 									<li><a href="mailbox.html">Messages</a></li>
-									<li><a href="../login.html">Logout</a></li>
+									<li><a asp-action="LogOut" asp-controller="Accounts">Logout</a></li>
 								</ul>
 							</div>
 						</li>

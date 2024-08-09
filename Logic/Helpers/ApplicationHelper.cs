@@ -219,10 +219,14 @@ namespace Logic.Helpers
                 {
                     return "~/Views/Shared/_AdminLayout.cshtml";
                 }
-                else
+                else if(userRole == "Applicant" || userRole == "Student")
                 {
                     return "~/Views/Shared/_StudentLayout.cshtml";
                 }
+                else
+                {
+                    return "~/Views/Shared/_ProgramLayout.cshtml";
+				}
             }
             return null;
         }

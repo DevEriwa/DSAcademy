@@ -184,5 +184,6 @@ namespace Logic.Helpers
             enumList.Insert(0, common);
             return enumList;
         }
+
     }
 }
