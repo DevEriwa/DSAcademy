@@ -851,6 +851,7 @@ function resetPassword() {
 
 function CreateTrainingCourse(action) {
     debugger
+    var logo = document.getElementById("logoId").files;
     var data = {};
     data.Title = $('#Title').val();
     data.Description = $('#Description').val();
@@ -858,45 +859,61 @@ function CreateTrainingCourse(action) {
     data.Duration = $('#Duration').val();
     data.TestDuration = $('#TestDuration').val();
     data.ActionType = action;
-    if ( data.Title == "" || data.Description == "" || data.Amount == "" || data.Duration == "" || data.TestDuration == "") {
-       
-        if (data.Title == "") {
-            document.querySelector("#titleVDT").style.display = "block";
-        } else {
-            document.querySelector("#titleVDT").style.display = "none";
-        }
-        if (data.Description == "") {
-            document.querySelector("#descVDT").style.display = "block";
-        } else {
-            document.querySelector("#descVDT").style.display = "none";
-        }
-        if (data.Amount == "") {
-            document.querySelector("#amtcVDT").style.display = "block";
-        } else {
-            document.querySelector("#amtcVDT").style.display = "none";
-        }
-        if (data.Duration == "") {
-            document.querySelector("#durationVDT").style.display = "block";
-        } else {
-            document.querySelector("#durationVDT").style.display = "none";
-        }
-        if (data.TestDuration == "") {
-            document.querySelector("#testDurationVDT").style.display = "block";
-        } else {
-            document.querySelector("#testDurationVDT").style.display = "none";
+    const reader = new FileReader();
+
+    var base64;
+    if (logo.length > 0) {
+        reader.readAsDataURL(logo[0]);
+        reader.onload = function ()
+        {
+            base64 = reader.result;
+            if (data.Title == "" || data.Description == "" || data.Amount == "" || data.Duration == "" || data.TestDuration == "") {
+                if (data.Title == "") {
+                    document.querySelector("#titleVDT").style.display = "block";
+                } else {
+                    document.querySelector("#titleVDT").style.display = "none";
+                }
+                if (data.Description == "") {
+                    document.querySelector("#descVDT").style.display = "block";
+                } else {
+                    document.querySelector("#descVDT").style.display = "none";
+                }
+                if (data.Amount == "") {
+                    document.querySelector("#amtcVDT").style.display = "block";
+                } else {
+                    document.querySelector("#amtcVDT").style.display = "none";
+                }
+                if (data.Duration == "") {
+                    document.querySelector("#durationVDT").style.display = "block";
+                } else {
+                    document.querySelector("#durationVDT").style.display = "none";
+                }
+                if (data.TestDuration == "") {
+                    document.querySelector("#testDurationVDT").style.display = "block";
+                } else {
+                    document.querySelector("#testDurationVDT").style.display = "none";
+                }
+                if (data.Logo == "") {
+                    document.querySelector("#testLogoVDT").style.display = "block";
+                } else {
+                    document.querySelector("#testLogoVDT").style.display = "none";
+                }
+            }
+            else {
+                document.querySelector("#titleVDT").style.display = "none";
+                document.querySelector("#descVDT").style.display = "none";
+                document.querySelector("#amtcVDT").style.display = "none";
+                document.querySelector("#durationVDT").style.display = "none";
+                document.querySelector("#testDurationVDT").style.display = "none";
+                document.querySelector("#testLogoVDT").style.display = "none";
+
+                $('#loader').show();
+                $('#loader-wrapper').show();
+                SendTrainingCourseToController(data, base64);
+            }
         }
     }
-    else {
-        document.querySelector("#titleVDT").style.display = "none";
-        document.querySelector("#descVDT").style.display = "none";
-        document.querySelector("#amtcVDT").style.display = "none";
-        document.querySelector("#durationVDT").style.display = "none";
-        document.querySelector("#testDurationVDT").style.display = "none";
-       
-        $('#loader').show();
-        $('#loader-wrapper').show();
-        SendTrainingCourseToController(data);
-    }
+   
 }
 
 function EditTrainingCourse(action) {
@@ -918,10 +935,10 @@ function EditTrainingCourse(action) {
             data.Logo = reader.result;
         }
     }
-    SendTrainingCourseToController(data);
+    SendTrainingCourseToController(data, base64);
 }
 
-function SendTrainingCourseToController(data) {
+function SendTrainingCourseToController(data, base64) {
     debugger;
     let collectedData = JSON.stringify(data);
     $.ajax({
@@ -931,6 +948,7 @@ function SendTrainingCourseToController(data) {
         data:
         {
             collectedTrainingData: collectedData,
+            base64: base64
         },
         success: function (result) {
 

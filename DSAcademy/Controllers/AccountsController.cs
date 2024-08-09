@@ -249,5 +249,28 @@ namespace DSAcademy.Controllers
             }
             return RedirectToAction("Login");
         }
-    }
+        [HttpGet]
+		public IActionResult Program()
+		{
+			var allTrainingCourse = _userHelper.GetAllTrainingCourseFromDB();
+			return View(allTrainingCourse);
+		}
+		[HttpGet]
+		public IActionResult BackendDeveloper()
+		{
+			var allTrainingCourse = _userHelper.GetAllTrainingCourseFromDB();
+			return View(allTrainingCourse);
+		}
+		[HttpGet]
+		public IActionResult FullStackDeveloper()
+		{
+			var allTrainingCourse = _userHelper.GetAllTrainingCourseFromDB();
+			return View(allTrainingCourse);
+		}
+		[HttpGet]
+		public IActionResult PaymentMethod()
+		{
+			return View();
+		}
+	}
 }

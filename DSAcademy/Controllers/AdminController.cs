@@ -124,15 +124,15 @@ namespace DSAcademy.Controllers
 		// TRAINING COST SETUP
 		public async Task<IActionResult> TrainingCourse()
 		{
-			//var username = User.Identity.Name;
-			//ViewBag.Layout = _applicationHelper.GetUserLayout(username).FirstOrDefault();
-			//var allTrainingCourse = _userHelper.GetAllTrainingCourseFromDB();
-			return View(/*allTrainingCourse*/);
+			var username = User.Identity.Name;
+			ViewBag.Layout = _applicationHelper.GetUserLayout(username).FirstOrDefault();
+			var allTrainingCourse = _userHelper.GetAllTrainingCourseFromDB();
+			return View(allTrainingCourse);
 		}
 
 		// POST ACTION FOR ALL TRAINING COST SETUP
 		[HttpPost]
-		public JsonResult TrainingCoursePost(string collectedTrainingData)
+		public JsonResult TrainingCoursePost(string collectedTrainingData, string base64)
 		{
 			try
 			{
@@ -142,7 +142,7 @@ namespace DSAcademy.Controllers
 
 					if (rawTrainingData.ActionType == Create_Training_Cost_ActionType)
 					{
-						var newTrainingCourse = _adminHelper.AddTrainignCostServices(rawTrainingData);
+						var newTrainingCourse = _adminHelper.AddTrainignCostServices(rawTrainingData, base64);
 						if (newTrainingCourse != null)
 						{
 							return Json(new { isError = false, msg = "Added Successfully" });
@@ -168,7 +168,6 @@ namespace DSAcademy.Controllers
 								return Json(new { isError = false, msg = "Activated Successfully" });
 							}
 						}
-
 					}
 					else if (rawTrainingData.ActionType == Deactivate_Training_Cost_ActionType)
 					{

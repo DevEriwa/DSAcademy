@@ -1,0 +1,101 @@
+﻿@* @using Core.Enum
+@model IEnumerable<Core.Models.TrainingCourse> *@
+@{
+	var logger = Session.GetCurrentUser();
+	ViewData["Title"] = "Payment Method";
+	Layout = "~/Views/Shared/_ProgramLayout.cshtml";
+}
+
+
+<main class="">
+	<div class="container-fluid">
+		<div class="db-breadcrumb">
+			<h4 class="breadcrumb-title">Payment</h4>
+			<ul class="db-breadcrumb-list">
+				<li><a asp-action="Program" asp-controller="Accounts"><i class="fa fa-home"></i>Home</a></li>
+			</ul>
+		</div>
+		<div class="row">
+			<!-- Your Profile Views Chart -->
+			<div class="col-lg-12 m-b30">
+				<div class="widget-box">
+					<div class="wc-title">
+						<h4>Paymeny Method</h4>
+					</div>
+					<div class="widget-inner">
+						<div class="card-courses-list admin-review">
+							<div class="card-courses-full-dec">
+								<div class="card-courses-title">
+									<h4>Paid Before</h4>
+								</div>
+								<div class="row card-courses-dec">
+									<div class="col-md-12">
+										<h6 class="m-b10">Upload</h6>
+										<input type="file" class="form-control">
+									</div>
+									<div class="col-md-12 pt-4">
+										<a class="btn">Pay</a>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="card-courses-list admin-review">
+							<div class="card-courses-full-dec">
+								<div class="card-courses-title">
+									<h4>Bank Transfer </h4>
+								</div>
+								<div class="row card-courses-dec">
+
+									<div class="col-md-6">
+										<h6 class="m-b10">Bank Name</h6>
+										<input class="form-control" type="text" readonly placeholder="Opay">
+									</div>
+
+									<div class="col-md-6">
+										<h6 class="m-b10">Account Number</h6>
+										<input class="form-control" type="text" readonly placeholder="9167106731">
+									</div>
+
+									<div class="col-md-6">
+										<h6 class="m-b10">Account Name</h6>
+										<input class="form-control" type="text" readonly placeholder="Emmanuel Ezugwu">
+									</div>
+
+									<div class="col-md-6">
+										<h6 class="m-b10">Amount</h6>
+										<input class="form-control" type="text"  placeholder="12,500">
+									</div>
+									<div class="col-md-12">
+										<h6 class="m-b10">Upload</h6>
+										<input class="form-control" type="file">
+									</div>
+
+									<div class="col-md-12 pt-4">
+										<a class="btn" style="margin-left:45%;">Pay</a>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="card-courses-list admin-review">
+							<div class="card-courses-full-dec">
+								<div class="card-courses-title">
+									<h4>Paystack Payment</h4>
+								</div>
+								<div class="row card-courses-dec">
+									
+									<div class="col-md-12">
+										<a class="btn">Pay</a>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+				</div>
+			</div>
+			<!-- Your Profile Views Chart END-->
+		</div>
+	</div>
+</main>
