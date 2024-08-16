@@ -1,4 +1,5 @@
 ﻿using Core.Enum;
+using Core.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -45,5 +46,15 @@ namespace Core.ViewModels
         public List<string>? Roles { get; set; }
         public string? Layout { get; set; }
         public bool CheckBox { get; set; }
-    }
+		public bool IsProgram { get; set; }
+        public Guid? CompanyId { get; set; }
+		public string? CompanyAddress { get; set; }
+		public string? CompanyEmail { get; set; }
+		public string? CompanyLogo { get; set; }
+		public string? CompanyPhone { get; set; }
+		public string? CompanyMobile { get; set; }
+		public string? CompanyName { get; set; }
+		public string? CompanyMotto { get; set; }
+		public ApplicationUser? User { get; set; }
+	}
 }

@@ -23,8 +23,12 @@ namespace Core.Models
         public string? ReasonForProgramming { get; set; }
         public string? HowDoYouIntendToCopeStatement { get; set; }
         public bool IsAdmin { get; set; }
+        public bool IsProgram { get; set; }
         public ApplicationStatus? Status { get; set; }
-        [NotMapped]
+		public Guid? CompanyId { get; set; }
+		[ForeignKey("CompanyId")]
+		public virtual Company? Company { get; set; }
+		[NotMapped]
         public string? Message { get; set; }
         [NotMapped]
         public bool ErrorHappened { get; set; }
@@ -45,6 +49,8 @@ namespace Core.Models
         public string? Role { get; set; }
         public bool IsEnrolled { get; set; } = true;
         public bool IsApproved { get; set; } = false;
+        [NotMapped]
+        public List<string>? Roles { get; set; }
     }
 
 }

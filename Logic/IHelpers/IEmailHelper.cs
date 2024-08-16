@@ -18,5 +18,7 @@ namespace Logic.IHelpers
         bool InformApplicantAboutWrittenInterview(string userEmail);
         bool SendMailToApplicant(ApplicationUser userDetail, string linkToClick);
         bool VerificationEmail(string applicantEmail, string linkToClick);
-    }
+        bool SendEmailToStudentAndCompanyForProofOfPayment(string studentEmail, string companyEmail, string companyName);
+
+	}
 }

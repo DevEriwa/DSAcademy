@@ -363,66 +363,88 @@ function loginPost() {
 // Admin Registration POST ACTION
 function RegisterAdmin() {
     debugger;
+    var companyLogo = document.getElementById("companyLogo").files;
     var data = {};
+    data.CompanyName = $('#companyName').val();
+    data.CompanyAddress = $('#companyAddress').val();
+    data.CompanyPhone = $('#companyPhone').val();
+    data.CompanyMobile = $('#companyMobile').val();
     data.FirstName = $('#FirstName').val();
     data.LastName = $('#LastName').val();
-    data.PhoneNumber = $('#phoneNumber').val();
-    data.Email = $('#email').val();
+    data.CompanyEmail = $('#companyEmail').val();
     data.Password = $('#Password').val();
     data.ConfirmPassword = $('#ConfirmPassword').val();
     data.Address = $('#Address').val();
-    if (data.FirstName != "" && data.LastName != "" && data.Email != "" && data.Password != "" && data.Password == data.ConfirmPassword && data.Address != "" && data.PhoneNumber != "") {
-        let applicationViewModel = JSON.stringify(data);
-        $.ajax({
-            type: 'POST',
-            dataType: 'Json',
-            url: '/Accounts/AdminRegisteration',
-            data:
-            {
-                applicationUserViewModel: applicationViewModel,
-            },
-            success: function (result) {
+    data.CheckBox = $('#termsCondition').is(":checked");
+    const reader = new FileReader();
+    var base64;
+    if (companyLogo.length > 0) {
+        reader.readAsDataURL(companyLogo[0]);
+        reader.onload = function () {
+            base64 = reader.result;
+            if (data.FirstName != ""
+                && data.LastName != ""
+                && data.CompanyEmail != ""
+                && data.Password != ""
+                && data.Password == data.ConfirmPassword
+                && data.CompanyName != ""
+                && data.CompanyAddress != ""
+                && data.CompanyPhone != "") {
 
-                if (!result.isError) {
-                    $("#loader").fadeOut(3000);
-                    var url = '/Accounts/Login'
-                    successAlertWithRedirect(result.msg, url)
-                }
-                else {
-                    $("#loader").fadeOut(3000);
-                    errorAlert(result.msg)
-                }
-            },
-            Error: function (ex) {
-                $("#loader").fadeOut(3000);
-                errorAlert(ex);
+                let applicationViewModel = JSON.stringify(data);
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'Json',
+                    url: '/Accounts/AdminRegisteration',
+                    data:
+                    {
+                        applicationUserViewModel: applicationViewModel,
+                        base64: base64
+                    },
+                    success: function (result) {
+
+                        if (!result.isError) {
+                            $("#loader").fadeOut(3000);
+                            var url = '/Accounts/Login'
+                            successAlertWithRedirect(result.msg, url)
+                        }
+                        else {
+                            $("#loader").fadeOut(3000);
+                            errorAlert(result.msg)
+                        }
+                    },
+                    Error: function (ex) {
+                        $("#loader").fadeOut(3000);
+                        errorAlert(ex);
+                    }
+                });
             }
-        });
-    }
-    else {
-        if (data.FirstName == "") {
-            document.querySelector("#fNameVDT").style.display = "block";
-        } else {
-            document.querySelector("#fNameVDT").style.display = "none";
-        }
-        if (data.LastName == "") {
-            document.querySelector("#lNameVDT").style.display = "block";
-        } else {
-            document.querySelector("#lNameVDT").style.display = "none";
-        }
-        if (data.Email == "") {
-            document.querySelector("#emailVDT").style.display = "block";
-        } else {
-            document.querySelector("#emailVDT").style.display = "none";
-        }
-        if (data.Password == "") {
-            document.querySelector("#passwrdVDT").style.display = "block";
-        } else {
-            document.querySelector("#passwrdVDT").style.display = "none";
-            if (data.Password != data.ConfirmPassword) {
-                document.querySelector("#cpasswrdVDT").style.display = "block";
-            } else {
-                document.querySelector("#cpasswrdVDT").style.display = "none";
+            else {
+                if (data.FirstName == "") {
+                    document.querySelector("#fNameVDT").style.display = "block";
+                } else {
+                    document.querySelector("#fNameVDT").style.display = "none";
+                }
+                if (data.LastName == "") {
+                    document.querySelector("#lNameVDT").style.display = "block";
+                } else {
+                    document.querySelector("#lNameVDT").style.display = "none";
+                }
+                if (data.Email == "") {
+                    document.querySelector("#emailVDT").style.display = "block";
+                } else {
+                    document.querySelector("#emailVDT").style.display = "none";
+                }
+                if (data.Password == "") {
+                    document.querySelector("#passwrdVDT").style.display = "block";
+                } else {
+                    document.querySelector("#passwrdVDT").style.display = "none";
+                    if (data.Password != data.ConfirmPassword) {
+                        document.querySelector("#cpasswrdVDT").style.display = "block";
+                    } else {
+                        document.querySelector("#cpasswrdVDT").style.display = "none";
+                    }
+                }
             }
         }
     }
@@ -858,6 +880,7 @@ function CreateTrainingCourse(action) {
     data.Amount = $('#Cost').val();
     data.Duration = $('#Duration').val();
     data.TestDuration = $('#TestDuration').val();
+    data.ProgramStatus = $('#programId').val();
     data.ActionType = action;
     const reader = new FileReader();
 
@@ -916,23 +939,51 @@ function CreateTrainingCourse(action) {
    
 }
 
+function getCourseById(id) {
+    $.ajax({
+        type: 'GET',
+        url: '/Admin/GetTrainingCourseById',
+        dataType: 'json',
+        data:
+        {
+            id: id
+        },
+        success: function (data) {
+            if (!data.isError) {
+                $('#edit_Id').val(data.id);
+                $('#editTitle').val(data.title);
+                $('#editDescription').val(data.description);
+                $('#editCost').val(data.amount);
+                $('#editTestDuration').val(data.duration);
+                $('#editDuration').val(data.testDuration);
+                $('#editProgramId').val(data.programStatus).trigger('change');
+                $('#upgrade_Course').modal('show');
+            }
+        },
+        error: function (ex) {
+            "Something went wrong, contact support - " + errorAlert(ex);
+        }
+    });
+};
 function EditTrainingCourse(action) {
-
+    debugger
     var data = {};
-    var logo = document.getElementById("Edit_Logo").files;
-    data.Id = $('#Edit_Id').val();
-    data.Title = $('#Edit_Title').val();
-    data.Description = $('#Edit_Description').val();
-    data.Amount = $('#Edit_Cost').val();
-    data.Duration = $('#Edit_Duration').val();
-    data.TestDuration = $('#Edit_TestDuration').val();
+    var logo = document.getElementById("editlogoId").files;
+    data.Id = $('#edit_Id').val();
+    data.Title = $('#editTitle').val();
+    data.Description = $('#editDescription').val();
+    data.Amount = $('#editCost').val();
+    data.Duration = $('#editDuration').val();
+    data.TestDuration = $('#editTestDuration').val();
+    data.ProgramStatus = $('#editProgramId').val();
     data.ActionType = action;
-    if (logo[0] != null) {
-        const reader = new FileReader();
-        reader.readAsDataURL(logo[0]);
+    const reader = new FileReader();
 
+    var base64;
+    if (logo.length > 0) {
+        reader.readAsDataURL(logo[0]);
         reader.onload = function () {
-            data.Logo = reader.result;
+            base64 = reader.result;
         }
     }
     SendTrainingCourseToController(data, base64);
@@ -968,9 +1019,27 @@ function SendTrainingCourseToController(data, base64) {
         }
     });
 }
-
+function getCourseByIdToDelete(id) {
+    $.ajax({
+        type: 'GET',
+        url: '/Admin/GetTrainingCourseById',
+        dataType: 'json',
+        data:
+        {
+            id: id
+        },
+        success: function (data) {
+            if (!data.isError) {
+                $('#Delete_Id').val(data.id);
+                $('#delete_Course').modal('show');
+            }
+        },
+        error: function (ex) {
+            "Something went wrong, contact support - " + errorAlert(ex);
+        }
+    });
+};
 function TrainingCoursePost(action, id) {
-
     if (action == 'DeactivateTrainingCourse' || action == 'ActivateTrainingCourse' && id != "") {
         var data = {};
         data.Id = id;
@@ -3146,4 +3215,58 @@ function login() {
             errorAlert("An error has occurred, try again. Please contact support if the error persists");
         }
     });
+}
+
+function payBeforeComing() {
+    debugger
+    var defaultBtnValue = $('#submit_btn').html();
+    $('#submit_btn').html("Please wait...");
+    $('#submit_btn').attr("disabled", true);
+    var paymentPhoto = document.getElementById("upLoadProveOfPaymentId").files;
+    var payData = {};
+    payData.CourseId = $("#courseId").val();
+    payData.Name = $("#name").val();
+    const reader = new FileReader();
+    var base64;
+    var data = JSON.stringify(payData);
+    if (paymentPhoto.length > 0) {
+        reader.readAsDataURL(paymentPhoto[0]);
+        reader.onload = function ()
+        {
+            base64 = reader.result;
+            if (payData.CourseId != 0 || payData.CourseId != "") {
+
+                $.ajax({
+                    type: 'Post',
+                    url: '/Accounts/SaveProveOfPayment',
+                    dataType: 'json',
+                    data:
+                    {
+                        collectedData: data,
+                        base64: base64
+                    },
+                    success: function (result) {
+                        if (!result.isError) {
+                            var url = '/Student/Index';
+                            successAlertWithRedirect(result.msg, url);
+                            $('#submit_btn').html(defaultBtnValue);
+                        }
+                        else {
+                            $('#submit_btn').html(defaultBtnValue);
+                            $('#submit_btn').attr("disabled", false);
+                            errorAlert(result.msg);
+                        }
+                    },
+                    error: function (ex) {
+                        $('#submit_btn').html(defaultBtnValue);
+                        $('#submit_btn').attr("disabled", false);
+                        errorAlert("An error has occurred, try again. Please contact support if the error persists");
+                    }
+                });
+
+            }
+        }
+
+    }
+
 }

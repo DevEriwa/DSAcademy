@@ -11,14 +11,17 @@ namespace Core.Models
 	public class TestQuestions
 	{
 		[Key]
-		public int Id { get; set; }
+		public int? Id { get; set; }
 		public int? CourseId { get; set; }
 		[ForeignKey("CourseId")]
-		public virtual TrainingCourse Course { get; set; }
-		public string Question { get; set; }
-		public string Answer { get; set; }
+		public virtual TrainingCourse? Course { get; set; }
+		public string? Question { get; set; }
+		public string? Answer { get; set; }
 		public bool IsActive { get; set; }
 		public bool IsDeleted { get; set; }
 		public DateTime DateCreated { get; set; }
-	}
+        public Guid? CompanyId { get; set; }
+        [ForeignKey("CompanyId")]
+        public virtual Company? Company { get; set; }
+    }
 }

@@ -11,5 +11,7 @@ namespace Logic.IHelpers
         List<CommonDropDown> JobTypes();
         List<CommonDropDown> JobTypesForSearch();
         List<CommonDropDown> GetExamTypeList();
-    }
+        List<Company> GetAllCompany();
+        List<CommonDropDown> GetProgramEnumsList();
+	}
 }

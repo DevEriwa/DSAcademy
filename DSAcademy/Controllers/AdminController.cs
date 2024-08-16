@@ -125,6 +125,7 @@ namespace DSAcademy.Controllers
 		public async Task<IActionResult> TrainingCourse()
 		{
 			var username = User.Identity.Name;
+			ViewBag.Program = _dropdownHelper.GetProgramEnumsList();
 			ViewBag.Layout = _applicationHelper.GetUserLayout(username).FirstOrDefault();
 			var allTrainingCourse = _userHelper.GetAllTrainingCourseFromDB();
 			return View(allTrainingCourse);
@@ -136,10 +137,11 @@ namespace DSAcademy.Controllers
 		{
 			try
 			{
+				var userName = _userHelper.FindByEmailAsync(User.Identity.Name).Result;
 				if (collectedTrainingData != null)
 				{
 					var rawTrainingData = JsonConvert.DeserializeObject<TrainingCourseViewModel>(collectedTrainingData);
-
+					rawTrainingData.User = userName;
 					if (rawTrainingData.ActionType == Create_Training_Cost_ActionType)
 					{
 						var newTrainingCourse = _adminHelper.AddTrainignCostServices(rawTrainingData, base64);
@@ -147,7 +149,6 @@ namespace DSAcademy.Controllers
 						{
 							return Json(new { isError = false, msg = "Added Successfully" });
 						}
-
 					}
 					else if (rawTrainingData.ActionType == Edit_Training_Cost_ActionType)
 					{

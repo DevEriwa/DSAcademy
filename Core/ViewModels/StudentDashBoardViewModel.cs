@@ -9,7 +9,7 @@ namespace Core.ViewModels
 {
     public class StudentDashBoardViewModel
     {
-        public virtual ApplicationUserViewModel? Users { get; set; }
+        public virtual ApplicationUser? Users { get; set; }
         public virtual List<TestResult>? TestResult { get; set; }
        // public virtual List<Job>? ListOfRecentJobs { get; set; }
         public bool IsProjectCompleted { get; set; }

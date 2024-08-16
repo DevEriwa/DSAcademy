@@ -7,6 +7,7 @@ using Core.Enum;
 using System.Threading.Tasks;
 using Core.Db;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Logic.Helpers
 {
@@ -30,7 +31,18 @@ namespace Logic.Helpers
             enumList.Insert(0, common);
             return enumList;
         }
-        public List<CommonDropDown> GetApplicationStatusDropDownEnumsList()
+		public List<CommonDropDown> GetProgramEnumsList()
+		{
+			var common = new CommonDropDown()
+			{
+				Id = 0,
+				Name = "-- Select --"
+			};
+			var enumList = ((ProgramEnum[])Enum.GetValues(typeof(ProgramEnum))).Select(c => new CommonDropDown() { Id = (int)c, Name = c.ToString() }).ToList();
+			enumList.Insert(0, common);
+			return enumList;
+		}
+		public List<CommonDropDown> GetApplicationStatusDropDownEnumsList()
         {
             var common = new CommonDropDown()
             {
@@ -184,6 +196,19 @@ namespace Logic.Helpers
             enumList.Insert(0, common);
             return enumList;
         }
+		public List<Company> GetAllCompany()
+		{
+			var listOfCompany = new List<Company>();
+			var common = new Company()
+			{
+				Id = Guid.Parse("00000000-0000-0000-0000-000000000000"),
+				Name = "Switch Branch"
+			};
+			var loggedInUser = Session.GetCurrentUser();
+			var branches = _context.Companies.Where(x => !x.Deleted && x.Id == loggedInUser.CompanyId).ToList();
+			branches.Insert(0, common);
+			return branches;
+		}
 
-    }
+	}
 }
