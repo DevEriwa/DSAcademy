@@ -1,5 +1,5 @@
-﻿@* @using Core.Enum
-@model IEnumerable<Core.Models.TrainingCourse> *@
+﻿@using Core.Enum
+@model Core.Models.TrainingCourse
 @{
 	var logger = Session.GetCurrentUser();
 	ViewData["Title"] = "Payment Method";
@@ -29,12 +29,18 @@
 									<h4>Paid Before</h4>
 								</div>
 								<div class="row card-courses-dec">
-									<div class="col-md-12">
-										<h6 class="m-b10">Upload</h6>
-										<input type="file" class="form-control">
+									<div class="col-md-6">
+										<h6 class="m-b10">Sender Name</h6>
+										<input class="form-control" type="text" id="name">
+									</div>
+
+									<div class="col-md-6">
+										<input type="text" hidden class="form-control" id="courseId" value="@Model.Id">
+										<h6 class="m-b10">Upload Prove Of Payment</h6>
+										<input type="file" class="form-control" id="upLoadProveOfPaymentId">
 									</div>
 									<div class="col-md-12 pt-4">
-										<a class="btn">Pay</a>
+										<a class="btn" onclick="payBeforeComing()" id="submit_btn" style="margin-left:45%;">Submit</a>
 									</div>
 								</div>
 							</div>
@@ -64,15 +70,20 @@
 
 									<div class="col-md-6">
 										<h6 class="m-b10">Amount</h6>
-										<input class="form-control" type="text"  placeholder="12,500">
+										<input class="form-control" type="text"  value="@Model.Amount">
 									</div>
-									<div class="col-md-12">
-										<h6 class="m-b10">Upload</h6>
-										<input class="form-control" type="file">
+									<div class="col-md-6">
+										<input type="text" hidden class="form-control" id="courseId" value="@Model.Id">
+										<h6 class="m-b10">Upload Prove Of Payment</h6>
+										<input type="file" class="form-control" id="upLoadProveOfPaymentId">
+									</div>
+									<div class="col-md-6">
+										<h6 class="m-b10">Sender Name</h6>
+										<input class="form-control" type="text" id="name">
 									</div>
 
 									<div class="col-md-12 pt-4">
-										<a class="btn" style="margin-left:45%;">Pay</a>
+										<a class="btn" style="margin-left:45%;" onclick="payBeforeComing()">Pay</a>
 									</div>
 								</div>
 							</div>

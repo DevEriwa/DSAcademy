@@ -18,6 +18,9 @@ namespace Core.Models
         public int? ResultTwo { get; set; }
         public bool TestTwoChecker { get; set; }
         public int? Total { get; set; }
+        public Guid? CompanyId { get; set; }
+        [ForeignKey("CompanyId")]
+        public virtual Company? Company { get; set; }
         [NotMapped]
         public string? Title { get; set; }
     }

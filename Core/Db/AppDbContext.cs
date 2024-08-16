@@ -19,5 +19,6 @@ namespace Core.Db
 		public DbSet<UserVerification> UserVerifications { get; set; }
 		public DbSet<TestQuestions> TestQuestions { get; set; }
 		public DbSet<AnswerOptions> AnswerOptions { get; set; }
+		public DbSet<Company> Companies { get; set; }
 	}
 }

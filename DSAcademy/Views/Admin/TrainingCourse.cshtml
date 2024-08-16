@@ -16,25 +16,21 @@
 					<div class="col">
 						<h3 class="page-title">Training Course Setup</h3>
 					</div>
-					<div class="col-auto float-right">
-						<a style="margin-left:189%;" class="btn add-btn" href="#" data-toggle="modal" data-target="#add_Course"><i class="fa fa-plus"></i> Add Course</a>
+					<div class="col-auto float-right ml-auto">
+						<a  class="btn add-btn" href="#" data-toggle="modal" data-target="#add_Course"><i class="fa fa-plus"></i> Add Course</a>
 					</div>
 				</div>
 			</div>
 			<!-- /Page Header -->
 			@if (Model != null || Model.Count() > 0)
 			{
-				<div class="row">
-					<!-- Your Profile Views Chart -->
-					<div class="col-lg-12 m-b30">
-						<div class="widget-box">
-							@* <div class="wc-title">
-						<h4>Your Courses</h4>
-						</div> *@
-							<div class="widget-inner">
-
-								@foreach (var trainingCourse in Model)
-								{
+				@foreach (var trainingCourse in Model)
+				{
+					<div class="row">
+						<!-- Your Profile Views Chart -->
+						<div class="col-lg-12 m-b30">
+							<div class="widget-box">
+								<div class="widget-inner">
 									<div class="card-courses-list admin-courses">
 										<div class="card-courses-media">
 											<img src="@trainingCourse.Logo" />
@@ -55,47 +51,36 @@
 														</div>
 													</li>
 													<li class="card-courses-categories">
-														<h5>3 Categories</h5>
-														<h4>Backend</h4>
+														<h5>Categories</h5>
+														<h4>@trainingCourse?.ProgramStatus.Value</h4>
 													</li>
-													<li class="card-courses-review">
-														<h5>3 Review</h5>
-														<ul class="cours-star">
-															<li class="active"><i class="fa fa-star"></i></li>
-															<li class="active"><i class="fa fa-star"></i></li>
-															<li class="active"><i class="fa fa-star"></i></li>
-															<li><i class="fa fa-star"></i></li>
-															<li><i class="fa fa-star"></i></li>
-														</ul>
-													</li>
-													<li class="card-courses-stats">
-														<a href="#" class="btn button-sm green radius-xl">Pending</a>
-													</li>
-													<li class="card-courses-price">
-														<del>$190</del>
-														<h5 class="text-primary">$@trainingCourse.Amount</h5>
+
+
+													<li class="card-courses-categories">
+														<h5>Amount</h5>
+														<h4>$@trainingCourse?.Amount</h4>
 													</li>
 												</ul>
 											</div>
 											<div class="row card-courses-dec">
 												<div class="col-md-12">
 													<h6 class="m-b10">Course Description</h6>
-													<p>@trainingCourse.Description </p>
+													<p>@trainingCourse?.Description </p>
 												</div>
 												<div class="col-md-12">
-													<a href="#" class="btn green radius-xl outline">Start Now</a>
-													<a href="#" class="btn red outline radius-xl ">Cancel</a>
+													<a onclick="getCourseById('@trainingCourse?.Id')" href="#" data-toggle="modal" data-target="#upgrade_Course" class="btn green radius-xl outline">Edit Course</a>
+													<a onclick="getCourseByIdToDelete('@trainingCourse?.Id')" href="#" data-toggle="modal" data-target="#delete_Course" class="btn red outline radius-xl ">Delete Course</a>
 												</div>
 											</div>
-
 										</div>
 									</div>
-								}
+								</div>
 							</div>
 						</div>
+						<!-- Your Profile Views Chart END-->
 					</div>
-					<!-- Your Profile Views Chart END-->
-				</div>
+				}
+
 			}
 		</div>
 	</main>
@@ -107,7 +92,7 @@
 <div class="modal custom-modal fade" id="add_Course" role="dialog">
 	<div class="modal-dialog modal-md modal-dialog-centered modal-lg">
 		<div class="modal-content">
-			<button type="button" class="close" data-dismiss="modal"><i class="fa fa-close"></i></button>
+			<button type="button" class="close" data-dismiss="modal" style="margin-left:95%;"><i class="fa fa-close"></i></button>
 			<div class="modal-body">
 				<h5 class="modal-title text-center mb-3">Add Course</h5>
 				<div class="row">
@@ -140,11 +125,17 @@
 							<p class="text-danger" id="testDurationVDT" style="display: none;">Enter Test Duration</p>
 						</div>
 					</div>
-					<div class="col-md-12">
+					<div class="col-md-6">
 						<div class="form-group">
 							<label>Image</label>
 							<input type="file" id="logoId" class="form-control" required>
 							<p class="text-danger" id="testLogoVDT" style="display: none;">Enter Image</p>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+							<label>Program</label>
+							<select class="form-control" id="programId" required asp-items="@(new SelectList(@ViewBag.Program,  "Id", "Name" ))"></select>
 						</div>
 					</div>
 					<div class="col-md-12">
@@ -165,57 +156,71 @@
 <!-- /Add Course Modal -->
 <!-- Edit Course Modal -->
 <div class="modal custom-modal fade" id="upgrade_Course" role="dialog">
-	<div class="modal-dialog modal-md modal-dialog-centered">
+	<div class="modal-dialog modal-md modal-dialog-centered modal-lg">
 		<div class="modal-content">
-			<button type="button" class="close" data-dismiss="modal"><i class="fa fa-close"></i></button>
+			<button type="button" class="close" data-dismiss="modal" style="margin-left:95%;"><i class="fa fa-close"></i></button>
 			<div class="modal-body">
 				<h5 class="modal-title text-center mb-3">Edit Course</h5>
 				<div class="row">
-					<div class="col-md-12">
+					<div class="col-md-6">
 						<div class="form-group">
 							<label>Course Title</label>
-							<input type="text" id="Edit_Id" hidden>
-							<input type="text" id="Edit_Title" class="form-control" required>
+							<input type="text" id="edit_Id" hidden>
+							<input type="text" id="editTitle" class="form-control" required>
+							<p class="text-danger" id="titleVDT" style="display: none;">Enter Course Title</p>
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="form-group">
+							<label>Amount</label>
+							<input type="number" id="editCost" class="form-control" required>
+							<p class="text-danger" id="amtcVDT" style="display: none;">Enter Amount</p>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+							<label>Training Duration</label>
+							<input type="text" id="editDuration" class="form-control" required>
+							<p class="text-danger" id="durationVDT" style="display: none;">Enter Duration</p>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+							<label>Test Duration (Minutes)</label>
+							<input type="number" id="editTestDuration" class="form-control" required>
+							<p class="text-danger" id="testDurationVDT" style="display: none;">Enter Test Duration</p>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+							<label>Image</label>
+							<input type="file" id="editlogoId" class="form-control" required>
+							<p class="text-danger" id="testLogoVDT" style="display: none;">Enter Image</p>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+							<label>Program</label>
+							<select class="form-control" id="editProgramId" required asp-items="@(new SelectList(@ViewBag.Program,  "Id", "Name" ))"></select>
 						</div>
 					</div>
 					<div class="col-md-12">
 						<div class="form-group">
 							<label>Course Description</label>
-							<textarea rows="3" class="form-control" id="Edit_Description" required></textarea>
-						</div>
-					</div>
-					<div class="col-md-12">
-						<div class="form-group">
-							<label>Amount</label>
-							<input type="number" id="Edit_Cost" class="form-control" required>
-						</div>
-					</div>
-					<div class="col-md-12">
-						<div class="form-group">
-							<label>Training Duration</label>
-							<input type="text" id="Edit_Duration" class="form-control" required>
-						</div>
-					</div>
-					<div class="col-md-12">
-						<div class="form-group">
-							<label>Test Duration (Minutes)</label>
-							<input type="number" id="Edit_TestDuration" class="form-control" required>
-						</div>
-					</div>
-					<div class="col-md-12">
-						<div class="form-group">
-							<label>Course Logo</label>
-							<input class="form-control" type="file" id="Edit_Logo" required>
+							<textarea rows="3" class="form-control" id="editDescription" required></textarea>
+							<p class="text-danger" id="descVDT" style="display: none;">Enter Course Description</p>
 						</div>
 					</div>
 				</div>
 				<div class="m-t-20 text-center">
-					<button class="btn newBtn submit-btn" onclick="EditTrainingCourse()">Update</button>
+					<button class="btn newBtn submit-btn" onclick="EditTrainingCourse('EditTrainingCourse')">Update</button>
 				</div>
 			</div>
 		</div>
 	</div>
 </div>
+
 <!-- /Edit Course Modal -->
 <!-- Delete Course Modal -->
 <div class="modal custom-modal fade" id="delete_Course" role="dialog">
@@ -223,17 +228,17 @@
 		<div class="modal-content">
 			<div class="modal-body">
 				<div class="form-header">
-					<input id="Delete_Id" hidden />
-					<h3>Delete Course</h3>
-					<p>Are you sure you want to delete?</p>
+					<h3 style="text-align:center;">Delete Course</h3>
+					<input class="form-control" type="text" hidden id="Delete_Id">
+					<p style="text-align:center;">Are you sure you want to delete this course?</p>
 				</div>
 				<div class="modal-btn delete-action">
 					<div class="row">
 						<div class="col-6">
-							<a onclick="TrainingCoursePost('DeleteTrainingCourse')" class="btn btn-primary continue-btn">Delete</a>
+							<a class="btn btn-primary continue-btn" style="margin-left:20%;" onclick="TrainingCoursePost('DeleteTrainingCourse')">Delete</a>
 						</div>
-						<div class="col-6">
-							<a href="javascript:void(0);" data-dismiss="modal" class="btn btn-primary cancel-btn">Cancel</a>
+						<div class="col-6" style="padding-left:20%;">
+							<a data-dismiss="modal"  class="btn btn-primary cancel-btn">Cancel</a>
 						</div>
 					</div>
 				</div>

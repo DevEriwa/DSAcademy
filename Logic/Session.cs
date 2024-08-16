@@ -1,6 +1,8 @@
-﻿using Core.ViewModels;
+﻿using Core.Models;
+using Core.ViewModels;
 using Logic;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Newtonsoft.Json;
@@ -57,17 +59,16 @@ namespace Logic
 }
 public class Session
 {
-    public static ApplicationUserViewModel GetCurrentUser()
+    public static ApplicationUser GetCurrentUser()
     {
         var user = AppHttpContext.Current.Session.GetString("user");
         if (user != null)
         {
-            var loggedInUser = JsonConvert.DeserializeObject<ApplicationUserViewModel>(user);
+            var loggedInUser = JsonConvert.DeserializeObject<ApplicationUser>(user);
             return loggedInUser;
         }
         return null;
     }
-
 
     public static string GetRoleLayout()
     {
@@ -102,21 +103,34 @@ public class Session
         }
         return Constants.DefaultLayout;
     }
-    public static string GetUserDashboardPage()
+    public static string GetUserDashboardPage(bool isProgram)
     {
         var user = GetCurrentUser();
-        var userRole = user.Role;
-        if (userRole != null)
+        if (isProgram == false)
         {
-            if (userRole == "SuperAdmin" || userRole == "Admin")
-            {
-                return "/Admin/Index";
-            }
-            else
-            {
-                return "/Student/Index";
-            }
-        }
+			var userRole = user.Role;
+			if (userRole != null)
+			{
+				if (userRole == "Student" || userRole == "Applicant")
+				{
+					return "/Accounts/Program";
+				}
+			}
+		}else if (isProgram == true)
+        {
+			var userRole = user.Role;
+			if (userRole != null)
+			{
+				if (userRole == "SuperAdmin" || userRole == "Admin")
+				{
+					return "/Admin/Index";
+				}
+				else
+				{
+					return "/Student/Index";
+				}
+			}
+		}
         return null;
     }
 
@@ -129,5 +143,6 @@ public class Session
         public static string DefaultLayout = "~/Views/Shared/_Layout.cshtml";
         public static string AdminLayout = "~/Views/Shared/_AdminLayout.cshtml";
         public static string StudentsLayout = "~/Views/Shared/_StudentLayout.cshtml";
+        public static string ProgramLayout = "~/Views/Shared/_ProgramLayout.cshtml";
     }
 }

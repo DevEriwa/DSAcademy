@@ -16,7 +16,7 @@ namespace Logic.IHelpers
         Task<ApplicationUser> FindByUserNameAsync(string userName);
 		List<ApplicationUserViewModel> GetAllOnboardApplicantsFromDB();
 		List<TrainingCourse> GetAllTrainingCourseFromDB();
-		List<string> GetOptListByQuestionIds(int id);
+		List<string> GetOptListByQuestionIds(int? id);
 		Payments GetPaymentById(int? Id);
 		List<Payments> GetPaymentList();
 		TestQuestions GetQuestionsById(int? Id);

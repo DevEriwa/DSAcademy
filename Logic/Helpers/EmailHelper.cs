@@ -64,23 +64,19 @@ namespace Logic.Helpers
         {
             try
             {
-
                 if (applicantEmail != null)
                 {
-
                     string toEmail = applicantEmail;
                     string subject = "Email Verified Successfully";
-                    string message = "Your Email has been verified.Thank you for applying with Bivisoft Academy.<br/> " +
+                    string message = "Your Email has been verified.Thank you for applying with Digital Skills Academy.<br/> " +
                         "<br/>" + "<br/>" + "Need help? We’re always here for you.Simply reply to this email to reach us. <br/>" + "<br/>" +
                     "Kind regards,<br/>" +
                     "<b>Digital Skills Academy.</b>";
                     _emailService.SendEmail(toEmail, subject, message);
                     return true;
                 };
-
                 return false;
             }
-
             catch (Exception)
             {
                 throw;
@@ -362,5 +358,45 @@ namespace Logic.Helpers
                 throw ex;
             }
         }
-    }
+		public bool SendEmailToStudentAndCompanyForProofOfPayment(string studentEmail, string companyEmail, string companyName)
+		{
+			try
+			{
+				if (!string.IsNullOrEmpty(studentEmail) && !string.IsNullOrEmpty(companyEmail))
+				{
+					// Email content for the student
+					string studentSubject = "Payment Proof Received";
+					string studentMessage = $"Dear Applicant,<br/><br/>" +
+						$"We have successfully received your proof of payment for the Digital Skills Academy program. Our team is currently reviewing your submission, and you will receive an email from {companyName} shortly with further instructions.<br/><br/>" +
+						"Thank you for your prompt action.<br/><br/>" +
+						$"Kind regards,<br/>" +
+						$"<b>{companyName}</b>";
+
+
+					// Email content for the company
+					string companySubject = "New Payment Notification";
+					string companyMessage = $"Dear {companyName},<br/><br/>" +
+						$"A new payment has been successfully processed by {studentEmail}. Please review the transaction and proceed with the necessary steps.<br/><br/>" +
+						"Best regards,<br/>" +
+						"<b>Your Automated System</b>";
+
+					// Send email to the student
+					_emailService.SendEmail(studentEmail, studentSubject, studentMessage);
+
+					// Send email to the company
+					_emailService.SendEmail(companyEmail, companySubject, companyMessage);
+
+					return true;
+				}
+				return false;
+			}
+			catch (Exception ex)
+			{
+				// Consider logging the exception here instead of rethrowing it
+				throw;
+			}
+		}
+
+
+	}
 }

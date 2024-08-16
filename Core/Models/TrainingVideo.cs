@@ -22,6 +22,9 @@ namespace Core.Models
 		public string? Outline { get; set; }
 		public bool IsActive { get; set; }
 		public DateTime DateCreated { get; set; }
-	}
+        public Guid? CompanyId { get; set; }
+        [ForeignKey("CompanyId")]
+        public virtual Company? Company { get; set; }
+    }
 
 }

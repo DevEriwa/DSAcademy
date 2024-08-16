@@ -1,11 +1,5 @@
 ﻿using Core.Enum;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Core.Models
 {
@@ -18,5 +12,9 @@ namespace Core.Models
 		[ForeignKey("CourseId")]
 		public virtual TrainingCourse? Courses { get; set; }
 		public PaymentStatus? Status { get; set; }
+		public Guid? CompanyId { get; set; }
+		[ForeignKey("CompanyId")]
+		public virtual Company? Company { get; set; }
+		public ProgramEnum? ProgramStatus { get; set; }
 	}
 }

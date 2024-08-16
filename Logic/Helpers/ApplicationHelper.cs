@@ -91,8 +91,10 @@ namespace Logic.Helpers
                 IsDeactivated = false,
                 IsActivated = true,
                 IsAdmin = false,
+                IsProgram = false,
                 Status = ApplicationStatus.Pending,
                 DateRegistered = DateTime.Now,
+                CompanyId = applicationUserViewModel.CompanyId,
             };
             try
             {
@@ -133,24 +135,29 @@ namespace Logic.Helpers
                 {
                     FirstName = applicationUserViewModel.FirstName,
                     LastName = applicationUserViewModel.LastName,
-                    Email = applicationUserViewModel.Email,
-                    UserName = applicationUserViewModel.Email,
-                    PhoneNumber = applicationUserViewModel.PhoneNumber,
+                    Email = applicationUserViewModel.CompanyEmail,
+                    UserName = applicationUserViewModel.CompanyEmail,
+                    PhoneNumber = applicationUserViewModel.CompanyPhone,
                     Address = applicationUserViewModel.Address,
                     HowDoYouIntendToCopeStatement = "Default coping statement",
                     Role = "Admin",
                     IsDeactivated = false,
+                    IsActivated = true,
                     IsAdmin = true,
+                    IsProgram = true,
                     DateRegistered = DateTime.Now
                 };
-
                 try
                 {
                     var result = await _userManager.CreateAsync(newInstanceOfApplicantModelAboutToBCreated, applicationUserViewModel.Password);
                     if (result.Succeeded)
                     {
-                        return newInstanceOfApplicantModelAboutToBCreated;
-                    }
+						var addToRole = await _userManager.AddToRoleAsync(newInstanceOfApplicantModelAboutToBCreated, "Admin");
+                        if (addToRole.Succeeded)
+                        {
+							return newInstanceOfApplicantModelAboutToBCreated;
+						}
+					}
                     else
                     {
                         // Log the identity errors
@@ -171,7 +178,39 @@ namespace Logic.Helpers
             return null;
         }
 
-
+		public async Task<bool> CreateCompany(ApplicationUserViewModel companyViewModel, string base64)
+		{
+			var createUser = await RegisterAdminService(companyViewModel).ConfigureAwait(false);
+			if (createUser != null && !string.IsNullOrEmpty(createUser.Id))
+			{
+				var company = new Company()
+				{
+					Name = companyViewModel.CompanyName,
+					Address = companyViewModel.CompanyAddress,
+					Email = companyViewModel.CompanyEmail,
+					Phone = companyViewModel.CompanyPhone,
+					Mobile = companyViewModel.CompanyMobile,
+					CompanyLogo = base64,
+					CreatedById = createUser.Id,
+				};
+				await _context.Companies.AddAsync(company).ConfigureAwait(false);
+				await _context.SaveChangesAsync().ConfigureAwait(false);
+                UpdateUserBranch(company.Id, company.CreatedById);
+                return true;
+			}
+			return false;
+		}
+        public void UpdateUserBranch(Guid? companyId, string userId)
+        {
+            var user = _context.ApplicationUsers.Where(x => x.Id == userId && !x.IsDeactivated).Include(x => x.Company).FirstOrDefault();
+            if (user != null)
+            {
+                user.CompanyId = companyId;
+                user.IsProgram = true;
+                _context.ApplicationUsers.Update(user);
+                _context.SaveChanges();
+            }
+        }
         public string GetUserDashboardPage(ApplicationUser userr)
         {
             var userRole = _userManager.GetRolesAsync(userr).Result.FirstOrDefault();
@@ -291,5 +330,32 @@ namespace Logic.Helpers
                 return null;
             }
         }
-    }
+		public Payments SaveProveOfPayment(PaymentViewModel collectedData, string base64, ApplicationUser user)
+		{
+			if (collectedData == null && user != null)
+				throw new ArgumentNullException(nameof(collectedData), "Collected data cannot be null");
+			try
+			{
+				var newPayment = new Payments
+				{
+					ProveOfPayment = base64,
+					Source = TransactionType.Cash,
+					Status = PaymentStatus.Pending,
+					ProgramStatus = collectedData?.Courses?.ProgramStatus,
+					UserId = user?.Id,
+					CourseId = collectedData?.CourseId,
+                    CompanyId = user?.CompanyId,
+                    Name = collectedData?.Name,
+				};
+				_context.Payments.Add(newPayment);
+				_context.SaveChanges();
+				return newPayment;
+			}
+			catch (Exception ex)
+			{
+				throw new ApplicationException("An error occurred while saving the payment.", ex);
+			}
+		}
+		
+	}
 }

@@ -37,86 +37,73 @@ namespace Logic.Helpers
 
 		public TrainingCourse AddTrainignCostServices(TrainingCourseViewModel collectedData, string base64)
 		{
+			var newCost = new TrainingCourse();
 			if (collectedData != null)
 			{
-				var newCost = new TrainingCourse
-				{
-					Title = collectedData.Title,
-					Description = collectedData.Description,
-					Logo = base64,
-					Duration = collectedData.Duration,
-					TestDuration = collectedData.TestDuration,
-					Amount = Convert.ToDecimal(collectedData.Amount),
-					IsActive = true,
-					IsDeleted = false,
-					DateCreated = DateTime.Now,
-				};
+				newCost.Title = collectedData.Title;
+				newCost.Description = collectedData.Description;
+				newCost.Logo = base64;
+				newCost.Duration = collectedData.Duration;
+				newCost.TestDuration = collectedData.TestDuration;
+				newCost.Amount = Convert.ToDecimal(collectedData.Amount);
+				newCost.UserId = collectedData?.User?.Id;
+				newCost.CompanyId = collectedData?.User?.CompanyId;
+				newCost.ProgramStatus = collectedData?.ProgramStatus;
 				_context.TrainingCourse.Add(newCost);
 				_context.SaveChanges();
-
-				return newCost;
 			}
-			return null;
+			return newCost;
 		}
 		public TrainingCourse EditTrainignCostServices(TrainingCourseViewModel collectedData)
 		{
-			var costToEdit = _context.TrainingCourse.Where(c => c.Id == collectedData.Id).FirstOrDefault();
-			if (costToEdit != null)
+			var costToEdit = _context.TrainingCourse
+				.Where(c => c.Id == collectedData.Id && c.CompanyId == collectedData.User.CompanyId)
+				.Include(c => c.Company).ThenInclude(u => u.CreatedBy)
+				.FirstOrDefault();
+
+			if (costToEdit == null)
 			{
-				if (collectedData.Title != null)
-				{
-					costToEdit.Title = collectedData.Title;
-				}
-				if (collectedData.Description != null)
-				{
-					costToEdit.Description = collectedData.Description;
-				}
-				if (collectedData.Logo != null)
-				{
-					costToEdit.Logo = collectedData.Logo;
-				}
-				if (collectedData.Duration != null)
-				{
-					costToEdit.Duration = collectedData.Duration;
-				}
-				if (collectedData.TestDuration != null)
-				{
-					costToEdit.TestDuration = collectedData.TestDuration;
-				}
-				if (collectedData.Amount != null)
-				{
-					costToEdit.Amount = Convert.ToDecimal(collectedData.Amount);
-				}
-				costToEdit.IsActive = true;
-
-				_context.TrainingCourse.Update(costToEdit);
-				_context.SaveChanges();
-
-				return costToEdit;
+				return null;
 			}
-			return null;
+			costToEdit.Title = collectedData.Title ?? costToEdit.Title;
+			costToEdit.Description = collectedData.Description ?? costToEdit.Description;
+			costToEdit.Logo = collectedData.Logo ?? costToEdit.Logo;
+			costToEdit.Duration = collectedData.Duration ?? costToEdit.Duration;
+			costToEdit.TestDuration = collectedData.TestDuration ?? costToEdit.TestDuration;
+			costToEdit.ProgramStatus = collectedData.ProgramStatus ?? costToEdit.ProgramStatus;
+			if (decimal.TryParse(collectedData.Amount, out decimal amount) && amount != 0)
+			{
+				costToEdit.Amount = amount;
+			}
+			costToEdit.IsActive = true;
+			_context.TrainingCourse.Update(costToEdit);
+			_context.SaveChanges();
+			return costToEdit;
 		}
 		public TrainingCourse DisableTrainignCostServices(TrainingCourseViewModel collectedData)
 		{
-			var costToTurnOff = _context.TrainingCourse.Where(c => c.Id == collectedData.Id).FirstOrDefault();
+			var costToTurnOff = _context.TrainingCourse.Where(c => c.Id == collectedData.Id)
+			.Include(c => c.Company).ThenInclude(u => u.CreatedBy)
+			.FirstOrDefault();
 			if (costToTurnOff != null)
 			{
 				costToTurnOff.IsActive = false;
-
+				costToTurnOff.IsDeleted = true;
 				_context.TrainingCourse.Update(costToTurnOff);
 				_context.SaveChanges();
-
 				return costToTurnOff;
 			}
 			return null;
 		}
 		public TrainingCourse ActivateTrainignCostServices(TrainingCourseViewModel collectedData)
 		{
-			var costToTurnOn = _context.TrainingCourse.Where(c => c.Id == collectedData.Id).FirstOrDefault();
+			var costToTurnOn = _context.TrainingCourse.Where(c => c.Id == collectedData.Id)
+			.Include(c => c.Company).ThenInclude(u => u.CreatedBy)
+			.FirstOrDefault();
 			if (costToTurnOn != null)
 			{
 				costToTurnOn.IsActive = true;
-
+				costToTurnOn.IsDeleted = false;
 				_context.TrainingCourse.Update(costToTurnOn);
 				_context.SaveChanges();
 
@@ -126,10 +113,13 @@ namespace Logic.Helpers
 		}
 		public TrainingCourse DeleteTrainignCostServices(TrainingCourseViewModel collectedData)
 		{
-			var costToDelete = _context.TrainingCourse.Where(c => c.Id == collectedData.Id).FirstOrDefault();
+			var costToDelete = _context.TrainingCourse.Where(c => c.Id == collectedData.Id)
+				.Include(c => c.Company).ThenInclude(u => u.CreatedBy)
+				.FirstOrDefault();
 			if (costToDelete != null)
 			{
 				costToDelete.IsDeleted = true;
+				costToDelete.IsActive = false;
 
 				_context.TrainingCourse.Update(costToDelete);
 				_context.SaveChanges();
@@ -307,6 +297,57 @@ namespace Logic.Helpers
 				return true;
 			}
 			return false;
+		}
+		public List<TrainingCourse> GetAllTrainingCourseForFrontend()
+		{
+			var allTrainingCourse = _context.TrainingCourse.Where(t => !t.IsDeleted && t.CompanyId != Guid.Empty && t.IsActive == true && t.ProgramStatus == ProgramEnum.Frontend)
+			.Include(c => c.Company)
+			.ThenInclude(u => u.CreatedBy)
+			.ToList();
+			if (allTrainingCourse.Any())
+			{
+				return allTrainingCourse;
+			}
+			return allTrainingCourse;
+		}
+		public List<TrainingCourse> GetAllTrainingCourseForBackend()
+		{
+			var allTrainingCourse = _context.TrainingCourse.Where(t => !t.IsDeleted && t.CompanyId != Guid.Empty && t.IsActive == true && t.ProgramStatus == ProgramEnum.Backend)
+			.Include(c => c.Company)
+			.ThenInclude(u => u.CreatedBy)
+			.ToList();
+			if (allTrainingCourse.Any())
+			{
+				return allTrainingCourse;
+			}
+			return allTrainingCourse;
+		}
+		
+		public List<TrainingCourse> GetAllTrainingCourseForFullStack()
+		{
+			var allTrainingCourse = _context.TrainingCourse.Where(t => !t.IsDeleted && t.CompanyId != Guid.Empty && t.IsActive == true && 
+			(t.ProgramStatus == ProgramEnum.Frontend || t.ProgramStatus == ProgramEnum.Frontend))
+			.Include(c => c.Company)
+			.ThenInclude(u => u.CreatedBy)
+			.ToList();
+			if (allTrainingCourse.Any())
+			{
+				return allTrainingCourse;
+			}
+			return allTrainingCourse;
+		}
+		public TrainingCourse CoursePayment(int courseId)
+		{
+			var allTrainingCourse = _context.TrainingCourse.Where(t => t.Id == courseId && !t.IsDeleted && t.CompanyId != Guid.Empty && t.IsActive == true &&
+			(t.ProgramStatus == ProgramEnum.Frontend || t.ProgramStatus == ProgramEnum.Frontend))
+			.Include(c => c.Company)
+			.ThenInclude(u => u.CreatedBy)
+			.FirstOrDefault();
+			if (allTrainingCourse != null)
+			{
+				return allTrainingCourse;
+			}
+			return null;
 		}
 	}
 }

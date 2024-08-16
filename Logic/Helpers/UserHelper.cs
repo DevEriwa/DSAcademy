@@ -5,11 +5,6 @@ using Core.ViewModels;
 using Logic.IHelpers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Logic.Helpers
 {
@@ -27,25 +22,25 @@ namespace Logic.Helpers
 
         public string GetFullNameByUserNameAsync(string userName)
         {
-            var user = _userManager.Users.Where(u => u.UserName == userName).FirstOrDefaultAsync().Result;
+            var user = _userManager.Users.Where(u => u.UserName == userName)?.Include(c => c.Company).FirstOrDefaultAsync().Result;
             var fullName = user.LastName + " " + user.FirstName;
             return fullName;
         }
         public async Task<ApplicationUser> FindByUserNameAsync(string userName)
         {
-            return _userManager.Users.Where(u => u.UserName == userName).FirstOrDefaultAsync().Result;
+            return _userManager.Users.Where(u => u.UserName == userName)?.Include(c => c.Company).FirstOrDefaultAsync().Result;
         }
         public async Task<ApplicationUser> FindByPhoneNumberAsync(string phoneNumber)
         {
-            return await _userManager.Users.Where(s => s.PhoneNumber == phoneNumber)?.FirstOrDefaultAsync();
+            return await _userManager.Users.Where(s => s.PhoneNumber == phoneNumber)?.Include(c => c.Company)?.FirstOrDefaultAsync();
         }
         public async Task<ApplicationUser> FindByEmailAsync(string email)
         {
-            return await _userManager.Users.Where(s => s.Email == email)?.FirstOrDefaultAsync();
+            return await _userManager.Users.Where(s => s.Email == email)?.Include(c => c.Company)?.FirstOrDefaultAsync();
         }
         public async Task<ApplicationUser> FindByIdAsync(string Id)
         {
-            return await _userManager.Users.Where(s => s.Id == Id)?.FirstOrDefaultAsync();
+            return await _userManager.Users.Where(s => s.Id == Id)?.Include(c => c.Company)?.FirstOrDefaultAsync();
         }
         public List<ApplicationUserViewModel> GetAllOnboardApplicantsFromDB()
         {
@@ -129,7 +124,10 @@ namespace Logic.Helpers
         }
         public List<TrainingCourse> GetAllTrainingCourseFromDB()
         {
-            var allTrainingCourse = _context.TrainingCourse.Where(t => !t.IsDeleted).ToList();
+            var allTrainingCourse = _context.TrainingCourse.Where(t => !t.IsDeleted && t.CompanyId != Guid.Empty && t.IsActive == true)
+            .Include(c => c.Company)
+            .ThenInclude(u => u.CreatedBy)
+            .ToList();
             if (allTrainingCourse.Any())
             {
                 return allTrainingCourse;
@@ -268,7 +266,7 @@ namespace Logic.Helpers
 			return result;
 		}
 
-		public List<string> GetOptListByQuestionIds(int id)
+		public List<string> GetOptListByQuestionIds(int? id)
 		{
 			var optList = new List<string>();
 			var optListDetails = _context.AnswerOptions.Where(a => a.QuestionId == id).ToList();
