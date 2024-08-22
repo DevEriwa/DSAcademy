@@ -1,6 +1,11 @@
 ﻿using Core.Config;
 using Core.Db;
 using Core.Models;
+using Hangfire;
+using Hangfire.Common;
+using Hangfire.Dashboard;
+using Hangfire.States;
+using Hangfire.Storage;
 using Logic;
 using Logic.Helpers;
 using Logic.IHelpers;
@@ -9,6 +14,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
+using System.Security.Claims;
 
 public class Startup
 {
@@ -64,6 +70,30 @@ public class Startup
                 .AddScoped<IDropdownHelper, DropdownHelper>()
                 .AddScoped<IStudentHelper, StudentHelper>()
                 .AddScoped<IAdminHelper, AdminHelper>();
+
+
+        //services.AddSession();
+        services.AddHttpContextAccessor();
+        // Add Hangfire services.  
+        services.AddHangfire(x => x.UseSqlServerStorage(Configuration.GetConnectionString("HangfireManagement")));
+        GlobalJobFilters.Filters.Add(new ExpirationTimeAttribute());
+        services.AddSession(options =>
+        {
+            options.Cookie.Name = ".AdventureWorks.Session";
+            options.IdleTimeout = TimeSpan.FromMinutes(60);
+            options.Cookie.IsEssential = true;
+        });
+        services.AddHttpContextAccessor();
+        services.Configure<FormOptions>(x =>
+        {
+            x.ValueLengthLimit = int.MaxValue;
+            x.MultipartBodyLengthLimit = int.MaxValue;
+            x.MultipartHeadersLengthLimit = int.MaxValue;
+        });
+
+        services.AddControllers().AddNewtonsoftJson(x =>
+            x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+         );
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -127,8 +157,52 @@ public class Startup
 
         UpdateDatabase(app);
     }
+	public void HangFireConfiguration(IApplicationBuilder app)
+	{
+		app.UseHangfireDashboard("/DSAcademyHangfire", new DashboardOptions
+		{
+			Authorization = new[] { new MyAuthorizationFilter() }
+		});
 
-    private static void UpdateDatabase(IApplicationBuilder app)
+		var robotOptions = new BackgroundJobServerOptions
+		{
+			ServerName = String.Format(
+				"{0}.{1}",
+				Environment.MachineName,
+				Guid.NewGuid().ToString())
+		};
+		app.UseHangfireServer(robotOptions);
+	}
+
+	public class MyAuthorizationFilter : IDashboardAuthorizationFilter
+	{
+		public bool Authorize(DashboardContext context)
+		{
+			var user = context.GetHttpContext().User;
+			if (user != null && user.Identity.IsAuthenticated && user.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "SuperAdmin"))
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+	};
+	public class ExpirationTimeAttribute : JobFilterAttribute, IApplyStateFilter
+	{
+		public void OnStateUnapplied(ApplyStateContext context, IWriteOnlyTransaction transaction)
+		{
+			context.JobExpirationTimeout = TimeSpan.FromDays(20);
+		}
+
+		public void OnStateApplied(ApplyStateContext context, IWriteOnlyTransaction transaction)
+		{
+			context.JobExpirationTimeout = TimeSpan.FromDays(20);
+		}
+	}
+
+	private static void UpdateDatabase(IApplicationBuilder app)
     {
         AppHttpContext.Services = app.ApplicationServices;
         using (var serviceScope = app.ApplicationServices
