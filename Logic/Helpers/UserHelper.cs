@@ -5,6 +5,7 @@ using Core.ViewModels;
 using Logic.IHelpers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Logic.Helpers
 {
@@ -265,7 +266,6 @@ namespace Logic.Helpers
 			}
 			return result;
 		}
-
 		public List<string> GetOptListByQuestionIds(int? id)
 		{
 			var optList = new List<string>();
@@ -277,6 +277,47 @@ namespace Logic.Helpers
 			}
 			return null;
 		}
+        public async Task<List<ApplicationUser>> GetStudentListAsync()
+        {
+            var loggedInUser = Session.GetCurrentUser();
+            if (loggedInUser != null)
+            {
+                var query = _context.ApplicationUsers
+                .Where(c => !c.IsDeactivated && c.CompanyId == loggedInUser.CompanyId && (c.Role == "Student" || c.Role == "Applicant"))
+                .OrderByDescending(d => d.DateRegistered);
 
-	}
+                return await query.ToListAsync();
+            }
+            return new List<ApplicationUser>();
+        }
+        public List<ApplicationUserViewModel> GetTeacher()
+        {
+            var loggedInUser = Session.GetCurrentUser();
+
+            return _context.ApplicationUsers
+                 .Where(x => !x.IsDeactivated && x.CompanyId == loggedInUser.CompanyId && x.IsActivated && (x.Role == "Techer"))
+                 .Include(y => y.Company)
+
+             .Select(s => new ApplicationUserViewModel
+             {
+                 Id = s.Id,
+                 Address = s.Address,
+                 Status = s.Status,
+                 CompanyId = s.CompanyId,
+                 Email = s.Email,
+                 UserName = s.UserName,
+                 FirstName = s.FirstName,
+                 LastName = s.LastName,
+                 FullName = s.FullName,
+                 Role = s.Role,
+                 PhoneNumber = s.PhoneNumber,
+                 IsProgram = s.IsProgram,
+                 IsAdmin = false,
+             }).ToList();
+        }
+        public ApplicationUser FindById(string Id)
+        {
+            return _context.ApplicationUsers.Where(s => s.Id == Id)?.Include(s => s.Company).FirstOrDefault();
+        }
+    }
 }

@@ -47,8 +47,14 @@ namespace DSAcademy.Controllers
 			_userManager = userManager;
 		}
 
+		[HttpGet]
 		public IActionResult Index()
         {
+			var adminDashboard = _adminHelper.GetAdminDashboardData();
+			if(adminDashboard != null)
+			{
+               return View(adminDashboard);
+            }
             return View();
         }
 		[HttpGet]

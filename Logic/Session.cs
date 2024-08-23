@@ -141,7 +141,7 @@ public class Session
         public static string StudentRole = "Student";
         public static string ApplicantRole = "Applicant";
         public static string DefaultLayout = "~/Views/Shared/_Layout.cshtml";
-        public static string AdminLayout = "~/Views/Shared/_AdminLayout.cshtml";
+        public static string AdminLayout = "~/Views/Shared/_CompanyAdminLayout.cshtml";
         public static string StudentsLayout = "~/Views/Shared/_StudentLayout.cshtml";
         public static string ProgramLayout = "~/Views/Shared/_ProgramLayout.cshtml";
     }

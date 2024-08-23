@@ -6,6 +6,7 @@ using Core.ViewModels;
 using Logic.IHelpers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -322,7 +323,6 @@ namespace Logic.Helpers
 			}
 			return allTrainingCourse;
 		}
-		
 		public List<TrainingCourse> GetAllTrainingCourseForFullStack()
 		{
 			var allTrainingCourse = _context.TrainingCourse.Where(t => !t.IsDeleted && t.CompanyId != Guid.Empty && t.IsActive == true && 
@@ -349,5 +349,104 @@ namespace Logic.Helpers
 			}
 			return null;
 		}
-	}
+		public AdminDashboardViewModel? GetAdminDashboardData()
+        {
+            var myStudents = new List<ApplicationUserViewModel>();
+            var myTeachers = new List<ApplicationUserViewModel>();
+            var trainingCourse = new List<TrainingCourseViewModel>();
+            var loggedInUser = Session.GetCurrentUser();
+            if(loggedInUser.Id != null)
+            {
+                var date = DateTime.Now;
+                var students = _userHelper.GetStudentListAsync().Result;
+                var studentCount = students.Count();
+                var teacherCount = _userHelper.GetTeacher().Count();
+                var courseCount = _userHelper.GetAllTrainingCourseFromDB().Count();
+
+                var allstudents = _context.ApplicationUsers
+                .Where(x => !x.IsDeactivated && x.CompanyId == loggedInUser.CompanyId && (x.Role == "Student" || x.Role == "Applicant"))
+                .Include(x => x.Company).ToList();
+				
+				var allTeacher = _context.ApplicationUsers
+                .Where(x => !x.IsDeactivated && x.CompanyId == loggedInUser.CompanyId && (x.Role == "Techer"))
+                .Include(x => x.Company).ToList();
+				
+				var allCourse = _context.TrainingCourse
+                .Where(x => !x.IsDeleted && x.CompanyId == loggedInUser.CompanyId)
+                .Include(x => x.Company).ToList();
+
+                if (allstudents.Any())
+                {
+                    myStudents = allstudents
+                        .Where(x => x.IsProgram == true)
+                        .OrderByDescending(v => v.DateRegistered)
+                        .Select(s => new ApplicationUserViewModel
+                        {
+                            Id = s.Id,
+                            Address = s.Address,
+                            Status = s.Status,
+                            CompanyId = s.CompanyId,
+                            Email = s.Email,
+                            UserName = s.UserName,
+                            FirstName = s.FirstName,
+                            LastName = s.LastName,
+                            FullName = s.FullName,
+                            Role = "Applicant",
+                            PhoneNumber = s.PhoneNumber,
+                            IsProgram = s.IsProgram,
+                            IsAdmin = false,
+
+                        }).ToList();
+
+
+                    myTeachers = allTeacher
+                         .OrderByDescending(v => v.DateRegistered)
+                         .Select(s => new ApplicationUserViewModel
+                         {
+                             Id = s.Id,
+                             Address = s.Address,
+                             Status = s.Status,
+                             CompanyId = s.CompanyId,
+                             Email = s.Email,
+                             UserName = s.UserName,
+                             FirstName = s.FirstName,
+                             LastName = s.LastName,
+                             FullName = s.FullName,
+                             Role = "Techer",
+                             PhoneNumber = s.PhoneNumber,
+                             IsProgram = s.IsProgram,
+                             IsAdmin = false,
+                         }).ToList();
+
+
+                    trainingCourse = allCourse
+                    .OrderByDescending(v => v.DateCreated)
+                    .Select(s => new TrainingCourseViewModel
+                    {
+                        Id = s.Id,
+						Amount = s.Amount.ToString(),
+						DateCreated= s.DateCreated,
+						Description = s.Description,
+						Duration = s.Duration,
+						ProgramStatus = s.ProgramStatus,
+						Logo = s.Logo,
+                        TestDuration = s.TestDuration,
+						Title = s.Title,
+						User = s.User,
+                    }).ToList();
+                }
+                if (loggedInUser != null)
+                {
+                    var adminDashBoard = new AdminDashboardViewModel()
+                    {
+						StudentCount = studentCount,
+						TeacherCount = teacherCount,
+						CourseCount = courseCount
+                    };
+                    return adminDashBoard;
+                }
+            }
+            return null;
+        }
+    }
 }

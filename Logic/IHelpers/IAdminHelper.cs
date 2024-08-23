@@ -18,5 +18,7 @@ namespace Logic.IHelpers
 		List<TrainingCourse> GetAllTrainingCourseForBackend();
 		List<TrainingCourse> GetAllTrainingCourseForFullStack();
 		TrainingCourse CoursePayment(int courseId);
-	}
+		AdminDashboardViewModel? GetAdminDashboardData();
+
+    }
 }
