@@ -115,7 +115,7 @@ namespace DSAcademy.Controllers
                 if (returndResultFrmRegisterService != null)
                 {
                     var userToken = await _emailHelper.CreateUserToken(newApplicant.Email);
-                    var addToRole = _userManager.AddToRoleAsync(returndResultFrmRegisterService, "Applicant").Result;
+                    var addToRole = _userManager.AddToRoleAsync(returndResultFrmRegisterService, "Student").Result;
                     if (addToRole.Succeeded & userToken != null)
                     {
                         string linkToClick = HttpContext.Request.Scheme.ToString() + "://"
