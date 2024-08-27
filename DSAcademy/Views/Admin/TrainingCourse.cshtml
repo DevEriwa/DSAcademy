@@ -16,11 +16,14 @@
                 <li class="breadcrumb-item active">Courses</li>
             </ol>
         </nav>
+		<div class="col-auto float-right ml-auto">
+			<a class="btn btn-primary" href="#" data-bs-toggle="modal" data-bs-target="#add_Course" style="margin-left:88%;"><i class="fa fa-plus"></i> Add Course</a>
+		</div>
     </div><!-- End Page Title -->
 
     <section class="section">
         <div class="row">
-            <div class="col-lg-6">
+            <div class="col-lg-12">
 
                 <div class="card">
                     <div class="card-body">
@@ -31,7 +34,6 @@
 							<thead>
 								<tr>
 									<th scope="col">S/N</th>
-									<th scope="col">Name</th>
 									<th scope="col">Title</th>
 									<th scope="col">Amount</th>
 									<th scope="col">Status</th>
@@ -48,24 +50,19 @@
 									@foreach (var course in Model)
 									{
 										<tr>
-											<th scope="row"></th>
-											<td>@course.Name</td>
+											<td></td>
 											<td>@course.Title</td>
 											<td>@course.Amount</td>
 											<td>@course.ProgramStatus</td>
 											<td>@course.Duration</td>
 											<td>@course.TestDuration</td>
-											<td>@course.Description</td>
+											<td>
+												<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#description_Modal" onclick="getCourseDescriptionById('@course.Id')">View</button>
+											</td>
 											<td>@course.DateCreated.ToString("d")</td>
-
 											<td class="text-right">
-												<div class="dropdown dropdown-action">
-													<a href="#" class="action-icon dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
-													<div class="dropdown-menu dropdown-menu-right">
-														<a class="dropdown-item" data-toggle="modal" onclick="getClientDetails('@course.Id')" data-target="#upgrade_Course"><i class="fa fa-file-text m-r-5 "></i>Edit</a>
-														<a class="dropdown-item" href="#" data-toggle="modal" data-target="#delete_Course" onclick="getVisitsById(@course.Id)"><i class="fa fa-pencil m-r-5"></i> Delete</a>
-													</div>
-												</div>
+												<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#upgrade_Course" onclick="getCourseById('@course.Id')">Edit</button>
+												<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#delete_Course" onclick="getCourseById('@course.Id')">Delete</button>
 											</td>
 										</tr>
 									}
@@ -80,67 +77,72 @@
         </div>
     </section>
 
+	
 </main><!-- End #main -->
+
+
 <!-- Add Course Modal -->
 <div class="modal custom-modal fade" id="add_Course" role="dialog">
 	<div class="modal-dialog modal-md modal-dialog-centered modal-lg">
 		<div class="modal-content">
-			<button type="button" class="close" data-dismiss="modal" style="margin-left:95%;"><i class="fa fa-close"></i></button>
+			<div class="modal-header">
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
 			<div class="modal-body">
 				<h5 class="modal-title text-center mb-3">Add Course</h5>
 				<div class="row">
-					<div class="col-md-6">
+					<div class="col-md-6 pt-2">
 						<div class="form-group">
-							<label>Course Title</label>
+							<label>Course Title<span class="text-danger">*</span></label>
 							<input type="text" id="Title" class="form-control" required>
 							<p class="text-danger" id="titleVDT" style="display: none;">Enter Course Title</p>
 						</div>
 					</div>
 					
-					<div class="col-md-6">
+					<div class="col-md-6 pt-2">
 						<div class="form-group">
-							<label>Amount</label>
+							<label>Amount<span class="text-danger">*</span></label>
 							<input type="number" id="Cost" class="form-control" required>
 							<p class="text-danger" id="amtcVDT" style="display: none;">Enter Amount</p>
 						</div>
 					</div>
-					<div class="col-md-6">
+					<div class="col-md-6 pt-2">
 						<div class="form-group">
-							<label>Training Duration</label>
+							<label>Training Duration<span class="text-danger">*</span></label>
 							<input type="text" id="Duration" class="form-control" required>
 							<p class="text-danger" id="durationVDT" style="display: none;">Enter Duration</p>
 						</div>
 					</div>
-					<div class="col-md-6">
+					<div class="col-md-6 pt-2">
 						<div class="form-group">
-							<label>Test Duration (Minutes)</label>
+							<label>Test Duration (Minutes)<span class="text-danger">*</span></label>
 							<input type="number" id="TestDuration" class="form-control" required>
 							<p class="text-danger" id="testDurationVDT" style="display: none;">Enter Test Duration</p>
 						</div>
 					</div>
-					<div class="col-md-6">
+					<div class="col-md-6 pt-2">
 						<div class="form-group">
-							<label>Image</label>
+							<label>Image<span class="text-danger">*</span></label>
 							<input type="file" id="logoId" class="form-control" required>
 							<p class="text-danger" id="testLogoVDT" style="display: none;">Enter Image</p>
 						</div>
 					</div>
-					<div class="col-md-6">
+					<div class="col-md-6 pt-2">
 						<div class="form-group">
-							<label>Program</label>
+							<label>Program<span class="text-danger">*</span></label>
 							<select class="form-control" id="programId" required asp-items="@(new SelectList(@ViewBag.Program,  "Id", "Name" ))"></select>
 						</div>
 					</div>
-					<div class="col-md-12">
+					<div class="col-md-12 pt-2">
 						<div class="form-group">
-							<label>Course Description</label>
+							<label>Course Description<span class="text-danger">*</span></label>
 							<textarea rows="3" class="form-control" id="Description" required></textarea>
 							<p class="text-danger" id="descVDT" style="display: none;">Enter Course Description</p>
 						</div>
 					</div>
 				</div>
-				<div class="m-t-20 text-center">
-					<button class="btn newBtn submit-btn" onclick="CreateTrainingCourse('CreateTrainingCourse')">Add Courses</button>
+				<div class="m-t-20 text-center pt-5">
+					<button class="btn newBtn submit-btn btn-primary" type="button" id="submit_btn" onclick="CreateTrainingCourse('CreateTrainingCourse')">Submit</button>
 				</div>
 			</div>
 		</div>
@@ -151,69 +153,70 @@
 <div class="modal custom-modal fade" id="upgrade_Course" role="dialog">
 	<div class="modal-dialog modal-md modal-dialog-centered modal-lg">
 		<div class="modal-content">
-			<button type="button" class="close" data-dismiss="modal" style="margin-left:95%;"><i class="fa fa-close"></i></button>
+			<div class="modal-header">
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
 			<div class="modal-body">
 				<h5 class="modal-title text-center mb-3">Edit Course</h5>
 				<div class="row">
-					<div class="col-md-6">
+					<div class="col-md-6 pt-2">
 						<div class="form-group">
-							<label>Course Title</label>
+							<label>Course Title<span class="text-danger">*</span></label>
 							<input type="text" id="edit_Id" hidden>
 							<input type="text" id="editTitle" class="form-control" required>
 							<p class="text-danger" id="titleVDT" style="display: none;">Enter Course Title</p>
 						</div>
 					</div>
 
-					<div class="col-md-6">
+					<div class="col-md-6 pt-2">
 						<div class="form-group">
-							<label>Amount</label>
+							<label>Amount<span class="text-danger">*</span></label>
 							<input type="number" id="editCost" class="form-control" required>
 							<p class="text-danger" id="amtcVDT" style="display: none;">Enter Amount</p>
 						</div>
 					</div>
-					<div class="col-md-6">
+					<div class="col-md-6 pt-2">
 						<div class="form-group">
-							<label>Training Duration</label>
+							<label>Training Duration<span class="text-danger">*</span></label>
 							<input type="text" id="editDuration" class="form-control" required>
 							<p class="text-danger" id="durationVDT" style="display: none;">Enter Duration</p>
 						</div>
 					</div>
-					<div class="col-md-6">
+					<div class="col-md-6 pt-2">
 						<div class="form-group">
-							<label>Test Duration (Minutes)</label>
+							<label>Test Duration (Minutes)<span class="text-danger">*</span></label>
 							<input type="number" id="editTestDuration" class="form-control" required>
 							<p class="text-danger" id="testDurationVDT" style="display: none;">Enter Test Duration</p>
 						</div>
 					</div>
-					<div class="col-md-6">
+					<div class="col-md-6 pt-2">
 						<div class="form-group">
-							<label>Image</label>
+							<label>Image<span class="text-danger">*</span></label>
 							<input type="file" id="editlogoId" class="form-control" required>
 							<p class="text-danger" id="testLogoVDT" style="display: none;">Enter Image</p>
 						</div>
 					</div>
-					<div class="col-md-6">
+					<div class="col-md-6 pt-2">
 						<div class="form-group">
-							<label>Program</label>
+							<label>Program<span class="text-danger">*</span></label>
 							<select class="form-control" id="editProgramId" required asp-items="@(new SelectList(@ViewBag.Program,  "Id", "Name" ))"></select>
 						</div>
 					</div>
-					<div class="col-md-12">
+					<div class="col-md-12 pt-2">
 						<div class="form-group">
-							<label>Course Description</label>
+							<label>Course Description<span class="text-danger">*</span></label>
 							<textarea rows="3" class="form-control" id="editDescription" required></textarea>
 							<p class="text-danger" id="descVDT" style="display: none;">Enter Course Description</p>
 						</div>
 					</div>
 				</div>
-				<div class="m-t-20 text-center">
-					<button class="btn newBtn submit-btn" onclick="EditTrainingCourse('EditTrainingCourse')">Update</button>
+				<div class="m-t-20 text-center pt-5">
+					<button class="btn newBtn submit-btn btn-primary" type="button" id="submit_btn" onclick="EditTrainingCourse('EditTrainingCourse')">Update</button>
 				</div>
 			</div>
 		</div>
 	</div>
 </div>
-
 <!-- /Edit Course Modal -->
 <!-- Delete Course Modal -->
 <div class="modal custom-modal fade" id="delete_Course" role="dialog">
@@ -241,16 +244,24 @@
 </div>
 <!-- /Delete Course Modal -->
 <!-- VIEW TRAINING OUTLINE Modal -->
-<div id="description_Modal" class="modal custom-modal fade" role="dialog">
-	<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+<div class="modal custom-modal fade" id="description_Modal" role="dialog">
+	<div class="modal-dialog modal-dialog-centered">
 		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
-				<h3 class="text-center pb-2">Course Description</h3>
+			<div class="modal-body">
+				<div class="form-header">
+					<h3 style="text-align:center;">Description Course</h3>
+					<input class="form-control" type="text" hidden id="description_Id">
+				</div>
+				<div class="modal-btn delete-action">
+					<div class="row">
+						<div class="col-md-12 pt-2">
+							<div class="form-group">
+								<textarea type="text" id="description" class="form-control" readonly rows="3"></textarea>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
-			<div class="w-100 px-4" id="view_Outline"></div>
 		</div>
 	</div>
 </div>

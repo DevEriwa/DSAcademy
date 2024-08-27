@@ -5,7 +5,7 @@ namespace Logic.IHelpers
 {
     public interface IApplicationHelper
     {
-        Task<ApplicationUser> RegisterApplicantService(ApplicationUserViewModel applicationUserViewModel);
+        Task<ApplicationUser> RegisterApplicantService(ApplicationUserViewModel applicationUserViewModel, Guid? companyId);
         Task<ApplicationUser> RegisterAdminService(ApplicationUserViewModel applicationUserViewModel);
         Task<ApplicationUser> AuthenticateUser(string email, string password);
         string GetUserDashboardPage(ApplicationUser userr);
