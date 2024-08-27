@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using Core.Enum;
+using Core.ViewModels;
 
 namespace Core.Models
 {
@@ -51,6 +52,14 @@ namespace Core.Models
         public bool IsApproved { get; set; } = false;
         [NotMapped]
         public List<string>? Roles { get; set; }
-    }
+		[NotMapped]
+		public string UserRole { get; set; }
+		[NotMapped]
+		public List<PageStatisticsView>? PageStatisticsViews { get; set; }
+		[NotMapped]
+		public string? BaseUrl { get; set; }
+		[NotMapped]
+		public double PaperSize { get; set; }
+	}
 
 }

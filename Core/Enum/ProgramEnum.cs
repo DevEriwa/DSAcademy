@@ -11,4 +11,29 @@ namespace Core.Enum
 		[Description("Full-Stack Developer")]
 		FullStack = 3,
 	}
+	public enum CompanySettings
+	{
+		[Description("DOC Booking Module")]
+		DOCBookingModule,
+		[Description("Store Module")]
+		StoreModule = 3,
+		[Description("Treatment Module")]
+		TreatmentModule = 4,
+		[Description("Pet Boarding Module")]
+		PetBoardingModule = 5,
+		[Description("Is MOT reminder enabled")]
+		IsMOTReminderEnabled = 6,
+		[Description("enabled reminder")]
+		IsReminderEnabled = 7,
+		[Description("Enabled receipt waterMark")]
+		IsReceiptWaterMark = 8,
+		[Description("Enabled Price Mark-Up")]
+		IsPriceMarkUp = 9,
+		[Description("Disable VAT For Quick Visit")]
+		DisableVATForQuickVisit = 10,
+		[Description("Enable Mark VHC Parts Green")]
+		MarkVHCPartsGreen = 11,
+		[Description("Don't Pull Customer Detail When Fetching Car")]
+		DontPullCustomerDetailWhenFetchingCar = 12
+	}
 }

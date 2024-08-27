@@ -2,26 +2,38 @@
 using Core.Enum;
 using Core.Models;
 using Core.ViewModels;
+using Hangfire;
 using Logic.IHelpers;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+using RedisCache;
+using System.Net;
 
 namespace Logic.Helpers
 {
-	public class UserHelper: IUserHelper
+	public class UserHelper: BaseHelper, IUserHelper
 	{
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly AppDbContext _context;
-        public UserHelper(
-            UserManager<ApplicationUser> 
-            userManager, AppDbContext context)
-        {
-            _userManager = userManager;
-            _context = context;
-        }
+		private readonly INotificationHelper _notificationHelper;
 
-        public string GetFullNameByUserNameAsync(string userName)
+		public UserHelper(
+			UserManager<ApplicationUser>
+			userManager,
+			ICacheService cacheService,
+			AppDbContext context
+,
+			INotificationHelper notificationHelper) : base(context, cacheService)
+		{
+			_userManager = userManager;
+			_context = context;
+			_notificationHelper = notificationHelper;
+		}
+
+		public string GetFullNameByUserNameAsync(string userName)
         {
             var user = _userManager.Users.Where(u => u.UserName == userName)?.Include(c => c.Company).FirstOrDefaultAsync().Result;
             var fullName = user.LastName + " " + user.FirstName;
@@ -319,5 +331,232 @@ namespace Logic.Helpers
         {
             return _context.ApplicationUsers.Where(s => s.Id == Id)?.Include(s => s.Company).FirstOrDefault();
         }
-    }
+		public string GetRoleLayout()
+		{
+			var loggedInUser = Session.GetCurrentUser();
+			if (loggedInUser.CompanyId == null)
+			{
+				loggedInUser = UpdateSessionAsync(loggedInUser.UserName).Result;
+
+			}
+			if (loggedInUser != null)
+			{
+				var superAdmin = loggedInUser.Roles.Contains(Session.Constants.SuperAdminRole);
+				if (superAdmin)
+				{
+					return Session.Constants.SuperAdminLayout;
+				}
+				else if (!superAdmin)
+				{
+					var isCompanyAdmin = loggedInUser.Roles.Contains(Session.Constants.AdminRole);
+					if (isCompanyAdmin)
+					{
+						return Session.Constants.AdminLayout;
+					}
+					else
+					{
+						var isStudent = loggedInUser.Roles.Contains(Session.Constants.StudentRole);
+						if (isStudent)
+						{
+							return Session.Constants.StudentsLayout;
+						}
+					}
+				}
+			}
+			return Session.Constants.DefaultLayout;
+		}
+		public void CreateUserLoginLog(string ipAddress, string userId, string systemName)
+		{
+			try
+			{
+				if (userId != null)
+				{
+					var userDetails = new UserLoginLog()
+					{
+						DeviceName = systemName,
+						IPAddress = ipAddress,
+						LoginDate = DateTime.Now,
+						UserId = userId,
+					};
+					_context.UserLoginLogs.Add(userDetails);
+					_context.SaveChanges();
+				}
+			}
+			catch (Exception exp)
+			{
+
+				throw exp;
+			}
+		}
+		//public IPagedList<UserLogsViewModel> GetLoggedInUsers(IPageListModel<UserLogsViewModel> model, DateTime daliyReportdate, int page)
+		//{
+		//	var userLogsViewModel = _context.UserLoginLogs.Where(c => c.UserId != null && c.IPAddress != null)
+		//		.Include(x => x.User)
+		//		.ThenInclude(x => x.CompanyBranch)
+		//		.ThenInclude(x => x.Company)
+		//		.AsQueryable();
+		//	if (!string.IsNullOrEmpty(model.Keyword))
+		//	{
+		//		userLogsViewModel = userLogsViewModel.Where(v =>
+		//			v.DeviceName.ToLower().Contains(model.Keyword.ToLower()) ||
+		//			v.User.FirstName.ToLower().Contains(model.Keyword.ToLower()) ||
+		//			v.User.CompanyBranch.Company.Name.ToLower().Contains(model.Keyword.ToLower()));
+		//	}
+		//	if (model.StartDate.HasValue)
+		//	{
+		//		userLogsViewModel = userLogsViewModel.Where(v => v.LoginDate >= model.StartDate);
+		//	}
+		//	if (model.EndDate.HasValue)
+		//	{
+		//		userLogsViewModel = userLogsViewModel.Where(v => v.LoginDate <= model.EndDate);
+		//	}
+		//	if (daliyReportdate != DateTime.MinValue)
+		//	{
+		//		userLogsViewModel = userLogsViewModel.Where(v => v.LoginDate.Date == daliyReportdate.Date);
+		//	}
+		//	var sentMessage = userLogsViewModel
+		//		.OrderByDescending(v => v.LoginDate)
+		//		 .Take(200)
+		//	.Select(c => new UserLogsViewModel
+		//	{
+		//		IpAddress = c.IPAddress,
+		//		CompanyName = c.User.CompanyBranch.Company.Name,
+		//		UserName = c.User.FullName,
+		//		DeviceName = c.DeviceName,
+		//		LoggedDate = c.LoginDate,
+		//	}).ToPagedList(page, 25);
+		//	model.Model = sentMessage;
+		//	return sentMessage;
+		//}
+		public async Task<ApplicationUser?> UpdateSessionAsync(string userEmail)
+		{
+			if (string.IsNullOrEmpty(userEmail))
+			{
+				return null;
+			}
+
+			try
+			{
+				var user = await _context.ApplicationUsers
+					.Where(s => s.Email == userEmail)
+					.Include(x => x.Company)
+					.FirstOrDefaultAsync()
+					.ConfigureAwait(false);
+
+				if (user == null)
+				{
+					return null;
+				}
+
+				// Temporarily store createdBy details to avoid serialization issues
+				string createdById = user?.Company?.CreatedById ?? string.Empty;
+				ApplicationUser? createdBy = user.Company?.CreatedBy;
+				if (user.Company != null)
+				{
+					user.Company.CreatedBy = null;
+				}
+
+				user.Roles = (List<string>)await _userManager.GetRolesAsync(user).ConfigureAwait(false);
+
+				user.UserRole = user.Roles.Contains(Session.Constants.SuperAdminRole) ? Session.Constants.SuperAdminRole :
+								user.Roles.Contains(Session.Constants.AdminRole) ? Session.Constants.AdminRole :
+								user.Roles.Contains(Session.Constants.StudentRole) ? Session.Constants.StudentRole :
+								Session.Constants.StudentRole;
+
+				if (user.Company != null && user.CompanyId != Guid.Empty)
+				{
+					var garageSystemSettings = await _notificationHelper.GetNotificationSettings(user.CompanyId).ConfigureAwait(false);
+					AppHttpContext.Current.Session.SetString("garageSystemSettings", JsonConvert.SerializeObject(garageSystemSettings));
+				}
+
+				user.PageStatisticsViews = GetPageStatistics(user.CompanyId, user.UserRole);
+
+				AppHttpContext.Current.Session.SetString("myuser", JsonConvert.SerializeObject(user));
+
+				//var roleId = _context.UserRoles.Where(x => x.UserId == user.Id).FirstOrDefault()?.RoleId;
+				//if (roleId != null)
+				//{
+				//	var screenRoles = _context.ScreenRoles.Where(x => x.CompanyBranchId == user.CompanyBranchId && x.RoleId == roleId).ToList();
+				//	if (screenRoles.Any())
+				//	{
+				//		AppHttpContext.Current.Session.SetString("accessRight", JsonConvert.SerializeObject(screenRoles));
+				//	}
+				//}
+
+				if (createdById != string.Empty && createdBy != null)
+				{
+					user.Company.CreatedBy = createdBy;
+					user.Company.CreatedById = createdById;
+				}
+
+				var ip = AppHttpContext.Current.Connection.RemoteIpAddress?.ToString() ?? "Unknown IP";
+				if (ip == "::1")
+				{
+					ip = Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(addr => addr.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)?.ToString() ?? "Unknown IP";
+				}
+
+				var systemName = AppHttpContext.Current.Request.Headers["User-Agent"].ToString();
+				CreateUserLoginLog(ip, user.Id, systemName);
+
+				return user;
+			}
+			catch (Exception e)
+			{
+				LogCritical($"Failed to update session with this error: {e.InnerException?.Message ?? e.Message}");
+				return null;
+			}
+		}
+
+		public List<PageStatisticsView>? GetPageStatistics(Guid? companyId, string userRole)
+		{
+			var statReport = new List<PageStatisticsView>();
+			if (companyId != Guid.Empty && userRole != null)
+			{
+				var reportsCount = _context.View_PageStatisticsViews.Where(x => x.CompanyId == companyId && x.RoleName == userRole).ToList();
+				statReport = reportsCount.OrderByDescending(d => d.CountOfPage).Take(5).Select(f => new PageStatisticsView()
+				{
+					PageUrl = f.PageUrl,
+					CompanyId = f.CompanyId,
+					CountOfPage = f.CountOfPage,
+					BranchName = f.BranchName,
+					CompanyName = f.CompanyName,
+					PageName = f.PageName,
+					RoleName = f.RoleName
+				}).ToList();
+				return statReport;
+			}
+			return statReport;
+		}
+		public void GetAllUserAccessedPage(string fullUrl, string pageUrl, string pageName)
+		{
+			var loggedInUser = Session.GetCurrentUser();
+			if (loggedInUser != null && loggedInUser.CompanyId != null)
+			{
+				var pagestat = new PageStatistics()
+				{
+					PageUrl = pageUrl,
+					FullPageUrl = fullUrl,
+					UserId = loggedInUser.Id,
+					CompanyId = loggedInUser.CompanyId,
+					PageDate = DateTime.Now,
+					PageName = pageName,
+					RoleName = loggedInUser.UserRole,
+				};
+				LogPageStatisticInHangfire(pagestat);
+			}
+		}
+		public void SavePageStatistics(PageStatistics sat)
+		{
+			if (sat != null)
+			{
+				_context.PageStatistics.Add(sat);
+				_context.SaveChanges();
+			}
+		}
+		public void LogPageStatisticInHangfire(PageStatistics sat)
+		{
+			BackgroundJob.Enqueue(() => SavePageStatistics(sat));
+		}
+
+	}
 }

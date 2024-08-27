@@ -69,8 +69,35 @@ public class Session
         }
         return null;
     }
+	public static Notification GetSystemSetting()
+	{
+		var settings = new Notification();
+		var settingsString = AppHttpContext.Current?.Session?.GetString("DSASystemSettings");
+		if (settingsString != null)
+		{
+			settings = JsonConvert.DeserializeObject<Notification>(settingsString);
+			return settings;
+		}
+		return settings;
+	}
 
-    public static string GetRoleLayout()
+	public static CompanySetting GetCompanySettings()
+	{
+		var companySettings = new CompanySetting();
+
+		var result = AppHttpContext.Current.Session.GetString("companySettings");
+		if (result != null)
+		{
+			companySettings = JsonConvert.DeserializeObject<CompanySetting>(result);
+			if (companySettings != null)
+			{
+				return companySettings;
+			}
+		}
+		return companySettings;
+	}
+
+	public static string GetRoleLayout()
     {
         var loggedInUser = GetCurrentUser();
         if (loggedInUser != null)
@@ -144,5 +171,30 @@ public class Session
         public static string AdminLayout = "~/Views/Shared/_CompanyAdminLayout.cshtml";
         public static string StudentsLayout = "~/Views/Shared/_StudentLayout.cshtml";
         public static string ProgramLayout = "~/Views/Shared/_ProgramLayout.cshtml";
-    }
+		public static string SuperAdminLayout = "~/Views/Shared/_SuperAdminLayout.cshtml";
+	}
+
+	public bool CheckAdminIsLogin()
+	{
+		var result = AppHttpContext.Current.Session.GetString("isImpersonating");
+		if (result == null)
+		{
+			return false;
+		}
+		return true;
+	}
+
+	public static class MessageConstants
+	{
+		public static string SendAppointmentEmailToClient = "Hi ${customerName}, <br/>" +
+			"Your appointment has been booked for ${appointmentDate} at ${messageSenderName}.<br/>" +
+			"Thanks,<br/> ${companyName}.<br/>";
+
+		public static string SendReminderForUpcomingMOT = "Hello ${customerName}, your MOT expires in ${dueDate}." + "\n" +
+			" To book your MOT test please call us on ${companyPhoneNumber}. " + "\n" +
+			"Thank you!  ${companyName}";
+
+		public static string VHC = "Hi, please see your vehicle health check online using the link below ${link}" + "\n" +
+									"Thanks!  ${companyName}";
+	}
 }

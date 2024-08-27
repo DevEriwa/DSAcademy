@@ -13,6 +13,7 @@ using Logic.SmtpMailServices;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using RedisCache;
 using System.Net;
 using System.Security.Claims;
 
@@ -69,11 +70,15 @@ public class Startup
                 .AddScoped<IApplicationHelper, ApplicationHelper>()
                 .AddScoped<IDropdownHelper, DropdownHelper>()
                 .AddScoped<IStudentHelper, StudentHelper>()
-                .AddScoped<IAdminHelper, AdminHelper>();
+                .AddScoped<IAdminHelper, AdminHelper>()
+                .AddScoped<ICacheService, RedisCacheService>()
+                .AddScoped<IBaseHelper, BaseHelper>()
+                .AddScoped<ISuperAdminHelper, SuperAdminHelper>()
+                .AddScoped<INotificationHelper, NotificationHelper>();
 
 
-        //services.AddSession();
-        services.AddHttpContextAccessor();
+		//services.AddSession();
+		services.AddHttpContextAccessor();
         // Add Hangfire services.  
         services.AddHangfire(x => x.UseSqlServerStorage(Configuration.GetConnectionString("HangfireManagement")));
         GlobalJobFilters.Filters.Add(new ExpirationTimeAttribute());
