@@ -15,6 +15,9 @@
                 <li class="breadcrumb-item active">Dashboard</li>
             </ol>
         </nav>
+        <div class="col-auto float-right ml-auto">
+            <a class="btn btn-primary" onclick="studemtLink('@Model.CompanyId')" style="margin-left:88%;"><i class="fa fa-plus"></i>Student Link </a>
+        </div>
     </div><!-- End Page Title -->
 
     <section class="section dashboard">
@@ -88,6 +91,7 @@
                                 <th scope="col">Email</th>
                                 <th scope="col">PhoneNumber</th>
                                 <th scope="col">Date Register</th>
+                                <th class="text-center">Action</th>
                             </tr>
                         </thead>
                         @if(Model.Student != null)
@@ -100,7 +104,17 @@
                                         <td>@student.FullName</td>
                                         <td>@student.Email</td>
                                         <td>@student.PhoneNumber</td>
-                                        <td>@student.DateRegister</td>
+                                        <td>@student.DateRegister.ToString("d")</td>
+
+                                        <td class="text-right">
+                                            <div class="dropdown dropdown-action">
+                                                <a href="#" class="action-icon dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
+                                                <div class="dropdown-menu dropdown-menu-right">
+                                                    <a class="dropdown-item" data-toggle="modal" onclick="getClientDetails('@student.Id')" data-target="#upgrade_Course"><i class="fa fa-file-text m-r-5 "></i>Edit</a>
+                                                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#delete_Course" onclick="getVisitsById(@student.Id)"><i class="fa fa-pencil m-r-5"></i> Delete</a>
+                                                </div>
+                                            </div>
+                                        </td>
                                     </tr>
                                 }
                             </tbody>

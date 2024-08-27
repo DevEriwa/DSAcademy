@@ -57,5 +57,5 @@ namespace Core.ViewModels
 		public string? CompanyMotto { get; set; }
 		public ApplicationUser? User { get; set; }
 		public DateTime DateRegister { get; set; }
-	}
+    }
 }

@@ -79,14 +79,18 @@ namespace DSAcademy.Controllers
             }
         }
         [HttpGet]
-        public IActionResult RegisterStudent()
+        public IActionResult RegisterStudent(Guid? id)
         {
             ViewBag.YesOrNo = _dropdownHelper.GetDropDownEnumsList();
-            return View();
+            var model = new ApplicationUserViewModel()
+            {
+                CompanyId = id,
+            };
+            return View(model);
         }
         //REGISTRAION POST 
         [HttpPost]
-        public async Task<JsonResult> StudentRegisteration(string userDetails)
+        public async Task<JsonResult> StudentRegisteration(string userDetails, Guid? companyId)
         {
             try
             {
@@ -111,7 +115,7 @@ namespace DSAcademy.Controllers
                 {
                     return Json(new { isError = true, msg = "Password and Confirm password must match" });
                 }
-                var returndResultFrmRegisterService = _applicationHelper.RegisterApplicantService(newApplicant).Result;
+                var returndResultFrmRegisterService = _applicationHelper.RegisterApplicantService(newApplicant, companyId).Result;
                 if (returndResultFrmRegisterService != null)
                 {
                     var userToken = await _emailHelper.CreateUserToken(newApplicant.Email);
@@ -249,21 +253,24 @@ namespace DSAcademy.Controllers
             return RedirectToAction("Login");
         }
         [HttpGet]
-		public IActionResult Program()
+		public async Task<IActionResult> Program()
 		{
-			var allTrainingCourse = _adminHelper.GetAllTrainingCourseForFrontend();
+            var userName = await _userHelper.FindByEmailAsync(User?.Identity?.Name);
+            var allTrainingCourse = _adminHelper.GetAllTrainingCourseForFrontend(userName.CompanyId);
 			return View(allTrainingCourse);
 		}
 		[HttpGet]
-		public IActionResult BackendDeveloper()
+		public async Task<IActionResult> BackendDeveloper()
 		{
-			var allTrainingCourse = _adminHelper.GetAllTrainingCourseForBackend();
+            var userName = await _userHelper.FindByEmailAsync(User?.Identity?.Name);
+            var allTrainingCourse = _adminHelper.GetAllTrainingCourseForBackend(userName.CompanyId);
 			return View(allTrainingCourse);
 		}
 		[HttpGet]
-		public IActionResult FullStackDeveloper()
+		public async Task<IActionResult> FullStackDeveloper()
 		{
-			var allTrainingCourse = _adminHelper.GetAllTrainingCourseForFullStack();
+            var userName = await _userHelper.FindByEmailAsync(User?.Identity?.Name);
+            var allTrainingCourse = _adminHelper.GetAllTrainingCourseForFullStack(userName.CompanyId);
 			return View(allTrainingCourse);
 		}
 		[HttpGet]

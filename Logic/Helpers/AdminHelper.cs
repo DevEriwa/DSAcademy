@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -299,9 +300,9 @@ namespace Logic.Helpers
 			}
 			return false;
 		}
-		public List<TrainingCourse> GetAllTrainingCourseForFrontend()
+		public List<TrainingCourse> GetAllTrainingCourseForFrontend(Guid? companyId)
 		{
-			var allTrainingCourse = _context.TrainingCourse.Where(t => !t.IsDeleted && t.CompanyId != Guid.Empty && t.IsActive == true && t.ProgramStatus == ProgramEnum.Frontend)
+			var allTrainingCourse = _context.TrainingCourse.Where(t => !t.IsDeleted && t.CompanyId == companyId && t.ProgramStatus == ProgramEnum.Frontend)
 			.Include(c => c.Company)
 			.ThenInclude(u => u.CreatedBy)
 			.ToList();
@@ -311,9 +312,9 @@ namespace Logic.Helpers
 			}
 			return allTrainingCourse;
 		}
-		public List<TrainingCourse> GetAllTrainingCourseForBackend()
-		{
-			var allTrainingCourse = _context.TrainingCourse.Where(t => !t.IsDeleted && t.CompanyId != Guid.Empty && t.IsActive == true && t.ProgramStatus == ProgramEnum.Backend)
+		public List<TrainingCourse> GetAllTrainingCourseForBackend(Guid? companyId)
+        {
+			var allTrainingCourse = _context.TrainingCourse.Where(t => !t.IsDeleted && t.CompanyId == companyId && t.ProgramStatus == ProgramEnum.Backend)
 			.Include(c => c.Company)
 			.ThenInclude(u => u.CreatedBy)
 			.ToList();
@@ -323,10 +324,10 @@ namespace Logic.Helpers
 			}
 			return allTrainingCourse;
 		}
-		public List<TrainingCourse> GetAllTrainingCourseForFullStack()
+		public List<TrainingCourse> GetAllTrainingCourseForFullStack(Guid? companyId)
 		{
-			var allTrainingCourse = _context.TrainingCourse.Where(t => !t.IsDeleted && t.CompanyId != Guid.Empty && t.IsActive == true && 
-			(t.ProgramStatus == ProgramEnum.Frontend || t.ProgramStatus == ProgramEnum.Frontend))
+			var allTrainingCourse = _context.TrainingCourse.Where(t => !t.IsDeleted && t.CompanyId == companyId &&
+			(t.ProgramStatus == ProgramEnum.Frontend || t.ProgramStatus == ProgramEnum.Backend))
 			.Include(c => c.Company)
 			.ThenInclude(u => u.CreatedBy)
 			.ToList();
@@ -362,7 +363,7 @@ namespace Logic.Helpers
                 var studentCount = students.Count();
                 var teacherCount = _userHelper.GetTeacher().Count();
                 var courseCount = _userHelper.GetAllTrainingCourseFromDB().Count();
-
+                var userName = _userHelper.FindByEmailAsync(loggedInUser.Email).Result;
                 var allstudents = _context.ApplicationUsers
                 .Where(x => !x.IsDeactivated && x.CompanyId == loggedInUser.CompanyId && (x.Role == "Student" || x.Role == "Applicant"))
                 .Include(x => x.Company).ToList();
@@ -441,7 +442,8 @@ namespace Logic.Helpers
                     {
 						StudentCount = studentCount,
 						TeacherCount = teacherCount,
-						CourseCount = courseCount
+						CourseCount = courseCount,
+						CompanyId = userName.CompanyId
                     };
                     return adminDashBoard;
                 }
