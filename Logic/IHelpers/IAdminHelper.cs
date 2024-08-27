@@ -14,9 +14,9 @@ namespace Logic.IHelpers
 		bool PostServices4Options(AnswerOptionViewModel collectedData);
 		TestQuestions TestQuestionsServices(TestQuestionsViewModel collectedData);
 		TrainingVideo TrainignVideoServices(TrainingVideosViewModel collectedData);
-		List<TrainingCourse> GetAllTrainingCourseForFrontend();
-		List<TrainingCourse> GetAllTrainingCourseForBackend();
-		List<TrainingCourse> GetAllTrainingCourseForFullStack();
+		List<TrainingCourse> GetAllTrainingCourseForFrontend(Guid? companyId);
+		List<TrainingCourse> GetAllTrainingCourseForBackend(Guid? companyId);
+		List<TrainingCourse> GetAllTrainingCourseForFullStack(Guid? companyId);
 		TrainingCourse CoursePayment(int courseId);
 		AdminDashboardViewModel? GetAdminDashboardData();
 

@@ -66,7 +66,7 @@ namespace Logic.Helpers
         //    }
         //    return null;
         //}
-        public async Task<ApplicationUser> RegisterApplicantService(ApplicationUserViewModel applicationUserViewModel)
+        public async Task<ApplicationUser> RegisterApplicantService(ApplicationUserViewModel applicationUserViewModel, Guid? companyId)
         {
             if (applicationUserViewModel == null)
             {
@@ -94,7 +94,7 @@ namespace Logic.Helpers
                 IsProgram = false,
                 Status = ApplicationStatus.Pending,
                 DateRegistered = DateTime.Now,
-                CompanyId = applicationUserViewModel.CompanyId,
+                CompanyId = companyId,
             };
             try
             {

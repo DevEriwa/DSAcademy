@@ -872,7 +872,9 @@ function resetPassword() {
 }
 
 function CreateTrainingCourse(action) {
-    debugger
+    var defaultBtnValue = $('#submit_btn').html();
+    $('#submit_btn').html("Please wait...");
+    $('#submit_btn').attr("disabled", true);
     var logo = document.getElementById("logoId").files;
     var data = {};
     data.Title = $('#Title').val();
@@ -930,8 +932,7 @@ function CreateTrainingCourse(action) {
                 document.querySelector("#testDurationVDT").style.display = "none";
                 document.querySelector("#testLogoVDT").style.display = "none";
 
-                $('#loader').show();
-                $('#loader-wrapper').show();
+                $('#submit_btn').html(defaultBtnValue);
                 SendTrainingCourseToController(data, base64);
             }
         }
@@ -951,13 +952,16 @@ function getCourseById(id) {
         success: function (data) {
             if (!data.isError) {
                 $('#edit_Id').val(data.id);
+                $('#Delete_Id').val(data.id);
+                $('#Description_Id').val(data.id);
+                $('#Description').val(data.description);
                 $('#editTitle').val(data.title);
                 $('#editDescription').val(data.description);
                 $('#editCost').val(data.amount);
                 $('#editTestDuration').val(data.duration);
                 $('#editDuration').val(data.testDuration);
                 $('#editProgramId').val(data.programStatus).trigger('change');
-                $('#upgrade_Course').modal('show');
+               // $('#upgrade_Course').modal('show');
             }
         },
         error: function (ex) {
@@ -965,7 +969,33 @@ function getCourseById(id) {
         }
     });
 };
+
+function getCourseDescriptionById(id) {
+    $.ajax({
+        type: 'GET',
+        url: '/Admin/GetTrainingCourseById',
+        dataType: 'json',
+        data:
+        {
+            id: id
+        },
+        success: function (data) {
+            if (!data.isError) {
+                $('#description_Id').val(data.id);
+                $('#description').val(data.description);
+                $('#description_Modal').modal('show');
+            }
+        },
+        error: function (ex) {
+            "Something went wrong, contact support - " + errorAlert(ex);
+        }
+    });
+};
+
 function EditTrainingCourse(action) {
+    var defaultBtnValue = $('#submit_btn').html();
+    $('#submit_btn').html("Please wait...");
+    $('#submit_btn').attr("disabled", true);
     debugger
     var data = {};
     var logo = document.getElementById("editlogoId").files;
@@ -986,11 +1016,14 @@ function EditTrainingCourse(action) {
             base64 = reader.result;
         }
     }
+    $('#submit_btn').html(defaultBtnValue);
     SendTrainingCourseToController(data, base64);
 }
 
 function SendTrainingCourseToController(data, base64) {
-    debugger;
+    var defaultBtnValue = $('#submit_btn').html();
+    $('#submit_btn').html("Please wait...");
+    $('#submit_btn').attr("disabled", true);
     let collectedData = JSON.stringify(data);
     $.ajax({
         type: 'Post',
@@ -1002,19 +1035,20 @@ function SendTrainingCourseToController(data, base64) {
             base64: base64
         },
         success: function (result) {
-
             if (!result.isError) {
-                $("#loader").fadeOut(3000);
                 var url = '/Admin/TrainingCourse';
                 successAlertWithRedirect(result.msg, url)
+                $('#submit_btn').html(defaultBtnValue);
             }
             else {
-                $("#loader").fadeOut(3000);
+                $('#submit_btn').html(defaultBtnValue);
+                $('#submit_btn').attr("disabled", false);
                 errorAlert(result.msg)
             }
         },
         error: function (ex) {
-            $("#loader").fadeOut(3000);
+            $('#submit_btn').html(defaultBtnValue);
+            $('#submit_btn').attr("disabled", false);
             errorAlert("Error occured try again");
         }
     });
@@ -3129,9 +3163,12 @@ function editApplicantDocumentation(Id) {
 
 // APPLICATION REQUEST 
 function registerStudent() {
+    debugger
     var defaultBtnValue = $('#submit_btn').html();
     $('#submit_btn').html("Please wait...");
     $('#submit_btn').attr("disabled", true);
+    var urlParams = new URLSearchParams(window.location.search);
+    var companyId = urlParams.get('id');
     var data = {};
     data.FirstName = $('#studentFirstName').val();
     data.LastName = $('#studentLastName').val();
@@ -3145,6 +3182,7 @@ function registerStudent() {
     data.HasLaptop = $('#studentHasLaptop').val();
     data.ReasonForProgramming = $('#studentReasonForProgramming').val();
     data.Address = $('#studentAddress').val();
+    data.CompanyId = $('#companyId').val();
     data.IsAdmin = false;
     data.CheckBox = $('#termsCondition').is(":checked");
     let userDetails = JSON.stringify(data);
@@ -3155,6 +3193,7 @@ function registerStudent() {
         data:
         {
             userDetails: userDetails,
+            companyId: companyId
         },
         success: function (result) {
             if (!result.isError) {
@@ -3269,4 +3308,47 @@ function payBeforeComing() {
 
     }
 
+}
+
+
+function studemtLink(companyId) {
+    $.ajax({
+        type: 'GET',
+        url: '/Admin/GetStudentLink',
+        data: {
+            companyId: companyId,
+        },
+        success: function (data) {
+            if (data.isError) {
+                errorAlert(data.msg);
+            } else {
+                if (typeof data !== 'string') {
+                    data = JSON.stringify(data);
+                }
+                copyLinkToClipboard(data);
+            }
+        },
+        error: function (xhr, status, error) {
+            errorAlert("Error fetching student link");
+        }
+    });
+}
+
+function copyLinkToClipboard(link) {
+    if (navigator.clipboard && window.isSecureContext) {
+        // Use modern Clipboard API
+        navigator.clipboard.writeText(link).then(function () {
+            successAlert("Student link copied successfully");
+        }, function (err) {
+            errorAlert("Failed to copy link to clipboard: " + err);
+        });
+    } else {
+        // Fallback for older browsers
+        var $temp = $("<input>");
+        $("body").append($temp);
+        $temp.val(link).select();
+        document.execCommand("copy");
+        $temp.remove();
+        successAlert("Student link copied successfully");
+    }
 }

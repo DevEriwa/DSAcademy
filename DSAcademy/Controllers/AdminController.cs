@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using static Logic.AppHttpContext;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace DSAcademy.Controllers
 {
@@ -29,25 +31,27 @@ namespace DSAcademy.Controllers
 		private const string Activate_Training_Cost_ActionType = "ActivateTrainingCourse";
 		private const string Deactivate_Training_Cost_ActionType = "DeactivateTrainingCourse";
 		private const string Delete_Training_Cost_ActionType = "DeleteTrainingCourse";
-		public AdminController(
-			IUserHelper userHelper,
-			IStudentHelper studentHelper,
-			IAdminHelper adminHelper,
-			IApplicationHelper applicationHelper,
-			IDropdownHelper dropdownHelper,
-			SignInManager<ApplicationUser> signInManager,
-			UserManager<ApplicationUser> userManager)
-		{
-			_userHelper = userHelper;
-			_studentHelper = studentHelper;
-			_adminHelper = adminHelper;
-			_applicationHelper = applicationHelper;
-			_dropdownHelper = dropdownHelper;
-			_signInManager = signInManager;
-			_userManager = userManager;
-		}
+        public AdminController(
+            IUserHelper userHelper,
+            IStudentHelper studentHelper,
+            IAdminHelper adminHelper,
+            IApplicationHelper applicationHelper,
+            IDropdownHelper dropdownHelper,
+            SignInManager<ApplicationUser> signInManager,
+            UserManager<ApplicationUser> userManager,
+            AppDbContext context)
+        {
+            _userHelper = userHelper;
+            _studentHelper = studentHelper;
+            _adminHelper = adminHelper;
+            _applicationHelper = applicationHelper;
+            _dropdownHelper = dropdownHelper;
+            _signInManager = signInManager;
+            _userManager = userManager;
+            _context = context;
+        }
 
-		[HttpGet]
+        [HttpGet]
 		public IActionResult Index()
         {
 			var adminDashboard = _adminHelper.GetAdminDashboardData();
@@ -223,9 +227,29 @@ namespace DSAcademy.Controllers
 			}
 			catch (Exception ex)
 			{
-
 				return Json(new { isError = true, msg = "An unexpected error occured " + ex.Message });
 			}
 		}
-	}
+        [HttpGet]
+        public ActionResult GetStudentLink(Guid? companyId)
+        {
+            try
+            {
+				if(companyId == Guid.Empty)
+                    return Json(new { isError = true, msg = "Error occured" });
+
+                var company = _context.Companies.FirstOrDefault(x => x.Id == companyId);
+                if (company != null)
+                {
+                    string linkToClick = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/Accounts/RegisterStudent?id={company.Id}";
+                    return Content(linkToClick);
+                }
+                return Json(new { isError = true, msg = "Failed" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { isError = true, msg = "An unexpected error occured " + ex.Message });
+            }
+        }
+    }
 }
