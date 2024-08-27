@@ -1,4 +1,4 @@
-﻿@model Core.Models.ApplicationUser
+﻿@model Core.ViewModels.ApplicationUserViewModel
 @{
     ViewData["Title"] = "Registration Page";
     Layout = "~/Views/Shared/_AccountLayout.cshtml";
@@ -29,6 +29,7 @@
                     </div>
                     <!-- /Page Header -->
                     <div class="row mb-2">
+                        <input class="form-control" id="companyId"  type="text" hidden>
                         <div class="col-sm-6">
                             <div class="form-group">
                                 <label for="FirstName">First Name <span class="text-danger">*</span></label>
