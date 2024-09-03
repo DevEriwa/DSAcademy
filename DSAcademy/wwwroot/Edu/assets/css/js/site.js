@@ -1513,7 +1513,7 @@ function SendCourseIdForPayment() {
     });
 }
 // APPLICATION REQUEST 
-function ManualPaymentAUpload() {
+function ManualPaymentAUploads() {
     
     $('#loader').show();
     $('#loader-wrapper').show();
@@ -1568,6 +1568,56 @@ function ManualPaymentAUpload() {
     {
         $("#loader").fadeOut(3000);
         errorAlert("Upload Prove to proceed");
+    }
+}
+
+function ManualPaymentAUpload() {
+    document.getElementById('loader-wrapper').style.display = 'block';
+
+    var fileInput = document.getElementById('prove');
+    var file = fileInput.files[0];
+    var courseId = document.getElementById('courseId').value;
+
+    if (file) {
+        var reader = new FileReader();
+        reader.readAsDataURL(file);
+
+        reader.onload = function () {
+            var data = {
+                Id: courseId,
+                ProveOfPayment: reader.result
+            };
+
+            if (data.ProveOfPayment && data.Id > 0) {
+                fetch('/Student/ManualPaymenUpload', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                })
+                    .then(response => response.json())
+                    .then(result => {
+                        document.getElementById('loader-wrapper').style.display = 'none';
+
+                        if (!result.isError) {
+                            successAlertWithRedirect(result.msg, '/Student/StudentCourses');
+                        } else {
+                            errorAlert(result.msg);
+                        }
+                    })
+                    .catch(error => {
+                        document.getElementById('loader-wrapper').style.display = 'none';
+                        errorAlert("Error occurred, please try again");
+                    });
+            } else {
+                document.getElementById('loader-wrapper').style.display = 'none';
+                errorAlert("Only PDF file is allowed");
+            }
+        };
+    } else {
+        document.getElementById('loader-wrapper').style.display = 'none';
+        errorAlert("Upload proof to proceed");
     }
 }
 function ApplicantsGetJobById(id) {

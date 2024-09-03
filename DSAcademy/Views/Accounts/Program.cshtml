@@ -1,83 +1,223 @@
 ﻿@using Core.Enum
 @model IEnumerable<Core.Models.TrainingCourse>
 @{
-	var logger = Session.GetCurrentUser();
-	ViewData["Title"] = "Frontend Developer";
-	Layout = "~/Views/Shared/_ProgramLayout.cshtml";
+    var logger = Session.GetCurrentUser();
+    ViewData["Title"] = "Frontend Developer";
+    Layout = "~/Views/Shared/_ProgramLayout.cshtml";
 }
 
 <!--Main container start -->
 <main class="">
-	<div class="container-fluid">
-		<div class="db-breadcrumb">
-			<h4 class="breadcrumb-title"><a asp-action="Program" asp-controller="Accounts">Frontend Developer</a></h4>
-			<ul class="db-breadcrumb-list">
-				<li><a asp-action="BackendDeveloper" asp-controller="Accounts">Backend Developer</a></li>
-				<li><a asp-action="FullStackDeveloper" asp-controller="Accounts">Full-Stack Developer</a></li>
-			</ul>
-		</div>
-		<div class="row">
-			<!-- Your Profile Views Chart -->
+    <!-- Page Wrapper -->
+    <div class="page-wrapper">
+        <div class="container-fluid">
+            <div class="db-breadcrumb">
+                <h4 class="breadcrumb-title">
+                    <a asp-action="Program" asp-controller="Accounts" asp-route-type="Frontend">Frontend Developer</a>
+                </h4>
+                <ul class="db-breadcrumb-list">
+                    <li><a asp-action="Program" asp-controller="Accounts" asp-route-type="Backend">Backend Developer</a></li>
+                    <li><a asp-action="Program" asp-controller="Accounts" asp-route-type="FullStack">Full-Stack Developer</a></li>
+                </ul>
 
-			@if(Model != null || Model.Count() > 0)
-			{
-				@foreach (var course in Model)
-				{
-				  <div class="col-lg-12 m-b30">
-					<div class="widget-box">
-						<div class="wc-title">
-							<h4>Your Frontend Courses</h4>
-						</div>
-						<div class="widget-inner">
-							<div class="card-courses-list admin-courses">
-								<div class="card-courses-media">
-									<img src="@course.Logo" alt="" />
-								</div>
-								<div class="card-courses-full-dec">
-									<div class="card-courses-title">
-										<h4>@course.Title</h4>
-									</div>
-									<div class="card-courses-list-bx">
-										<ul class="card-courses-view">
-											<li class="card-courses-user">
-												<div class="card-courses-user-pic">
-													<img src="~/edu/admin/assets/images/testimonials/pic3.jpg" alt="" />
-												</div>
-												<div class="card-courses-user-info">
-													<h5>Teacher</h5>
-													<h4>Keny White</h4>
-												</div>
-											</li>
-											<li class="card-courses-categories">
-												<h5>Categories</h5>
-												<h4>@course.ProgramStatus</h4>
-											</li>
-											<li class="card-courses-categories">
-												<h5>Amount</h5>
-												<h5 class="text-primary">@course.Amount</h5>
-											</li>
-										</ul>
-									</div>
-									<div class="row card-courses-dec">
-										<div class="col-md-12">
-											<h6 class="m-b10">Course Description</h6>
-											<p>@course.Description </p>
-										</div>
-										<div class="col-md-12">
-										    <a asp-action="PaymentMethod" asp-controller="Accounts" asp-route-courseId="@course.Id" class="btn green radius-xl outline">Get Started</a>
-											<a  class="btn red outline radius-xl ">Cancel</a>
-										</div>
-									</div>
+            </div>
+            <div class="row">
+                <!-- Your Profile Views Chart -->
+                @if (Model != null && Model.Any())
+                {
+                    <!-- Assuming you are rendering a list of courses -->
+                    @foreach (var course in Model)
+                    {
+                        <div class="col-lg-12 m-b30">
+                            <div class="widget-box">
+                                <div class="wc-title">
+                                    <h4>Your Courses</h4>
+                                </div>
+                                <div class="widget-inner">
+                                    <div class="card-courses-list admin-courses">
+                                        <div class="card-courses-media">
+                                            <img src="@course.Logo" alt="" />
+                                        </div>
+                                        <div class="card-courses-full-dec">
+                                            <div class="card-courses-title">
+                                                <h4>@course.Title</h4>
+                                            </div>
+                                            <div class="card-courses-list-bx">
+                                                <ul class="card-courses-view">
+                                                    <li class="card-courses-user">
+                                                        <div class="card-courses-user-pic">
+                                                            <img src="~/edu/admin/assets/images/testimonials/pic3.jpg" alt="" />
+                                                        </div>
+                                                        <div class="card-courses-user-info">
+                                                            <h5>Teacher</h5>
+                                                            <h4>Keny White</h4>
+                                                        </div>
+                                                    </li>
+                                                    <li class="card-courses-categories">
+                                                        <h5>Categories</h5>
+                                                        <h4>@course.ProgramStatus</h4>
+                                                    </li>
+                                                    <li class="card-courses-categories">
+                                                        <h5>Amount</h5>
+                                                        <h5 class="text-primary">@course.Amount</h5>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div class="row card-courses-dec">
+                                                <div class="col-md-12">
+                                                    <h6 class="m-b10">Course Description</h6>
+                                                    <p>@course.Description</p>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <input type="hidden" id="courseId_@course.Id" value="@course.Id" />
+                                                    <input type="hidden" id="amount_@course.Id" value="@course.Amount" />
+                                                    <input type="hidden" id="status_@course.Id" value="@course.ProgramStatus" />
 
-								</div>
-							</div>
-						</div>
-					</div>
-				  </div>
-				<!-- Your Profile Views Chart END-->	
-				}
-			}
-		</div>
-	</div>
+                                                    <a class="btn btn-primary btn-rounded" data-toggle="modal" data-target="#add_payment" onclick="payUpdate('@course.Id','@course.Amount','@course.ProgramStatus')"><i class="fa fa-plus m-r-5 btn-primary"></i> Get Started</a>
+                                                    @* <a asp-action="PaymentMethod" asp-controller="Accounts" asp-route-courseId="@course.Id" asp-route-amount="@course.Amount" asp-route-status="@course.ProgramStatus" class="btn green radius-xl outline">Get Started</a> *@
+                                                    <a class="btn red outline radius-xl">Cancel</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                }
+                else
+                {
+                    <p>No courses available.</p>
+                }
+
+            </div>
+        </div>
+
+        <!-- Add Payment Modal -->
+        <div id="add_payment" class="modal custom-modal fade" role="dialog">
+            <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Update Customer Record</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+
+                        <div class="row">
+                            <!-- Payment Methods -->
+                            <div class="col-lg-12 m-b30">
+                                <div class="widget-box">
+                                    <div class="wc-title">
+                                        <h4>Payment Method</h4>
+                                    </div>
+                                    <div class="widget-inner">
+                                        <!-- Paid Before Section -->
+                                        <div class="card-courses-list admin-review">
+                                            <div class="card-courses-full-dec">
+                                                <div class="card-courses-title">
+                                                    <h4>Paid Before</h4>
+                                                </div>
+                                                <div class="row card-courses-dec">
+                                                    <div class="col-md-6">
+                                                        <h6 class="m-b10">Sender Name</h6>
+                                                        <input class="form-control" type="text" id="paidBeforeName">
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <input type="text" hidden class="form-control" id="paidBeforeCourseId" value="">
+                                                        <h6 class="m-b10">Upload Proof Of Payment</h6>
+                                                        <input type="file" class="form-control" id="paidBeforeUploadProof">
+                                                    </div>
+                                                    <div class="col-md-12 pt-4">
+                                                        <button class="btn" onclick="payBeforeComing()" id="submit_btn_paid_before" style="margin-left:45%;">Submit</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Bank Transfer Section -->
+                                        <div class="card-courses-list admin-review">
+                                            <div class="card-courses-full-dec">
+                                                <div class="card-courses-title">
+                                                    <h4>Bank Transfer</h4>
+                                                </div>
+                                                <div class="row card-courses-dec">
+                                                    <div class="col-md-6">
+                                                        <h6 class="m-b10">Bank Name</h6>
+                                                        <input class="form-control" type="text" readonly value="Access Bank">
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <h6 class="m-b10">Account Name</h6>
+                                                        <input class="form-control" type="text" readonly value="DSkillAcademy">
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="row">
+                                                            <div class="col-md-10">
+                                                                <input class="form-control" id="accountInput" value="0123456789" type="text" readonly>
+                                                            </div>
+                                                            <div class="col-md-2">
+                                                                <button class="btn btn-white p-2" onclick="copyToClipboard('accountInput')">
+                                                                    <i class="fa fa-clone"></i>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <a data-clipboard-target="#"></a>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <input type="text" hidden class="form-control" id="bankTransferCourseId" value="">
+                                                        <h6 class="m-b10">Upload Proof Of Payment</h6>
+                                                        <input type="file" class="form-control" id="bankTransferUploadProof">
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <h6 class="m-b10">Sender Name</h6>
+                                                        <input class="form-control" type="text" id="bankTransferName">
+                                                    </div>
+                                                    <div class="col-md-12 pt-4">
+                                                        <button class="btn" style="margin-left:45%;" onclick="ManualPaymentAUpload()">Submit</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Paystack Payment Section -->
+                                        <div class="card-courses-list admin-review">
+                                            <div class="card-courses-full-dec">
+                                                <div class="card-courses-title">
+                                                    <h4>Paystack Payment</h4>
+                                                </div>
+                                                <div class="row card-courses-dec">
+                                                    <div class="col-md-12">
+                                                        <input type="hidden" id="courseId" value="" />
+                                                        <input type="hidden" id="amount" value="" />
+                                                        <input type="hidden" id="programStatus" value="" />
+                                                        <!-- Pass Course ID, Amount, and Status to JavaScript function -->
+                                                        <button class="btn"
+                                                                onclick="sendPaymentDetails()">
+                                                            Pay with Paystack
+                                                        </button>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Payment Methods End -->
+                        </div> 
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /Add Payment Modal -->
+    </div>
+
+   
 </main>
-<div class="ttr-overlay"></div>

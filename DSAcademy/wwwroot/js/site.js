@@ -1565,8 +1565,142 @@ function SendCourseIdForPayment() {
         }
     });
 }
-// APPLICATION REQUEST 
+function payUpdate(courseId, amount, programStatus) {
+    $('#courseId').val(courseId);
+    $('#amount').val(amount);
+    $("#programStatus").val(programStatus);
+}
+
+function sendPaymentDetailss() {
+    debugger;
+    $('#loader').show();
+    $('#loader-wrapper').show();
+    var data = {};
+    data.SalesLogsId = $('#salesLogsId').val();
+    // Check if amount and status are not undefined before proceeding
+    if (amount === undefined || status === undefined) {
+        $("#loader").fadeOut(3000);
+        errorAlert("Payment details are missing, please refresh the page and try again.");
+        return;
+    }
+    $.ajax({
+        type: 'Post',
+        dataType: 'json',
+        url: '/Student/GetPaymentDetials',
+        data: {
+            Id: courseId,
+            Amount: amount,
+            Status: status // Ensure this matches the expected parameter name on the server side
+        },
+        success: function (result) {
+            if (!result.isError) {
+                $("#loader").fadeOut(3000);
+                Swal.fire({
+                    title: "Success",
+                    text: "You're good to go, let's make the payment now",
+                    icon: "success",
+                    timer: 30000,
+                    confirmButtonColor: "#0253cc",
+                }).then(function () {
+                    location.href = result.paystackUrl;
+                });
+            }
+        },
+        error: function (ex) {
+            $("#loader").fadeOut(3000);
+            errorAlert("Error occurred, try again");
+        }
+    });
+}
+
+function sendPaymentDetails() {
+    debugger
+    var defaultBtnValue = $('#submit_btn').html();
+    $('#submit_btn').html("Please wait...");
+    $('#submit_btn').attr("disabled", true);
+
+    var data = {
+        CourseId: $('#courseId').val(),
+        Amount: $('#amount').val(),
+        ProgramStatus: $('#programStatus').val()
+    };
+
+    var paymentDetails = JSON.stringify(data);  // Serialize object to JSON string
+
+    console.log("Serialized data sent to server:", paymentDetails);
+
+    $.ajax({
+        type: 'POST',
+        url: '/Student/GetPaymentDetails',
+        dataType: 'json',
+        data: { paymentDetails: paymentDetails },  // Send serialized JSON string
+
+        success: function (result) {
+            $('#submit_btn').html(defaultBtnValue);
+            $('#submit_btn').attr("disabled", false);
+
+            if (!result.isError) {
+                console.log('Success:', result);
+                var url = 'Student/Payments?SalesLogsId=' + result;
+                newSuccessAlert(result.msg, url);
+            } else {
+                console.log('Error from server:', result.msg);
+                errorAlert(result.msg);
+            }
+        },
+
+        error: function (ex) {
+            $('#submit_btn').html(defaultBtnValue);
+            $('#submit_btn').attr("disabled", false);
+            console.error("AJAX error:", ex);
+            errorAlert("Network failure, please try again");
+        }
+    });
+}
+
 function ManualPaymentAUpload() {
+    debugger;
+    var fileInput = document.getElementById('bankTransferUploadProof');
+    var file = fileInput.files[0];
+    var courseId = document.getElementById('courseId').value;
+
+    if (file) {
+        var reader = new FileReader();
+        reader.readAsDataURL(file);
+
+        reader.onload = function () {
+            var data = {
+                id: courseId,
+                proveOfPayment: reader.result 
+            };
+
+            fetch('/Student/ManualPaymenUpload', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+                .then(response => response.json())
+                .then(result => {
+                    debugger
+                    if (!result.isError) {
+                        successAlertWithRedirect(result.msg, '/Student/StudentCourses');
+                    } else {
+                        errorAlert(result.msg);
+                    }
+                })
+                .catch(error => {
+                    errorAlert("Error occurred, please try again");
+                });
+        };
+    } else {
+        errorAlert("Upload proof to proceed");
+    }
+}
+
+// APPLICATION REQUEST 
+function ManualPaymentAUploads() {
 
     $('#loader').show();
     $('#loader-wrapper').show();
@@ -1781,23 +1915,6 @@ function autoSubmitInterview() {
 }
 
 //COPY TEXT
-function CopyLink(type) {
-
-    var id = type;
-    var copiedLink = document.getElementById(id);
-
-    // Select the text field
-    copiedLink.select();
-    copiedLink.setSelectionRange(0, 99999); // For mobile devices
-
-    // Copy the text inside the text field
-    navigator.clipboard.writeText(copiedLink.value);
-
-    // Alert the copied text
-    if (copiedLink.value) {
-        successAlert("Copied: " + copiedLink.value)
-    }
-}
 // <!......................... ADMIN SCRIPTS ............................>
 function CourseVideoPost(action) {
 
@@ -3256,12 +3373,12 @@ function login() {
     });
 }
 
-function payBeforeComing() {
+function payBeforeComingn() {
     debugger
-    var defaultBtnValue = $('#submit_btn').html();
-    $('#submit_btn').html("Please wait...");
-    $('#submit_btn').attr("disabled", true);
-    var paymentPhoto = document.getElementById("upLoadProveOfPaymentId").files;
+    var defaultBtnValue = $('#submit_btn_paid_before').html();
+    $('#submit_btn_paid_before').html("Please wait...");
+    $('#submit_btn_paid_before').attr("disabled", true);
+    var paymentPhoto = document.getElementById("paidBeforeUploadProof").files;
     var payData = {};
     payData.CourseId = $("#courseId").val();
     payData.Name = $("#name").val();
@@ -3288,17 +3405,17 @@ function payBeforeComing() {
                         if (!result.isError) {
                             var url = '/Student/Index';
                             successAlertWithRedirect(result.msg, url);
-                            $('#submit_btn').html(defaultBtnValue);
+                            $('#submit_btn_paid_before').html(defaultBtnValue);
                         }
                         else {
-                            $('#submit_btn').html(defaultBtnValue);
-                            $('#submit_btn').attr("disabled", false);
+                            $('#submit_btn_paid_before').html(defaultBtnValue);
+                            $('#submit_btn_paid_before').attr("disabled", false);
                             errorAlert(result.msg);
                         }
                     },
                     error: function (ex) {
-                        $('#submit_btn').html(defaultBtnValue);
-                        $('#submit_btn').attr("disabled", false);
+                        $('#submit_btn_paid_before').html(defaultBtnValue);
+                        $('#submit_btn_paid_before').attr("disabled", false);
                         errorAlert("An error has occurred, try again. Please contact support if the error persists");
                     }
                 });
@@ -3310,7 +3427,71 @@ function payBeforeComing() {
 
 }
 
+function payBeforeComing() {
+    debugger
+    const submitButton = document.getElementById('submit_btn_paid_before');
+    const defaultBtnValue = submitButton.innerHTML;
 
+    submitButton.innerHTML = "Please wait...";
+    submitButton.setAttribute("disabled", true);
+
+    const paymentPhoto = document.getElementById("paidBeforeUploadProof").files;
+    const courseId = document.getElementById('courseId').value;
+    const name = document.getElementById('paidBeforeName').value;
+
+    if (paymentPhoto.length > 0) {
+        const reader = new FileReader();
+
+        reader.onload = function () {
+            const base64 = reader.result;
+            const payData = {
+                CourseId: courseId,
+                Name: name
+            };
+
+            if (payData.CourseId && payData.Name) {
+                // Prepare form data
+                const formData = new FormData();
+                formData.append("collectedData", JSON.stringify(payData));
+                formData.append("base64", base64);
+
+                fetch('/Accounts/SaveProveOfPayment', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => response.json())
+                    .then(result => {
+                        submitButton.innerHTML = defaultBtnValue;
+                        submitButton.removeAttribute("disabled");
+
+                        if (!result.isError) {
+                            const url = '/Student/Index';
+                            successAlertWithRedirect(result.msg, url);
+                        } else {
+                            errorAlert(result.msg);
+                        }
+                    })
+                    .catch(error => {
+                        submitButton.innerHTML = defaultBtnValue;
+                        submitButton.removeAttribute("disabled");
+                        errorAlert("An error has occurred, try again. Please contact support if the error persists");
+                    });
+            } else {
+                submitButton.innerHTML = defaultBtnValue;
+                submitButton.removeAttribute("disabled");
+                errorAlert("Please provide all required details.");
+            }
+        };
+
+        reader.readAsDataURL(paymentPhoto[0]);
+    } else {
+        submitButton.innerHTML = defaultBtnValue;
+        submitButton.removeAttribute("disabled");
+        errorAlert("Please upload a proof of payment.");
+    }
+}
+
+    
 function studemtLink(companyId) {
     $.ajax({
         type: 'GET',
@@ -3352,3 +3533,98 @@ function copyLinkToClipboard(link) {
         successAlert("Student link copied successfully");
     }
 }
+
+
+
+
+// Function to handle "Paid Before" payment method
+function payBeforeComingnn() {
+    var senderName = document.getElementById('paidBeforeName').value;
+    var courseId = document.getElementById('paidBeforeCourseId').value;
+    var uploadProof = document.getElementById('paidBeforeUploadProof').files[0];
+
+    if (!senderName || !uploadProof) {
+        alert("Please fill in all fields and upload proof of payment.");
+        return;
+    }
+
+    var formData = new FormData();
+    formData.append("SenderName", senderName);
+    formData.append("CourseId", courseId);
+    formData.append("UploadProof", uploadProof);
+
+    fetch('/Accounts/PayBeforeComing', {
+        method: 'POST',
+        body: formData
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert("Payment proof submitted successfully.");
+            } else {
+                alert("There was an error submitting your payment proof: " + data.message);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+// Function to handle "Bank Transfer" payment method
+function handleBankTransfer() {
+    var senderName = document.getElementById('bankTransferName').value;
+    var courseId = document.getElementById('bankTransferCourseId').value;
+    var uploadProof = document.getElementById('bankTransferUploadProof').files[0];
+
+    if (!senderName || !uploadProof) {
+        alert("Please fill in all fields and upload proof of payment.");
+        return;
+    }
+
+    var formData = new FormData();
+    formData.append("SenderName", senderName);
+    formData.append("CourseId", courseId);
+    formData.append("UploadProof", uploadProof);
+
+    fetch('/Accounts/BankTransfer', {
+        method: 'POST',
+        body: formData
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert("Bank transfer proof submitted successfully.");
+            } else {
+                alert("There was an error submitting your bank transfer proof: " + data.message);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+
+function copyToClipboard(elementId) {
+    debugger
+    // Get the input field
+    const copyText = document.getElementById(elementId);
+
+    // Set the input field to be readonly and then focus on it
+    copyText.readOnly = false;
+    copyText.focus();
+    copyText.select();
+    copyText.setSelectionRange(0, 99999); // For mobile devices
+
+    // Try using the modern clipboard API
+    navigator.clipboard.writeText(copyText.value)
+        .then(() => {
+            alert("Account number copied to clipboard!");
+        })
+        .catch(err => {
+            console.warn('Clipboard API failed. Falling back to execCommand. Error:', err);
+            // Fallback for browsers not supporting clipboard API
+            document.execCommand('copy');
+            alert("Account number copied to clipboard!");
+        })
+        .finally(() => {
+            // Reset the input field to readonly after copy attempt
+            copyText.readOnly = true;
+        });
+}
+

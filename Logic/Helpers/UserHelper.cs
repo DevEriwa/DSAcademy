@@ -502,7 +502,7 @@ namespace Logic.Helpers
 			}
 			catch (Exception e)
 			{
-				LogCritical($"Failed to update session with this error: {e.InnerException?.Message ?? e.Message}");
+				//LogCritical($"Failed to update session with this error: {e.InnerException?.Message ?? e.Message}");
 				return null;
 			}
 		}

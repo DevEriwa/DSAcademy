@@ -39,95 +39,121 @@ namespace Logic.Helpers
             }
             return allTrainingCourse;
         }
-        //public ApplicantDocumment UpdateApplicantDocumentService(ApplicantDocumment applicantDetailsForUpdate)
-        //{
-        //    var applicantSubmittedDocument = new ApplicantDocumment
-        //    {
-        //        StudentId = Session.GetCurrentUser().Id,
-        //        BVN = applicantDetailsForUpdate.BVN,
-        //        FirstGuarantor = applicantDetailsForUpdate.FirstGuarantor,
-        //        SecondGuarantor = applicantDetailsForUpdate.SecondGuarantor,
-        //        NepaBill = applicantDetailsForUpdate.NepaBill,
-        //        SignedContract = applicantDetailsForUpdate.SignedContract,
-        //        IsApproved = false,
-        //        DateCreated = DateTime.Now,
-        //    };
-        //    if (applicantSubmittedDocument != null)
-        //    {
-        //        _context.ApplicantDocumments.Add(applicantSubmittedDocument);
-        //        _context.SaveChanges();
-        //        return applicantSubmittedDocument;
-        //    }
-        //    return null;
-        //}
-        //public TestResult ListOfAnsweredQuestions(TestQuestionsViewModel collectedData)
-        //{
-        //    try
-        //    {
-        //        var correctAnswer = new List<TestQuestions>();
-        //        var question = collectedData.AnsweredQuestions.Select(x => x.questionId).ToList();
-        //        var answers = collectedData.AnsweredQuestions.Select(x => x.selectedAnswer).ToList();
-        //        var questions = _context.TestQuestions.Where(x => x.Id != 0 && question.Contains(x.Id)).ToList();
-        //        var courseId = _context.TestQuestions.Where(x => x.Id != 0 && question.Contains(x.Id)).FirstOrDefault().CourseId;
-        //        if (questions.Any())
-        //        {
-        //            foreach (var ans in collectedData.AnsweredQuestions)
-        //            {
-        //                var myResult = questions.Where(q => q.Id == ans.questionId && q.Answer == ans.selectedAnswer).FirstOrDefault();
-        //                if (myResult != null)
-        //                {
-        //                    correctAnswer.Add(myResult);
-        //                }
-        //            }
-        //        }
-        //        var resultCount = correctAnswer.Count();
-        //        if (collectedData.ActionType == GeneralAction.CREATE)
-        //        {
-        //            var resultOne = new TestResult()
-        //            {
-        //                UserId = Session.GetCurrentUser().Id,
-        //                CourseId = courseId,
-        //                ResultOne = (resultCount * 10),
-        //                TestOneChecker = true,
-        //                ResultTwo = 0,
-        //                TestTwoChecker = false,
-        //                Total = (resultCount * 10) / 2,
-        //            };
 
-        //            var firstTestResult = _context.Add(resultOne);
-        //            _context.SaveChanges();
-        //            return resultOne;
-        //        }
-        //        else if (collectedData.ActionType == GeneralAction.UPDATE)
-        //        {
-        //            var resultTwo = _context.TestResults.Where(t => t.Id == collectedData.Id).FirstOrDefault();
-        //            if (!resultTwo.TestTwoChecker)
-        //            {
-        //                if (resultTwo != null)
-        //                {
-        //                    resultTwo.ResultTwo = (resultCount * 10);
-        //                    var result2Average = (resultCount * 10) / 2;
-        //                    resultTwo.TestTwoChecker = true;
-        //                    resultTwo.Total = (resultTwo.Total + result2Average);
 
-        //                    var firstTestResult = _context.Update(resultTwo);
-        //                    _context.SaveChanges();
+		public async Task<Payments> UploadMaualPaymentProve(PaymentViewModel prove, string userId)
+		{
+			if (prove != null)
+			{
+				var myPayment = new Payments
+				{
+					Source = TransactionType.Transfer,
+					InvoiceNumber = Generate().ToString(),
+					ProveOfPayment = prove.ProveOfPayment,
+					UserId = userId,
+					CourseId = prove.Id,
+					Status = PaymentStatus.Pending,
+					DateCreated = DateTime.Now,
+				};
 
-        //                    return resultTwo;
-        //                }
-        //            }
-        //            return resultTwo;
-        //        }
-        //        return null;
+				var saveCheck = await _context.Payments.AddAsync(myPayment);
+				_context.SaveChanges();
+				if (saveCheck != null)
+				{
+					return myPayment;
+				}
+			}
+			return null;
+		}
+		//public ApplicantDocumment UpdateApplicantDocumentService(ApplicantDocumment applicantDetailsForUpdate)
+		//{
+		//    var applicantSubmittedDocument = new ApplicantDocumment
+		//    {
+		//        StudentId = Session.GetCurrentUser().Id,
+		//        BVN = applicantDetailsForUpdate.BVN,
+		//        FirstGuarantor = applicantDetailsForUpdate.FirstGuarantor,
+		//        SecondGuarantor = applicantDetailsForUpdate.SecondGuarantor,
+		//        NepaBill = applicantDetailsForUpdate.NepaBill,
+		//        SignedContract = applicantDetailsForUpdate.SignedContract,
+		//        IsApproved = false,
+		//        DateCreated = DateTime.Now,
+		//    };
+		//    if (applicantSubmittedDocument != null)
+		//    {
+		//        _context.ApplicantDocumments.Add(applicantSubmittedDocument);
+		//        _context.SaveChanges();
+		//        return applicantSubmittedDocument;
+		//    }
+		//    return null;
+		//}
+		//public TestResult ListOfAnsweredQuestions(TestQuestionsViewModel collectedData)
+		//{
+		//    try
+		//    {
+		//        var correctAnswer = new List<TestQuestions>();
+		//        var question = collectedData.AnsweredQuestions.Select(x => x.questionId).ToList();
+		//        var answers = collectedData.AnsweredQuestions.Select(x => x.selectedAnswer).ToList();
+		//        var questions = _context.TestQuestions.Where(x => x.Id != 0 && question.Contains(x.Id)).ToList();
+		//        var courseId = _context.TestQuestions.Where(x => x.Id != 0 && question.Contains(x.Id)).FirstOrDefault().CourseId;
+		//        if (questions.Any())
+		//        {
+		//            foreach (var ans in collectedData.AnsweredQuestions)
+		//            {
+		//                var myResult = questions.Where(q => q.Id == ans.questionId && q.Answer == ans.selectedAnswer).FirstOrDefault();
+		//                if (myResult != null)
+		//                {
+		//                    correctAnswer.Add(myResult);
+		//                }
+		//            }
+		//        }
+		//        var resultCount = correctAnswer.Count();
+		//        if (collectedData.ActionType == GeneralAction.CREATE)
+		//        {
+		//            var resultOne = new TestResult()
+		//            {
+		//                UserId = Session.GetCurrentUser().Id,
+		//                CourseId = courseId,
+		//                ResultOne = (resultCount * 10),
+		//                TestOneChecker = true,
+		//                ResultTwo = 0,
+		//                TestTwoChecker = false,
+		//                Total = (resultCount * 10) / 2,
+		//            };
 
-        //    }
-        //    catch (Exception ex)
-        //    {
+		//            var firstTestResult = _context.Add(resultOne);
+		//            _context.SaveChanges();
+		//            return resultOne;
+		//        }
+		//        else if (collectedData.ActionType == GeneralAction.UPDATE)
+		//        {
+		//            var resultTwo = _context.TestResults.Where(t => t.Id == collectedData.Id).FirstOrDefault();
+		//            if (!resultTwo.TestTwoChecker)
+		//            {
+		//                if (resultTwo != null)
+		//                {
+		//                    resultTwo.ResultTwo = (resultCount * 10);
+		//                    var result2Average = (resultCount * 10) / 2;
+		//                    resultTwo.TestTwoChecker = true;
+		//                    resultTwo.Total = (resultTwo.Total + result2Average);
 
-        //        throw ex;
-        //    }
-        //}
-        public TestResult GetStudentResult(int? Id, string userID)
+		//                    var firstTestResult = _context.Update(resultTwo);
+		//                    _context.SaveChanges();
+
+		//                    return resultTwo;
+		//                }
+		//            }
+		//            return resultTwo;
+		//        }
+		//        return null;
+
+		//    }
+		//    catch (Exception ex)
+		//    {
+
+		//        throw ex;
+		//    }
+		//}
+		public TestResult GetStudentResult(int? Id, string userID)
         {
             try
             {

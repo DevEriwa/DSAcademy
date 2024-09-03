@@ -11,7 +11,7 @@ namespace Logic.Helpers
 {
 	public interface IBaseHelper
 	{
-		Notification? GarageSetting { get; }
+		Notification? DSkillSetting { get; }
 		CompanySetting? CompanySetting { get; }
 
 		bool Create<TViewModel, TEntity>(TViewModel details)
@@ -32,11 +32,11 @@ namespace Logic.Helpers
 		TEntity? Update<TEntity, T>(string propertyName, object propertyValue, T primaryKey) where TEntity : class, new();
 		TEntity? Update<TEntity, T>(Dictionary<string, object> propertyValues, T primaryKey) where TEntity : class, new();
 		int PageSizeFromRedisCache(Guid? currentBranchId);
-		void LogCritical(string message);
-		void LogWarning(string error);
-		void LogVerbose(string error);
-		void LogInformation(string error);
-		void LogError(string error);
+		//void LogCritical(string message);
+		//void LogWarning(string error);
+		//void LogVerbose(string error);
+		//void LogInformation(string error);
+		//void LogError(string error);
 	}
 
 	public class BaseHelper : IBaseHelper
@@ -372,7 +372,7 @@ namespace Logic.Helpers
 		private Notification _notification;
 		private CompanySetting _companySetting;
 
-		public Notification? GarageSetting
+		public Notification? DSkillSetting
 		{
 			get
 			{
@@ -391,29 +391,29 @@ namespace Logic.Helpers
 			}
 		}
 		// Logging method
-		public void LogCritical(string message)
-		{
-			Log.Logger.Fatal(message);
-		}
+		//public void LogCritical(string message)
+		//{
+		//	Log.Logger.Fatal(message);
+		//}
 
-		public void LogError(string error)
-		{
-			Log.Logger.Error(error);
-		}
+		//public void LogError(string error)
+		//{
+		//	Log.Logger.Error(error);
+		//}
 
-		public void LogInformation(string error)
-		{
-			Log.Logger.Information(error);
-		}
+		//public void LogInformation(string error)
+		//{
+		//	Log.Logger.Information(error);
+		//}
 
-		public void LogVerbose(string error)
-		{
-			Log.Logger.Verbose(error);
-		}
+		//public void LogVerbose(string error)
+		//{
+		//	Log.Logger.Verbose(error);
+		//}
 
-		public void LogWarning(string error)
-		{
-			Log.Logger.Warning(error);
-		}
+		//public void LogWarning(string error)
+		//{
+		//	Log.Logger.Warning(error);
+		//}
 	}
 }
