@@ -211,7 +211,8 @@ namespace Logic.Helpers
                     UserVerification userVerification = new UserVerification()
                     {
                         UserId = user.Id,
-                    };
+						DateUsed = DateTime.Now,
+					};
                     await _context.AddAsync(userVerification);
                     await _context.SaveChangesAsync();
                     return userVerification;
@@ -396,7 +397,32 @@ namespace Logic.Helpers
 				throw;
 			}
 		}
+		public bool TeacherVerificationEmail(string applicantEmail, string linkToClick)
+		{
+			try
+			{
+				if (applicantEmail != null)
+				{
+					string toEmail = applicantEmail;
+					string subject = "Verify your account - Digital Skills Academy ";
+					string message = "Thank you for registering! You’re only one click away from accessing your Digital skills academy account." + "<br/>" + "<br/>" +
+						"<a  href='" + linkToClick + "' target='_blank'>" + "<button style='color:white; background-color:#0C2B4B; padding:10px; border:10px;'>Verify Me Now</button>" + "</a>" + "<br/>" +
+						"If the link does not work copy the link here to your browser: " + linkToClick + "<br/>" + 
+                        "User this passwold to login to your account and do not share this with anyone passwold = (1111111)" + "</br>" +
+						"Need help? We’re here for you.Simply reply to this email to contact us. <br/>" +
 
+						"Kind regards,<br/>" +
+						"Digital Skills Academy Support.";
+					_emailService.SendEmail(toEmail, subject, message);
+					return true;
+				};
+				return false;
+			}
+			catch (Exception)
+			{
+				throw;
+			}
+		}
 
 	}
 }

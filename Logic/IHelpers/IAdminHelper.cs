@@ -19,6 +19,9 @@ namespace Logic.IHelpers
 		List<TrainingCourse> GetAllTrainingCourseForFullStack(Guid? companyId);
 		TrainingCourse CoursePayment(int courseId);
 		AdminDashboardViewModel? GetAdminDashboardData();
+		ApplicationUser EditTecher(ApplicationUserViewModel techer);
+		ApplicationUser DeleteTecher(string techerId);
 
-    }
+
+	}
 }
