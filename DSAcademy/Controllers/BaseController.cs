@@ -18,19 +18,19 @@ namespace DSAcademy.Controllers
 		private Notification _notification;
 		private CompanySetting _companySetting;
 
-		public ApplicationUser? CurrentUser
-		{
-			get
-			{
-				_user = Session.GetCurrentUser();
-				if (_user.Id == null && User != null && User.Identity.Name != null)
-				{
-					_user = GetAsync<ApplicationUser>(RedisKeyHelper.CurrentUserKey(User.Identity.Name)).Result;
-				}
+		//public ApplicationUser? CurrentUser
+		//{
+		//	get
+		//	{
+		//		_user = Session.GetCurrentUser();
+		//		if (_user.Id == null && User != null && User.Identity.Name != null)
+		//		{
+		//			_user = GetAsync<ApplicationUser>(RedisKeyHelper.CurrentUserKey(User.Identity.Name)).Result;
+		//		}
 
-				return _user;
-			}
-		}
+		//		return _user;
+		//	}
+		//}
 
 		public Notification? GarageSetting
 		{
@@ -52,46 +52,46 @@ namespace DSAcademy.Controllers
 		}
 
 
-		public string? CurrentUserId => CurrentUser.Id;
-		public string? CurrentUserName => CurrentUser.FullName;
-		private async Task<T> GetAsync<T>(string key)
-		{
-			try
-			{
-				IDatabase cache = Connection.GetDatabase();
-				var obj = await cache.GetAsync<T>(key);
-				return obj;
-			}
-			catch (Exception ex)
-			{
-				Log.Logger.Error(ex.Message ?? ex.InnerException?.Message);
-				return default;
-			}
-		}
-		public void LogCritical(string message)
-		{
-			Log.Logger.Fatal(message);
-		}
+		//public string? CurrentUserId => CurrentUser.Id;
+		//public string? CurrentUserName => CurrentUser.FullName;
+		//private async Task<T> GetAsync<T>(string key)
+		//{
+		//	try
+		//	{
+		//		IDatabase cache = Connection.GetDatabase();
+		//		var obj = await cache.GetAsync<T>(key);
+		//		return obj;
+		//	}
+		//	catch (Exception ex)
+		//	{
+		//		Log.Logger.Error(ex.Message ?? ex.InnerException?.Message);
+		//		return default;
+		//	}
+		//}
+		//public void LogCritical(string message)
+		//{
+		//	Log.Logger.Fatal(message);
+		//}
 
-		public void LogError(string error)
-		{
-			Log.Logger.Error(error);
-		}
+		//public void LogError(string error)
+		//{
+		//	Log.Logger.Error(error);
+		//}
 
-		public void LogInformation(string error)
-		{
-			Log.Logger.Information(error);
-		}
+		//public void LogInformation(string error)
+		//{
+		//	Log.Logger.Information(error);
+		//}
 
-		public void LogVerbose(string error)
-		{
-			Log.Logger.Verbose(error);
-		}
+		//public void LogVerbose(string error)
+		//{
+		//	Log.Logger.Verbose(error);
+		//}
 
-		public void LogWarning(string error)
-		{
-			Log.Logger.Warning(error);
-		}
+		//public void LogWarning(string error)
+		//{
+		//	Log.Logger.Warning(error);
+		//}
 
 		public static ConnectionMultiplexer Connection
 		{

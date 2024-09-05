@@ -7,14 +7,17 @@ namespace Core.ViewModels
 	{
 		public int Id { get; set; }
 		public string? Name { get; set; }
+		public decimal? Amount { get; set; }
 		public TransactionType? Source { get; set; }
 		public string? InvoiceNumber { get; set; }
 		public string? ProveOfPayment { get; set; }
 		public int? CourseId { get; set; }
 		public  TrainingCourse? Courses { get; set; }
 		public PaymentStatus? Status { get; set; }
+		public ProgramEnum? ProgramStatus { get; set; }
 		public string? UserId { get; set; }
 		public Guid? CompanyId { get; set; }
 		public  ApplicationUser? User { get; set; }
+		public DateTime? DateCreated { get; set;}
 	}
 }

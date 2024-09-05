@@ -1,4 +1,5 @@
-﻿using Core.Models;
+﻿using Core.Enum;
+using Core.Models;
 using Core.ViewModels;
 
 namespace Logic.IHelpers
@@ -17,8 +18,10 @@ namespace Logic.IHelpers
 		List<TrainingCourse> GetAllTrainingCourseForFrontend(Guid? companyId);
 		List<TrainingCourse> GetAllTrainingCourseForBackend(Guid? companyId);
 		List<TrainingCourse> GetAllTrainingCourseForFullStack(Guid? companyId);
-		TrainingCourse CoursePayment(int courseId);
+		//TrainingCourse CoursePayment(int courseId);
 		AdminDashboardViewModel? GetAdminDashboardData();
+        List<TrainingCourse> GetAllTrainingCourses(Guid? companyId);
+        TrainingCourse GetCoursePayment(int courseId, ProgramEnum status);
 		ApplicationUser EditTecher(ApplicationUserViewModel techer);
 		ApplicationUser DeleteTecher(string techerId);
 

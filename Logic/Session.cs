@@ -69,7 +69,18 @@ public class Session
         }
         return null;
     }
-	public static Notification GetSystemSetting()
+
+    public static ApplicationUserViewModel GetCurrentUserInfor()
+    {
+        var user = AppHttpContext.Current.Session.GetString("user");
+        if (user != null)
+        {
+            var loggedInUser = JsonConvert.DeserializeObject<ApplicationUserViewModel>(user);
+            return loggedInUser;
+        }
+        return null;
+    }
+    public static Notification GetSystemSetting()
 	{
 		var settings = new Notification();
 		var settingsString = AppHttpContext.Current?.Session?.GetString("DSASystemSettings");

@@ -74,7 +74,8 @@ public class Startup
                 .AddScoped<ICacheService, RedisCacheService>()
                 .AddScoped<IBaseHelper, BaseHelper>()
                 .AddScoped<ISuperAdminHelper, SuperAdminHelper>()
-                .AddScoped<INotificationHelper, NotificationHelper>();
+                .AddScoped<INotificationHelper, NotificationHelper>()
+                .AddScoped<IPaystackHelper, PaystackHelper>();
 
 
 		//services.AddSession();

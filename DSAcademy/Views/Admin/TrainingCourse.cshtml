@@ -3,7 +3,33 @@
 @{
 	ViewData["Title"] = "Training Courses";
 	Layout = "~/Views/Shared/_CompanyAdminLayout.cshtml";
+	var user = Session.GetCurrentUser();
+	var companySetting = Session.GetCompanySettings();
+	var link = "/Staff/Index";
+	if (user.UserRole == Session.Constants.AdminRole)
+	{
+		link = "/Admin/Index";
+	}
+	else if (user.UserRole == Session.Constants.StudentRole)
+	{
+		link = "/Student/Index";
+	}
 }
+<style>
+
+	body {
+		counter-reset: Serial; /* / Set the Serial counter to 0 /*/
+	}
+
+	tr td:first-child:before {
+		counter-increment: Serial; /* / Increment the Serial counter /*/
+		content: counter(Serial); /*  / Display the counter /*/
+	}
+
+	.table-avatar {
+		cursor: pointer !important;
+	}
+</style>
 
 <main id="main" class="main">
 
@@ -56,7 +82,7 @@
 											<td>@course.Duration</td>
 											<td>@course.TestDuration</td>
 											<td>
-												<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#description_Modal" onclick="getCourseDescriptionById('@course.Id')">View</button>
+												<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#description_Modal"          onclick="getCourseDescriptionById('@course.Id')">View</button>
 											</td>
 											<td>@course.DateCreated.ToString("d")</td>
 											<td class="text-right">

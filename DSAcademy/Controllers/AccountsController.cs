@@ -1,4 +1,5 @@
 ﻿using Core.Db;
+using Core.Enum;
 using Core.Models;
 using Core.ViewModels;
 using Logic.Helpers;
@@ -253,36 +254,51 @@ namespace DSAcademy.Controllers
             return RedirectToAction("Login");
         }
         [HttpGet]
-		public async Task<IActionResult> Program()
+		public async Task<IActionResult> Programs()
 		{
             var userName = await _userHelper.FindByEmailAsync(User?.Identity?.Name);
             var allTrainingCourse = _adminHelper.GetAllTrainingCourseForFrontend(userName.CompanyId);
 			return View(allTrainingCourse);
 		}
-		[HttpGet]
-		public async Task<IActionResult> BackendDeveloper()
-		{
-            var userName = await _userHelper.FindByEmailAsync(User?.Identity?.Name);
-            var allTrainingCourse = _adminHelper.GetAllTrainingCourseForBackend(userName.CompanyId);
-			return View(allTrainingCourse);
-		}
-		[HttpGet]
-		public async Task<IActionResult> FullStackDeveloper()
-		{
-            var userName = await _userHelper.FindByEmailAsync(User?.Identity?.Name);
-            var allTrainingCourse = _adminHelper.GetAllTrainingCourseForFullStack(userName.CompanyId);
-			return View(allTrainingCourse);
-		}
-		[HttpGet]
-		public IActionResult PaymentMethod(int courseId)
-		{
-            var coursePayment = _adminHelper.CoursePayment(courseId);
+        //This is an action that get all the list of courses for the student//
+        [HttpGet]
+        public async Task<IActionResult> Program(string type)
+        {
+            var user = await _userHelper.FindByEmailAsync(User?.Identity?.Name);
+            // Fetch all courses if no type is specified or for default case
+            List<TrainingCourse> trainingCourses = new List<TrainingCourse>();
+            switch (type)
+            {
+                case "Frontend":
+                    trainingCourses = _adminHelper.GetAllTrainingCourseForFrontend(user.CompanyId);
+                    break;
+                case "Backend":
+                    trainingCourses = _adminHelper.GetAllTrainingCourseForBackend(user.CompanyId);
+                    break;
+                case "FullStack":
+                    trainingCourses = _adminHelper.GetAllTrainingCourseForFullStack(user.CompanyId);
+                    break;
+                default:
+                    // Fetch all training courses if the type is not matched
+                    trainingCourses = _adminHelper.GetAllTrainingCourses(user.CompanyId);
+                break;
+            }
+            // Pass the courses to the view
+            return View(trainingCourses);
+        }
+        [HttpGet]
+        public IActionResult PaymentMethod(int courseId, decimal amount, ProgramEnum status)
+        {
+            var coursePayment = _adminHelper.GetCoursePayment(courseId, status);
+
             if (coursePayment != null)
             {
-				return View(coursePayment);
-			}
-			return View();
-		}
+                // Pass the amount to the view if needed
+                ViewBag.Amount = amount;
+                return View(coursePayment);
+            }
+            return View();
+        }
         [HttpPost]
         public JsonResult SaveProveOfPayment(string collectedData, string base64)
         {

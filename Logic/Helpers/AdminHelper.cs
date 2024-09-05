@@ -300,57 +300,53 @@ namespace Logic.Helpers
 			}
 			return false;
 		}
+		public List<TrainingCourse> GetAllTrainingCourses(Guid? companyId)
+		{
+			return _context.TrainingCourse
+				.Where(t => !t.IsDeleted && t.CompanyId == companyId)
+				.Include(c => c.Company)
+				.ThenInclude(u => u.CreatedBy)
+				.ToList();
+		}
 		public List<TrainingCourse> GetAllTrainingCourseForFrontend(Guid? companyId)
 		{
-			var allTrainingCourse = _context.TrainingCourse.Where(t => !t.IsDeleted && t.CompanyId == companyId && t.ProgramStatus == ProgramEnum.Frontend)
-			.Include(c => c.Company)
-			.ThenInclude(u => u.CreatedBy)
-			.ToList();
-			if (allTrainingCourse.Any())
-			{
-				return allTrainingCourse;
-			}
-			return allTrainingCourse;
+			return _context.TrainingCourse
+				.Where(t => !t.IsDeleted && t.CompanyId == companyId && t.ProgramStatus == ProgramEnum.Frontend)
+				.Include(c => c.Company)
+				.ThenInclude(u => u.CreatedBy)
+				.ToList();
 		}
+
 		public List<TrainingCourse> GetAllTrainingCourseForBackend(Guid? companyId)
         {
-			var allTrainingCourse = _context.TrainingCourse.Where(t => !t.IsDeleted && t.CompanyId == companyId && t.ProgramStatus == ProgramEnum.Backend)
+			return _context.TrainingCourse.Where(t => !t.IsDeleted && t.CompanyId == companyId && t.ProgramStatus == ProgramEnum.Backend)
 			.Include(c => c.Company)
 			.ThenInclude(u => u.CreatedBy)
 			.ToList();
-			if (allTrainingCourse.Any())
-			{
-				return allTrainingCourse;
-			}
-			return allTrainingCourse;
 		}
 		public List<TrainingCourse> GetAllTrainingCourseForFullStack(Guid? companyId)
 		{
-			var allTrainingCourse = _context.TrainingCourse.Where(t => !t.IsDeleted && t.CompanyId == companyId &&
+			return _context.TrainingCourse.Where(t => !t.IsDeleted && t.CompanyId == companyId &&
 			(t.ProgramStatus == ProgramEnum.Frontend || t.ProgramStatus == ProgramEnum.Backend))
 			.Include(c => c.Company)
 			.ThenInclude(u => u.CreatedBy)
 			.ToList();
-			if (allTrainingCourse.Any())
-			{
-				return allTrainingCourse;
-			}
-			return allTrainingCourse;
 		}
-		public TrainingCourse CoursePayment(int courseId)
-		{
-			var allTrainingCourse = _context.TrainingCourse.Where(t => t.Id == courseId && !t.IsDeleted && t.CompanyId != Guid.Empty && t.IsActive == true &&
-			(t.ProgramStatus == ProgramEnum.Frontend || t.ProgramStatus == ProgramEnum.Frontend))
-			.Include(c => c.Company)
-			.ThenInclude(u => u.CreatedBy)
-			.FirstOrDefault();
-			if (allTrainingCourse != null)
-			{
-				return allTrainingCourse;
-			}
-			return null;
-		}
-		public AdminDashboardViewModel? GetAdminDashboardData()
+        public TrainingCourse GetCoursePayment(int courseId, ProgramEnum status)
+        {
+            var trainingCourse = _context.TrainingCourse
+                .Where(t => t.Id == courseId
+                    && !t.IsDeleted
+                    && t.CompanyId != Guid.Empty
+                    && t.IsActive
+                    && t.ProgramStatus == status) 
+                .Include(c => c.Company)
+                    .ThenInclude(u => u.CreatedBy)
+                .FirstOrDefault(); 
+            return trainingCourse;
+        }
+
+        public AdminDashboardViewModel? GetAdminDashboardData()
         {
             var myStudents = new List<ApplicationUserViewModel>();
             var myTeachers = new List<ApplicationUserViewModel>();
@@ -393,7 +389,7 @@ namespace Logic.Helpers
                             FirstName = s.FirstName,
                             LastName = s.LastName,
                             FullName = s.FullName,
-                            Role = "Applicant",
+                            Role = "Student",
                             PhoneNumber = s.PhoneNumber,
                             IsProgram = s.IsProgram,
                             IsAdmin = false,

@@ -26,6 +26,7 @@ namespace Core.Db
 		public DbSet<UserLoginLog> UserLoginLogs { get; set; }
 		public DbSet<PageStatistics> PageStatistics { get; set; }
 		public DbSet<CompanySetting> CompanySettings { get; set; }
+		public DbSet<Paystack> Paystacks { get; set; }
 		public DbSet<View_PageStatisticsView> View_PageStatisticsViews { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)

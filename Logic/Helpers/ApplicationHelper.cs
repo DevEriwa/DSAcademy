@@ -308,7 +308,7 @@ namespace Logic.Helpers
 				var newPayment = new Payments
 				{
 					ProveOfPayment = base64,
-					Source = TransactionType.Cash,
+					Source = TransactionType.Transfer,
 					Status = PaymentStatus.Pending,
 					ProgramStatus = collectedData?.Courses?.ProgramStatus,
 					UserId = user?.Id,
