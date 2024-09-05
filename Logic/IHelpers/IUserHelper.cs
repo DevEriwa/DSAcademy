@@ -29,8 +29,10 @@ namespace Logic.IHelpers
 		Task<UserVerification> GetUserToken(Guid token);
 		TrainingVideo GetVideosById(Guid Id);
 		Task<List<ApplicationUser>> GetStudentListAsync();
-		List<ApplicationUserViewModel> GetTeacher();
+		List<ApplicationUserViewModel> GetTeacher(Guid? companyId);
 		ApplicationUser FindById(string Id);
+		Task<Company> FindCompanyByUserId(string id);
+		ApplicationUser GetTecherById(string? techerId);
 
-    }
+	}
 }

@@ -16,11 +16,11 @@
 	<link href="~/edu/admin/assets/css/shortcodes/shortcodes.css" rel="stylesheet" />
 	<link href="~/edu/admin/assets/css/style.css" rel="stylesheet" />
 	<link href="~/edu/admin/assets/css/color/color-1.css" rel="stylesheet" />
-	<link href="~/edu/admin/assets/css/css/sweetalert2.min.css" rel="stylesheet" />
 
 	<link rel="stylesheet" type="text/css" href="~/edu/admin/assets/vendors/calendar/fullcalendar.css">
 	<link rel="stylesheet" type="text/css" href="~/edu/admin/assets/css/dashboard.css">
 
+	<link href="~/edu/assets/css/css/sweetalert2.min.css" rel="stylesheet" />
 	<script>
 		function errorAlert(message) {
 			Swal.fire({
@@ -163,59 +163,93 @@
 	</script>
 </head>
 <body class="ttr-opened-sidebar ttr-pinned-sidebar">
-	@* <div class=""> *@
-
-	<!-- header start -->
 	<header class="ttr-header">
 		<div class="ttr-header-wrapper">
-			<!--sidebar menu toggler start -->
 			<div class="ttr-toggle-sidebar ttr-material-button">
 				<i class="ti-close ttr-open-icon"></i>
 				<i class="ti-menu ttr-close-icon"></i>
 			</div>
-			<!--sidebar menu toggler end -->
-			<!--logo start -->
 			<div class="ttr-logo-box">
-				<div class="menu-logo">
-					<a asp-action="Index" asp-controller="Home" class="ttr-logo"><img src="~/edu/admin/assets/images/dsa png[3].png" alt="Logo" /></a>
+				<div>
+					<a asp-action="Index" asp-controller="Home" class="ttr-logo">
+						<img class="ttr-logo-mobile" alt="" src="~/edu/admin/assets/images/logo-mobile.png" width="30" height="30">
+						<img class="ttr-logo-desktop" alt="" src="~/edu/admin/assets/images/logo-white.png" width="160" height="27">
+					</a>
 				</div>
 			</div>
-			<!--logo end -->
 			<div class="ttr-header-menu">
-				<!-- header left menu start -->
 				<ul class="ttr-header-navigation">
 					<li>
 						<a asp-action="Index" asp-controller="Home" class="ttr-material-button ttr-submenu-toggle">HOME</a>
 					</li>
 
 				</ul>
-				<!-- header left menu end -->
 			</div>
 			<div class="ttr-header-right ttr-with-seperator">
-				<!-- header right menu start -->
 				<ul class="ttr-header-navigation">
 					<li>
 						<div class="ttr-header-submenu">
 							<ul>
-								@* <li><a asp-action="Index" asp-controller="Home">My profile</a></li> *@
 								<li><a asp-action="Login" asp-controller="Accounts">Logout</a></li>
 							</ul>
 						</div>
 					</li>
 				</ul>
-				<!-- header right menu end -->
 			</div>
 		</div>
 	</header>
 
-
-	<div class="container">
-		<main role="main" class="" style="padding:7%;">
-			@RenderBody()
-		</main>
+	<div class="ttr-sidebar">
+		<div class="ttr-sidebar-wrapper content-scroll">
+			<div class="ttr-sidebar-logo">
+				<a href="#"><img alt="" src="~/edu/admin/assets/images/logo.png" width="122" height="27"></a>
+				<div class="ttr-sidebar-toggle-button">
+					<i class="ti-arrow-left"></i>
+				</div>
+			</div>
+			<nav class="ttr-sidebar-navi">
+				<ul>
+					<li>
+						<a asp-action="Program" asp-controller="Accounts" class="ttr-material-button">
+							<span class="ttr-icon"><i class="ti-home"></i></span>
+							<span class="ttr-label">Dashborad</span>
+						</a>
+					</li>
+					<li>
+						<a href="#" class="ttr-material-button">
+							<span class="ttr-icon"><i class="ti-user"></i></span>
+							<span class="ttr-label">Courses</span>
+							<span class="ttr-arrow-icon"><i class="fa fa-angle-down"></i></span>
+						</a>
+						<ul>
+							<li>
+					     		<a asp-action="Program" asp-controller="Accounts" class="ttr-material-button"><span class="ttr-label">FrontEnd Developer</span></a>
+							</li>
+							<li>
+								<a asp-action="BackendDeveloper" asp-controller="Accounts" class="ttr-material-button"><span class="ttr-label">BackEnd Developer</span></a>
+							</li>
+							<li>
+								<a asp-action="FullStackDeveloper" asp-controller="Accounts" class="ttr-material-button"><span class="ttr-label">Full-Stack Developer</span></a>
+							</li>
+						</ul>
+					</li>
+					<li>
+						<a asp-controller="Accounts" asp-action="LogOut" class="ttr-material-button">
+							<span class="ttr-icon"></span>
+							<span class="ttr-label">LogOut</span>
+						</a>
+					</li>
+				    <li class="ttr-seperate"></li>
+				</ul>
+			</nav>
+		</div>
 	</div>
-
-	@* </div> *@
+		<div class="container">
+			<main role="main" class="" style="padding:7%;">
+				@RenderBody()
+			</main>
+		</div>
+	<div class="ttr-overlay"></div>
 	<script src="~/lib/jquery/dist/jquery.min.js"></script>
 	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 	<script src="~/js/site.js" asp-append-version="true"></script>
@@ -238,6 +272,9 @@
 	<script src="~/edu/admin/assets/vendors/chart/chart.min.js"></script>
 	<script src="~/edu/admin/assets/js/admin.js"></script>
 	<script src='~/edu/admin/assets/vendors/switcher/switcher.js'></script>
+
+	<script src="~/edu/assets/css/js/sweetalert.min.js"></script>
+	<script src="~/edu/assets/css/js/sweetalert2.all.min.js"></script>
 	<!-- External JavaScripts -->
 	@await RenderSectionAsync("Scripts", required: false)
 </body>

@@ -22,5 +22,9 @@ namespace Logic.IHelpers
 		AdminDashboardViewModel? GetAdminDashboardData();
         List<TrainingCourse> GetAllTrainingCourses(Guid? companyId);
         TrainingCourse GetCoursePayment(int courseId, ProgramEnum status);
-    }
+		ApplicationUser EditTecher(ApplicationUserViewModel techer);
+		ApplicationUser DeleteTecher(string techerId);
+
+
+	}
 }
