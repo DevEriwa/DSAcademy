@@ -1618,24 +1618,23 @@ function sendPaymentDetails() {
     var defaultBtnValue = $('#submit_btn').html();
     $('#submit_btn').html("Please wait...");
     $('#submit_btn').attr("disabled", true);
-
     var data = {
         CourseId: $('#courseId').val(),
         Amount: $('#amount').val(),
         ProgramStatus: $('#programStatus').val()
     };
-
-    var paymentDetails = JSON.stringify(data);  // Serialize object to JSON string
-
+    var paymentDetails = JSON.stringify(data);
     console.log("Serialized data sent to server:", paymentDetails);
-
     $.ajax({
-        type: 'POST',
+        type: 'Post',
+        dataType: 'Json',
         url: '/Student/GetPaymentDetails',
-        dataType: 'json',
-        data: { paymentDetails: paymentDetails },  // Send serialized JSON string
-
+        data:
+        {
+            paymentDetails: paymentDetails,
+        },
         success: function (result) {
+            debugger
             $('#submit_btn').html(defaultBtnValue);
             $('#submit_btn').attr("disabled", false);
 
@@ -1648,7 +1647,6 @@ function sendPaymentDetails() {
                 errorAlert(result.msg);
             }
         },
-
         error: function (ex) {
             $('#submit_btn').html(defaultBtnValue);
             $('#submit_btn').attr("disabled", false);
@@ -3628,3 +3626,124 @@ function copyToClipboard(elementId) {
         });
 }
 
+
+function CourseVideoPost(action) {
+    debugger;
+    $('#loader').show();
+    $('#loader-wrapper').show();
+    var data = {};
+    if (action == "CREATE") {
+        data.ActionType = action;
+        data.CourseId = $("#name").val();
+        var nameVDT = document.querySelector("#nameValidation");
+        data.Outline = $("#outline").val();
+        var outlineVDT = document.querySelector("#outlineValidation");
+        data.VideoLink = $("#videoLink").val();
+        var videoLinkVDT = document.querySelector("#videoLinkValidation");
+    }
+    if (action == "EDIT") {
+        data.ActionType = action;
+        data.Id = $("#edit_Id").val();
+        data.CourseId = $("#edit_Name").val();
+        var nameVDT = document.querySelector("#edit_NameValidation");
+        data.Outline = $("#edit_Outline").val();
+        var outlineVDT = document.querySelector("#edit_OutlineValidation");
+        data.VideoLink = $("#edit_videoLink").val();
+        var videoLinkVDT = document.querySelector("#edit_videoLinkValidation");
+    }
+    if (action == "DELETE") {
+        data.ActionType = action;
+        data.Id = $("#Delete_Id").val();
+    }
+
+    if (data.ActionType == "CREATE") {
+        if (data.CourseId != "" && data.Outline != "" && data.VideoLink != "") {
+
+            SendVideoDataToController(data);
+        }
+        else {
+            $("#loader").fadeOut(3000);
+            if (data.CourseId == "") {
+                nameVDT.style.display = "block";
+            } else {
+                nameVDT.style.display = "none";
+            }
+            if (data.Outline == "") {
+                outlineVDT.style.display = "block";
+            } else {
+                outlineVDT.style.display = "none";
+            }
+            if (data.VideoLink == "") {
+                videoLinkVDT.style.display = "block";
+            } else {
+                videoLinkVDT.style.display = "none";
+            }
+        }
+    }
+    else if (data.ActionType == "EDIT") {
+        if (data.Id != "" && data.CourseId != 0 && data.Outline != "" && data.VideoLink) {
+
+            SendVideoDataToController(data);
+        }
+        else {
+            $("#loader").fadeOut(3000);
+            if (data.CourseId == "") {
+                nameVDT.style.display = "block";
+            } else {
+                nameVDT.style.display = "none";
+            }
+            if (data.Outline == "") {
+                outlineVDT.style.display = "block";
+            } else {
+                outlineVDT.style.display = "none";
+            }
+            if (data.VideoLink == "") {
+                videoLinkVDT.style.display = "block";
+            } else {
+                videoLinkVDT.style.display = "none";
+            }
+        }
+    }
+    else if (data.ActionType == "DELETE") {
+        if (data.Id != "") {
+
+            SendVideoDataToController(data);
+        }
+    }
+    else {
+
+        $("#loader").fadeOut(3000);
+        errorAlert("Failed");
+    }
+}
+
+function SendVideoDataToController(data) {
+    debugger;
+    let collectedData = JSON.stringify(data);
+
+    $.ajax({
+        type: 'Post',
+        dataType: 'json',
+        url: '/Admin/TrainingVideoUpload',
+        data:
+        {
+            collectedVideoData: collectedData,
+        },
+        success: function (result) {
+
+            if (!result.isError) {
+                $("#loader").fadeOut(3000);
+                var url = '/Admin/TrainingVideos';
+                successAlertWithRedirect(result.msg, url)
+            }
+            else {
+                $("#loader").fadeOut(3000);
+                errorAlert(result.msg)
+            }
+        },
+        error: function (ex) {
+            $("#loader").fadeOut(3000);
+            errorAlert("Error occured try again");
+        }
+    });
+}

@@ -29,6 +29,11 @@ public class Startup
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
+        services.Configure<FormOptions>(options =>
+        {
+            // Set the maximum allowed size for uploaded files to 100 MB (104857600 bytes)
+            options.MultipartBodyLengthLimit = 104857600; // 100 MB, adjust as necessary
+        });
         services.AddDbContext<AppDbContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("StudentManagement") ?? throw new InvalidOperationException("Connection string 'StudentManagement' not found.")));
 

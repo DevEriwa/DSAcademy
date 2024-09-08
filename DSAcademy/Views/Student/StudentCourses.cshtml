@@ -1,0 +1,186 @@
+﻿@model IEnumerable<Core.Models.TrainingCourse>;
+@{
+	ViewData["Title"] = "StudentCourses";
+	Layout = "~/Views/Shared/_StudentLayout.cshtml";
+	var paidCourseIdList = ViewBag.PaidCourseIdList;
+}
+<!-- Page Header -->
+<div class="page-header">
+	<div class="row align-items-center">
+		<div class="col">
+			<h3 class="page-title">Student</h3>
+			<ul class="breadcrumb">
+				<li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
+				<li class="breadcrumb-item active"></li>
+			</ul>
+		</div>
+	</div>
+</div>
+<!-- /Page Header -->
+<!-- Search Filter -->
+<div class="row filter-row">
+	<div class="col-sm-6 col-md-3">
+		<div class="form-group form-focus">
+			<input type="text" class="form-control floating">
+			<label class="focus-label">Client ID</label>
+		</div>
+	</div>
+	<div class="col-sm-6 col-md-3">
+		<div class="form-group form-focus">
+			<input type="text" class="form-control floating">
+			<label class="focus-label">Client Name</label>
+		</div>
+	</div>
+	<div class="col-sm-6 col-md-3">
+		<div class="form-group form-focus select-focus">
+			<select class="select floating">
+				<option>Select Company</option>
+				<option>Global Technologies</option>
+				<option>Delta Infotech</option>
+			</select>
+			<label class="focus-label">Company</label>
+		</div>
+	</div>
+	<div class="col-sm-6 col-md-3">
+		<a href="#" class="btn newSearchBtn btn-block"> Search </a>
+	</div>
+</div>
+<!-- Search Filter -->
+
+<div class="row staff-grid-row">
+
+	@if (Model != null && Model.Count() > 0)
+	{
+		@foreach (var course in Model)
+		{
+			<div class="col-md-3">
+				<div class="profile-widget">
+					<div class="profile-img">
+						<a href="client-profile.html" class="round"><img style="height:80px; " class="card-img-top rounded-circle" src="@course.Logo" alt="Card image cap"></a>
+					</div>
+					<div class="card-body mb-0">
+						<h4 class="user-name m-t-10 mb-0 text-ellipsis"><a href="client-profile.html">Title : @course.Title</a></h4>
+						<h4 class="user-name m-t-10 mb-0 text-ellipsis"><a href="client-profile.html">Duration : @course.Duration</a></h4>
+						<h4 class="user-name m-t-10 mb-0 text-ellipsis"><a href="client-profile.html">Amount: @String.Format("{0:n0}", course.Amount)</a></h4>
+						<div class="small mt-2">
+							@if (!User.IsInRole("Applicant"))
+							{
+								@if (paidCourseIdList != null)
+								{
+									@if (paidCourseIdList.Contains(course.Id))
+									{
+										<a asp-controller="Student" asp-action="TrainingVideos" class="btn newBtn btn-sm">Get Started</a>
+									}
+									else
+									{
+										<a href="#" class="btn btn-white btn-sm mr-2" data-toggle="modal" data-target="#Pay_Now" onclick="GetCourseId('@course.Id')">Pay Now</a>
+									}
+								}
+								else
+								{
+									<a href="#" class="btn btn-white btn-sm mr-2" data-toggle="modal" data-target="#Pay_Now" onclick="GetCourseId('@course.Id')">Pay Now</a>
+								}
+							}
+						</div>
+					</div>
+				</div>
+			</div>
+
+		}
+	}
+	else
+	{
+		<div cclass="row p5 m-5">
+			<div class="col-md-12 text-center p-5 m5">
+				<h2>No Record Found</h2>
+			</div>
+		</div>
+	}
+</div>
+<!-- /Page Content -->
+<!-- Pay Now Modal -->
+<div id="Pay_Now" class="modal custom-modal fade" role="dialog">
+	<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">BiviSoft Account Details</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<div class="row justify-content-center">
+					<div class="col-md-4">
+						<div class="form-group">
+							<label class="col-form-label">Account Name :</label>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+							<input class="form-control" placeholder="BiviSoft Academy" type="text" readonly>
+						</div>
+					</div>
+				</div>
+				<div class="row justify-content-center">
+					<div class="col-md-4">
+						<div class="form-group">
+							<label class="col-form-label">Account Number :</label>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="row">
+							<div class="col-md-10">
+								<input class="form-control" id="accountInput" Value="0123456789" type="text" disabled>
+							</div>
+							<div class="col-md-2">
+								<botton class="btn btn-white p-2" onclick="CopyLink('accountInput')"><i class="fa fa-clone"></i></botton>
+							</div>
+						</div>
+						<div class="form-group">
+							<a data-clipboard-target="#"></a>
+						</div>
+					</div>
+				</div>
+				<div class="row justify-content-center">
+					<div class="col-md-4">
+						<div class="form-group">
+							<label class="col-form-label">Bank Name :</label>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+							<input class="form-control" placeholder="Access Bank" type="text" readonly>
+						</div>
+					</div>
+				</div>
+				<div class="row justify-content-center">
+					<div class="col-md-10">
+						<input type="number" id="courseId" hidden />
+						<div class="form-group mb-0 row mb-2">
+							<div class="col-md-12">
+								<div class="input-group">
+									<div class="input-group-prepend">
+										<span class="input-group-text"><i class="fa fa-paperclip" aria-hidden="true"></i></span>
+									</div>
+									<input class="form-control" type="file" id="prove">
+									<div class="input-group-append">
+										<button class="btn newBtn" type="button" onclick="ManualPaymentAUpload()">Submit</button>
+									</div>
+								</div>
+							</div>
+						</div>
+						<h4 class="text-center mt-5"><a href="#" class="text-primary" onclick="SendCourseIdForPayment()">Pay with PayStack</a></h4>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- Pay Now Modal -->
+
+<script>
+	function GetCourseId(courseId) {
+		document.getElementById("courseId").value = courseId;
+		var chk = document.getElementById("courseId").value;
+	}
+</script>

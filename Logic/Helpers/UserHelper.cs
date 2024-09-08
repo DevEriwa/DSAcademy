@@ -174,16 +174,21 @@ namespace Logic.Helpers
             }
             return allPayments;
         }
-        public List<TrainingVideo> GetTrainingVideos()
-        {
-            var allVideos = _context.TrainingVideos.Where(v => v.IsActive).Include(c => c.Course).ToList();
-            if (allVideos.Any())
-            {
-                return allVideos;
-            }
-            return allVideos;
-        }
-        public List<TrainingVideo> GetStudentPaidTrainingVideos(string userID)
+		public TrainingVideosViewModel GetTrainingVideos()
+		{
+			var allVideos = _context.TrainingVideos
+				.Where(v => v.IsActive)
+				.Include(c => c.Course)
+				.ToList();
+			var viewModel = new TrainingVideosViewModel
+			{
+				Videos = allVideos, 									
+			};
+
+			return viewModel;
+		}
+
+		public List<TrainingVideo> GetStudentPaidTrainingVideos(string userID)
         {
 
             var getListOfCourseStudentPaidFor = _context.Payments.Where(t => t.UserId == userID && t.Status == PaymentStatus.Approved).ToList();

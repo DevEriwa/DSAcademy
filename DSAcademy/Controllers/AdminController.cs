@@ -141,7 +141,18 @@ namespace DSAcademy.Controllers
 			return View(allTrainingCourse);
 		}
 
-		// POST ACTION FOR ALL TRAINING COST SETUP
+		public async Task<IActionResult> TrainingVideos()
+		{
+			ViewBag.AllCourses = _dropdownHelper.DropdownOfCourses();
+			var username = User.Identity.Name;
+			ViewBag.Layout = _applicationHelper.GetUserLayout(username).FirstOrDefault();
+
+			// Fetch the view model
+			var viewModel = _userHelper.GetTrainingVideos();
+
+			// Return the view with the view model
+			return View(viewModel);
+		}
 		[HttpPost]
 		public JsonResult TrainingCoursePost(string collectedTrainingData, string base64)
 		{
@@ -251,5 +262,70 @@ namespace DSAcademy.Controllers
                 return Json(new { isError = true, msg = "An unexpected error occured " + ex.Message });
             }
         }
-    }
+
+
+		[HttpPost]
+		public async Task<JsonResult> TrainingVideoUpload(string collectedVideoData)
+		{
+			try
+			{
+				ViewBag.AllCourses = _dropdownHelper.DropdownOfCourses();
+
+				if (collectedVideoData != null)
+				{
+					var videoDetails = JsonConvert.DeserializeObject<TrainingVideosViewModel>(collectedVideoData);
+
+					if (videoDetails != null)
+					{
+						string resultMessage;
+
+						if (videoDetails.ActionType == GeneralAction.CREATE)
+						{
+							resultMessage = await _adminHelper.CreateTrainingVideoAsync(videoDetails);
+						}
+						else if (videoDetails.ActionType == GeneralAction.EDIT)
+						{
+							resultMessage = await _adminHelper.EditTrainingVideoAsync(videoDetails);
+						}
+						else if (videoDetails.ActionType == GeneralAction.DELETE)
+						{
+							resultMessage = await _adminHelper.DeleteTrainingVideoAsync(videoDetails.Id);
+						}
+						else
+						{
+							return Json(new { isError = true, msg = "Invalid Action Type" });
+						}
+
+						return Json(new { isError = false, msg = resultMessage });
+					}
+				}
+
+				return Json(new { isError = true, msg = "Failed" });
+			}
+			catch (Exception ex)
+			{
+				return Json(new { isError = true, msg = "An unexpected error occurred: " + ex.Message });
+			}
+		}
+
+		[HttpGet]
+		public JsonResult GetCourseDescriptionById(int? id)
+		{
+			try
+			{
+				if (id != null)
+				{
+					var courseDescription = _userHelper.GetTrainingCourseById(id).Description;
+					return Json(courseDescription);
+				}
+				return Json(new { isError = true, msg = "Failed" });
+
+			}
+			catch (Exception ex)
+			{
+				return Json(new { isError = true, msg = "An unexpected error occured " + ex.Message });
+			}
+		}
+
+	}
 }

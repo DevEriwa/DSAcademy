@@ -10,16 +10,21 @@
 	<link rel="icon" href="~/edu/admin/assets/images/dsa-png-4.png" type="image/png" />
 	<link rel="shortcut icon" href="~/edu/admin/assets/images/dsa-png-4.png" type="image/png" />
 
-	<!-- Custom Styles -->
-	<link href="~/edu/admin/assets/css/typography.css" rel="stylesheet" />
+	<!-- All PLUGINS CSS ============================================= -->
 	<link href="~/edu/admin/assets/css/assets.css" rel="stylesheet" />
-	<link href="~/edu/admin/assets/css/shortcodes/shortcodes.css" rel="stylesheet" />
-	<link href="~/edu/admin/assets/css/style.css" rel="stylesheet" />
-	<link href="~/edu/admin/assets/css/color/color-1.css" rel="stylesheet" />
-	<link href="~/edu/admin/assets/css/css/sweetalert2.min.css" rel="stylesheet" />
+	<link href="~/edu/admin/assets/vendors/calendar/fullcalendar.css" rel="stylesheet" />
 
-	<link rel="stylesheet" type="text/css" href="~/edu/admin/assets/vendors/calendar/fullcalendar.css">
-	<link rel="stylesheet" type="text/css" href="~/edu/admin/assets/css/dashboard.css">
+	<!-- TYPOGRAPHY ============================================= -->
+	<link href="~/edu/admin/assets/css/typography.css" rel="stylesheet" />
+
+	<!-- SHORTCODES ============================================= -->
+	<link href="~/edu/admin/assets/css/shortcodes/shortcodes.css" rel="stylesheet" />
+
+	<!-- STYLESHEETS ============================================= -->
+	<link href="~/edu/admin/assets/css/style.css" rel="stylesheet" />
+	<link href="~/edu/admin/assets/css/dashboard.css" rel="stylesheet" />
+	<link href="~/edu/admin/assets/css/color/color-1.css" rel="stylesheet" />
+	<link href="~/edu/assets/css/css/sweetalert2.min.css" rel="stylesheet" />
 
 	<script>
 		function errorAlert(message) {
@@ -216,29 +221,29 @@
 	</div>
 
 	@* </div> *@
-	<script src="~/lib/jquery/dist/jquery.min.js"></script>
-	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-	<script src="~/js/site.js" asp-append-version="true"></script>
-
-
-	<script src="~/edu/admin/assets/js/jquery.min.js"></script>
-	<script src="~/edu/admin/assets/vendors/bootstrap/js/popper.min.js"></script>
-	<script src="~/edu/admin/assets/vendors/bootstrap/js/bootstrap.min.js"></script>
-	<script src="~/edu/admin/assets/vendors/bootstrap-select/bootstrap-select.min.js"></script>
-	<script src="~/edu/admin/assets/vendors/bootstrap-touchspin/jquery.bootstrap-touchspin.js"></script>
-	<script src="~/edu/admin/assets/vendors/magnific-popup/magnific-popup.js"></script>
-	<script src="~/edu/admin/assets/vendors/counter/waypoints-min.js"></script>
-	<script src="~/edu/admin/assets/vendors/counter/counterup.min.js"></script>
-	<script src="~/edu/admin/assets/vendors/imagesloaded/imagesloaded.js"></script>
-	<script src="~/edu/admin/assets/vendors/masonry/masonry.js"></script>
-	<script src="~/edu/admin/assets/vendors/masonry/filter.js"></script>
-	<script src="~/edu/admin/assets/vendors/owl-carousel/owl.carousel.js"></script>
-	<script src='~/edu/admin/assets/vendors/scroll/scrollbar.min.js'></script>
-	<script src="~/edu/admin/assets/js/functions.js"></script>
+	<!-- External JavaScripts -->
+	<script src="~/edu/assets/js/jquery.min.js"></script>
+	<script src="~/edu/assets/vendors/bootstrap/js/popper.min.js"></script>
+	<script src="~/edu/assets/vendors/bootstrap/js/bootstrap.min.js"></script>
+	<script src="~/edu/assets/vendors/bootstrap-select/bootstrap-select.min.js"></script>
+	<script src="~/edu/assets/vendors/bootstrap-touchspin/jquery.bootstrap-touchspin.js"></script>
+	<script src="~/edu/assets/vendors/magnific-popup/magnific-popup.js"></script>
+	<script src="~/edu/assets/vendors/counter/counterup.min.js"></script>
+	<script src="~/edu/assets/vendors/counter/waypoints-min.js"></script>
+	<script src="~/edu/assets/vendors/imagesloaded/imagesloaded.js"></script>
+	<script src="~/edu/assets/vendors/masonry/masonry.js"></script>
+	<script src="~/edu/assets/vendors/masonry/filter.js"></script>
+	<script src="~/edu/assets/vendors/owl-carousel/owl.carousel.js"></script>
+	<script src="~/edu/assets/js/jquery.scroller.js"></script>
+	<script src="~/edu/assets/js/functions.js"></script>
+	<script src="~/edu/admin/assets/vendors/scroll/scrollbar.min.js"></script>
 	<script src="~/edu/admin/assets/vendors/chart/chart.min.js"></script>
 	<script src="~/edu/admin/assets/js/admin.js"></script>
-	<script src='~/edu/admin/assets/vendors/switcher/switcher.js'></script>
-	<!-- External JavaScripts -->
+	<script src="~/edu/admin/assets/vendors/calendar/moment.min.js"></script>
+	<script src="~/js/site.js"></script>
+	<script src="~/edu/admin/assets/vendors/switcher/switcher.js"></script>
+	<script src="~/edu/assets/css/js/sweetalert.min.js"></script>
+	<script src="~/edu/assets/css/js/sweetalert2.all.min.js"></script>
 	@await RenderSectionAsync("Scripts", required: false)
 </body>
 

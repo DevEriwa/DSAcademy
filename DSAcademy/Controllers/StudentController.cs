@@ -1,10 +1,12 @@
-﻿using Core.Db;
+﻿using Core.Config;
+using Core.Db;
 using Core.Models;
 using Core.ViewModels;
 using Logic.IHelpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using NETCore.MailKit.Core;
 using Newtonsoft.Json;
 using static Logic.AppHttpContext;
 
@@ -22,6 +24,8 @@ namespace DSAcademy.Controllers
         private readonly IUserHelper _userHelper;
         private readonly IStudentHelper _studentHelper;
         private readonly IPaystackHelper _paystackHelper;
+        private readonly IGeneralConfiguration _generalConfiguration;
+        private readonly IEmailService _emailService;
 
         public StudentController
             (AppDbContext context,
@@ -31,7 +35,9 @@ namespace DSAcademy.Controllers
             IApplicationHelper applicationHelper,
             IUserHelper userHelper,
             IStudentHelper studentHelper,
-            IPaystackHelper paystackHelper)
+            IPaystackHelper paystackHelper,
+            IGeneralConfiguration generalConfiguration,
+            IEmailService emailService)
         {
             _context = context;
             _userManger = userManger;
@@ -41,12 +47,34 @@ namespace DSAcademy.Controllers
             _userHelper = userHelper;
             _studentHelper = studentHelper;
             _paystackHelper = paystackHelper;
+            _generalConfiguration = generalConfiguration;
+            _emailService = emailService;
         }
+        [HttpGet]
         public IActionResult Index()
         {
             var dashBoardData = _studentHelper.DashboardBuildingServices();
             return View(dashBoardData);
         }
+
+		[HttpGet]
+		public JsonResult GetCourseOutLineById(Guid id)
+		{
+			try
+			{
+				if (id != Guid.Empty)
+				{
+					var courseOutLine = _userHelper.GetVideosById(id).Outline;
+					return Json(courseOutLine);
+				}
+				return Json(new { isError = true, msg = "Failed" });
+
+			}
+			catch (Exception ex)
+			{
+				return Json(new { isError = true, msg = "An unexpected error occured " + ex.Message });
+			}
+		}
 
 		[HttpPost]
 		public JsonResult GetPaymentDetailss(string paymentDetails)
@@ -185,6 +213,60 @@ namespace DSAcademy.Controllers
 				}
 			}
 			return Json(new { isError = true, msg = "Upload Failed" });
+		}
+        public bool GetPaymentResponse(Paystack paystack)
+        {
+            if (paystack != null)
+            {
+                if (paystack != null || paystack.PaymentHistoryId > 0)
+                {
+                    var user = Session.GetCurrentUser();
+                    var course = _userHelper.GetTrainingCourseById(paystack.PaymentsHistory.CourseId);
+                    var completedpayment = _paystackHelper.VerifyPayment(paystack);
+
+                    string toEmail = _generalConfiguration.AdminEmail;
+                    string subject = "PAYMENT NOTIFICATION";
+                    string message = "&#8358;" + paystack.amount + " has been credited to your Account by " + user.FullName +
+                         " been payment for " + course.Title + " with Ref No: " + paystack.reference;
+
+                    _emailService.SendAsync(toEmail, subject, message);
+                    return true;
+                }
+            }
+            return false;
+        }
+		[HttpGet]
+		public IActionResult StudentCourses()
+		{
+			var userId = Session.GetCurrentUser().Id;
+			var listOfallCourses = new List<TrainingCourse>();
+			if (userId != null)
+			{
+				ViewBag.PaidCourseIdList = _userHelper.GetListOfCourseIdStudentPaid4(userId);
+			}
+			var allCourses = _studentHelper.GetAllTrainingCourseDB();
+			if (allCourses != null)
+			{
+				listOfallCourses = allCourses;
+				return View(listOfallCourses);
+			}
+			return View(listOfallCourses);
+		}
+
+		[HttpGet]
+		public IActionResult TrainingVideos()
+		{
+			var newListVideos = new List<TrainingVideo>();
+			var userId = Session.GetCurrentUser().Id;
+			if (userId != null)
+			{
+				var listOfVideos = _userHelper.GetStudentPaidTrainingVideos(userId);
+				if (listOfVideos != null)
+				{
+					return View(listOfVideos);
+				}
+			}
+			return View(newListVideos);
 		}
 	}
 }

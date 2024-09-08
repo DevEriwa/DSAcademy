@@ -215,27 +215,7 @@ namespace Logic.Helpers
             Random rand = new Random((int)DateTime.Now.Ticks);
             return rand.Next(100000000, 999999999);
         }
-        public bool GetPaymentResponse(Paystack paystack)
-        {
-            if (paystack != null)
-            {
-                if (paystack != null || paystack.PaymentHistoryId > 0)
-                {
-                    var user = Session.GetCurrentUser();
-                    var course = _userHelper.GetTrainingCourseById(paystack.PaymentsHistory.CourseId);
-                    var completedpayment = VerifyPayment(paystack);
 
-                    string toEmail = _generalConfiguration.AdminEmail;
-                    string subject = "PAYMENT NOTIFICATION";
-                    string message = "&#8358;" + paystack.amount + " has been credited to your Account by " + user.FullName +
-                         " been payment for " + course.Title + " with Ref No: " + paystack.reference;
-
-                    _emailService.SendEmail(toEmail, subject, message);
-                    return true;
-                }
-            }
-            return false;
-        }
         public async Task<PaystackRepsonse> VerifyPayment(Paystack payment)
         {
             PaystackRepsonse paystackRepsonse = null;

@@ -12,11 +12,12 @@ namespace Core.ViewModels
 	{
 		public Guid Id { get; set; }
 		public int CourseId { get; set; }
+		public string Title { get; set; }
 		public string VideoLink { get; set; }
 		public string Outline { get; set; }
 		public bool IsActive { get; set; }
 		public GeneralAction ActionType { get; set; }
 		public DateTime DateCreated { get; set; }
-		public virtual List<TrainingVideo> Videos { get; set; }
+		public List<TrainingVideo> Videos { get; set; }
 	}
 }

@@ -4,6 +4,7 @@ using Core.Enum;
 using Core.Models;
 using Core.ViewModels;
 using Logic.IHelpers;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -446,5 +447,80 @@ namespace Logic.Helpers
             }
             return null;
         }
-    }
+
+
+		public async Task<string> HandleFileUploadAsync(IFormFile uploadedFile)
+		{
+			if (uploadedFile != null && uploadedFile.Length > 0)
+			{
+				var fileName = Path.GetFileName(uploadedFile.FileName);
+				var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads", fileName);
+
+				using (var stream = new FileStream(filePath, FileMode.Create))
+				{
+					await uploadedFile.CopyToAsync(stream);
+				}
+
+				return filePath;
+			}
+
+			return null;
+		}
+
+		public async Task<string> CreateTrainingVideoAsync(TrainingVideosViewModel videoDetails/*, IFormFile uploadedFile*/)
+		{
+			//var filePath = await HandleFileUploadAsync(uploadedFile);
+
+			var newVideo = new TrainingVideo
+			{
+				CourseId = videoDetails.CourseId,
+				VideoLink = videoDetails.VideoLink,
+				VideoPath = "",
+				Outline = videoDetails.Outline,
+				IsActive = true,
+				DateCreated = DateTime.Now,
+			};
+
+			_context.TrainingVideos.Add(newVideo);
+			await _context.SaveChangesAsync();
+
+			return "Created Successfully";
+		}
+
+		public async Task<string> EditTrainingVideoAsync(TrainingVideosViewModel videoDetails)
+		{
+			var videoEdited = await _context.TrainingVideos.FindAsync(videoDetails.Id);
+
+			if (videoEdited != null)
+			{
+				videoEdited.CourseId = videoDetails.CourseId;
+				videoEdited.VideoLink = videoDetails.VideoLink;
+				videoEdited.Outline = videoDetails.Outline;
+
+				_context.TrainingVideos.Update(videoEdited);
+				await _context.SaveChangesAsync();
+
+				return "Updated Successfully";
+			}
+
+			return "Video Not Found";
+		}
+
+		public async Task<string> DeleteTrainingVideoAsync(Guid id)
+		{
+			var videoDeleted = await _context.TrainingVideos.FindAsync(id);
+
+			if (videoDeleted != null)
+			{
+				videoDeleted.IsActive = false;
+
+				_context.TrainingVideos.Update(videoDeleted);
+				await _context.SaveChangesAsync();
+
+				return "Deleted Successfully";
+			}
+
+			return "Video Not Found";
+		}
+	}
 }

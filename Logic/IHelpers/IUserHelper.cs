@@ -25,12 +25,13 @@ namespace Logic.IHelpers
 		List<TestQuestionsViewModel> GetTestQuestionsForPage1(int? Id);
 		List<TestQuestionsViewModel> GetTestQuestionsForPage2(int? Id);
 		TrainingCourse GetTrainingCourseById(int? Id);
-		List<TrainingVideo> GetTrainingVideos();
+		//List<TrainingVideo> GetTrainingVideos();
 		Task<UserVerification> GetUserToken(Guid token);
 		TrainingVideo GetVideosById(Guid Id);
 		Task<List<ApplicationUser>> GetStudentListAsync();
 		List<ApplicationUserViewModel> GetTeacher();
 		ApplicationUser FindById(string Id);
-
-    }
+		TrainingVideosViewModel GetTrainingVideos();
+		List<int?> GetListOfCourseIdStudentPaid4(string userID);
+	}
 }

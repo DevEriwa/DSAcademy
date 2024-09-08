@@ -1,6 +1,7 @@
 ﻿using Core.Enum;
 using Core.Models;
 using Core.ViewModels;
+using Microsoft.AspNetCore.Http;
 
 namespace Logic.IHelpers
 {
@@ -22,5 +23,8 @@ namespace Logic.IHelpers
 		AdminDashboardViewModel? GetAdminDashboardData();
         List<TrainingCourse> GetAllTrainingCourses(Guid? companyId);
         TrainingCourse GetCoursePayment(int courseId, ProgramEnum status);
-    }
+		Task<string> CreateTrainingVideoAsync(TrainingVideosViewModel videoDetails);
+		Task<string> EditTrainingVideoAsync(TrainingVideosViewModel videoDetails);
+		Task<string> DeleteTrainingVideoAsync(Guid id);
+	}
 }

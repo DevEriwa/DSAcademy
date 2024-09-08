@@ -1,0 +1,224 @@
+﻿@model Core.ViewModels.TrainingVideosViewModel
+
+@{
+    ViewData["Title"] = "Training Videos";
+    Layout = "~/Views/Shared/_CompanyAdminLayout.cshtml";
+}
+
+<style>
+    body {
+        counter-reset: Serial;
+    }
+    tr td:first-child:before {
+        counter-increment: Serial;
+        content: counter(Serial);
+    }
+    .modal-title {
+        font-size: 20px;
+        font-weight: bold;
+    }
+    .table th,
+    .table td {
+        vertical-align: middle;
+        text-align: center;
+    }
+</style>
+
+<main id="main" class="main">
+	<div class="pagetitle">
+		<h1>Training Courses</h1>
+		<nav>
+			<ol class="breadcrumb">
+				<li class="breadcrumb-item"><a href="index.html">Home</a></li>
+				<li class="breadcrumb-item">Tables</li>
+				<li class="breadcrumb-item active">Courses</li>
+			</ol>
+		</nav>
+		<div class="col-auto float-right ml-auto">
+            <a class="btn btn-primary" href="#" data-bs-toggle="modal" data-bs-target="#add_Video" style="margin-left:88%;"><i class="fa fa-plus"></i> Add Course</a>
+		</div>
+	</div>
+
+    <section class="section">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">Training Courses</h5>
+
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th scope="col">S/N</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Video Link</th>
+                                    <th scope="col">View Outline</th>
+                                    <th scope="col">Date Created</th>
+                                    <th scope="col">Action</th>
+                                </tr>
+                            </thead>
+                            @if (Model.Videos != null)
+                            {
+                                <tbody>
+                                    @foreach (var course in Model.Videos)
+                                    {
+                                        <tr>
+                                            <td></td>
+                                            <td>@course.Course.Title</td>
+                                            <td>@course.VideoLink</td>
+											<td class="text-center"><a class="btn newBtn" href="#" onclick="ViewOutline2('@course.Id')" data-toggle="modal" data-target="#outline_Modal">Open</a></td>
+                                            <td>@course.DateCreated.ToString("d")</td>
+											<td class="text-right">
+												<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#edit_Video" onclick="GetVideoById('@course.Id')">Edit</button>
+												<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#delete_Video" onclick="GetVideoById('@course.Id')">Delete</button>
+											</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            }
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- Modals here (same as before) -->
+<!-- Add Video Modal -->
+<div class="modal custom-modal fade" id="add_Video" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <button type="button" class="close" data-dismiss="modal"><i class="fa fa-close"></i></button>
+            <div class="modal-body">
+                <h5 class="modal-title text-center mb-3">Add Course Video</h5>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>Course Name</label>
+                            <select class="form-control custom-select" id="name" asp-items="@(new SelectList(@ViewBag.AllCourses,  "Id", "Title" ))"></select>
+                            <p class="text-danger" id="nameValidation" style="display: none;">Select Course</p>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>Course Outline</label>
+                            <textarea class="form-control" id="outline"></textarea>
+                            <p class="text-danger" id="outlineValidation" style="display: none;">Enter the course outline</p>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>Course Video Link</label>
+                            <input type="text" class="form-control" id="videoLink" placeholder="Paste video link">
+                            <p class="text-danger" id="videoLinkValidation" style="display: none;">Paste a video link or upload a video</p>
+                        </div>
+                    </div>
+                    
+                </div>
+                <div class="m-t-20 text-center">
+                    <button class="btn btn-primary submit-btn" onclick="CourseVideoPost('CREATE')">Add Video Details</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Plan Modal -->
+<div class="modal custom-modal fade" id="edit_Video" role="dialog">
+	<div class="modal-dialog modal-md modal-dialog-centered">
+		<div class="modal-content">
+			<button type="button" class="close" data-dismiss="modal"><i class="fa fa-close"></i></button>
+			<div class="modal-body">
+				<h5 class="modal-title text-center mb-3">Edit Video</h5>
+				<div class="row">
+					<div class="col-md-12">
+						<div class="form-group">
+							<label>Course  Name</label>
+							<input type="text" id="edit_Id" hidden>
+							<select class="form-control custom-select" id="edit_Name" asp-items="@(new SelectList(@ViewBag.AllCourses,  "Id", "Title" ))"></select>
+							<p class="text-danger" id="edit_NameValidation" style="display: none;">Select Course</p>
+						</div>
+					</div>
+					<div class="col-md-12">
+						<div class="form-group">
+							<label>Course Outline</label>
+							<textarea rows="3" class="form-control" id="edit_Outline" required></textarea>
+							<p class="text-danger" id="edit_OutlineValidation" style="display: none;">Enter the course outline</p>
+						</div>
+					</div>
+					<div class="col-md-12">
+						<div class="form-group">
+							<label>Course VideoLink</label>
+							<input type="text" class="form-control" id="edit_videoLink" placeholder="Paste video link" required>
+							<p class="text-danger" id="edit_videoLinkValidation" style="display: none;">Upload Video</p>
+						</div>
+					</div>
+					
+				</div>
+				<div class="m-t-20 text-center">
+					<button class="btn newBtn submit-btn" onclick="CourseVideoPost('EDIT')">Update</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- /Edit Plan Modal -->
+<!-- Delete Course Modal -->
+<div class="modal custom-modal fade" id="delete_Video" role="dialog">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-body">
+				<div class="form-header">
+					<input id="Delete_Id" hidden />
+					<h3>Delete Branch</h3>
+					<p>Are you sure want to delete?</p>
+				</div>
+				<div class="modal-btn delete-action">
+					<div class="row">
+						<div class="col-6">
+							<a onclick="CourseVideoPost('DELETE')" class="btn btn-primary continue-btn">Delete</a>
+						</div>
+						<div class="col-6">
+							<a href="javascript:void(0);" data-dismiss="modal" class="btn btn-primary cancel-btn">Cancel</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- /Delete Course Modal -->
+<!-- VIEW TRAINING OUTLINE Modal -->
+<div id="outline_Modal" class="modal custom-modal fade" role="dialog">
+	<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h3 class="text-center pb-2">Course Outline</h3>
+			</div>
+			<div class="w-100 px-4" id="view_Outline">	</div>
+		</div>
+	</div>
+</div>
+<!-- /VIEW TRAINING OUTLINE   Modal -->
+
+<script>
+	function ViewOutline2(id) {
+		$.ajax({
+			type: 'GET',
+			url: '/Student/GetCourseOutLineById',
+			data: { id: id },
+			dataType: 'json',
+			success: function (data) {
+				if (!data.isError) {
+					var outlin = data.split("\n");
+					document.getElementById('view_Outline').innerHTML = "<ul><li>" + outlin.join("</li><li>") + "</li></ul>";
+				}
+			}
+		});
+
+	}
+</script>
