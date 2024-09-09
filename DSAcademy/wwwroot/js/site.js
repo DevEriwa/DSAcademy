@@ -3329,8 +3329,6 @@ function registerStudent() {
         }
     });
 }
-
-
 ///For LogIn
 function login() {
     $('#loader').show();
@@ -3512,7 +3510,6 @@ function studemtLink(companyId) {
         }
     });
 }
-
 function copyLinkToClipboard(link) {
     if (navigator.clipboard && window.isSecureContext) {
         // Use modern Clipboard API
@@ -3625,6 +3622,72 @@ function copyToClipboard(elementId) {
             copyText.readOnly = true;
         });
 }
+function CreateTeacher() {
+    debugger
+    var defaultBtnValue = $('#submit_btn').html();
+    $('#submit_btn').html("Please wait...");
+    $('#submit_btn').attr("disabled", true);
+    var data = {};
+    data.FirstName = $('#teacher_first_name').val();
+    data.LastName = $('#teacher_last_name').val();
+    data.PhoneNumber = $('#teacher_phone_number').val();
+    data.Email = $('#teacher_email').val();
+    data.PassWord = $('#teacher_password').val();
+    data.ConfirmPassword = $('#teacher_comfirmpassword').val();
+    data.Address = $('#teacher_address').val();
+    let teacherDetails = JSON.stringify(data);
+    $.ajax({
+        type: 'Post',
+        url: '/Admin/AddTeacher',
+        dataType: 'json',
+        data:
+        {
+            teacherDetails: teacherDetails,
+        },
+        success: function (result) {
+            if (!result.isError) {
+                var url = '/Admin/Teacher';
+                successAlertWithRedirect(result.msg, url);
+                $('#submit_btn').html(defaultBtnValue);
+            }
+            else {
+                $('#submit_btn').html(defaultBtnValue);
+                $('#submit_btn').attr("disabled", false);
+                errorAlert(result.msg);
+            }
+        },
+        error: function (ex) {
+            $('#submit_btn').html(defaultBtnValue);
+            $('#submit_btn').attr("disabled", false);
+            errorAlert("An error has occurred, try again. Please contact support if the error persists");
+        }
+    });
+}
+function getTeacherById(id) {
+    $.ajax({
+        type: 'GET',
+        url: '/Admin/GetTecherById',
+        dataType: 'json',
+        data:
+        {
+            techerId: id
+        },
+        success: function (data) {
+            if (!data.isError) {
+                $('#delete_techer_Id').val(data.id);
+                $('#edit_teacher_id').val(data.id);
+                $('#edit_teacher_first_name').val(data.firstName);
+                $('#edit_teacher_last_name').val(data.lastName);
+                $('#edit_teacher_email').val(data.email);
+                $('#edit_teacher_phone_number').val(data.phoneNumber);
+                $('#edit_teacher_address').val(data.address);
+            }
+        },
+        error: function (ex) {
+            "Something went wrong, contact support - " + errorAlert(ex);
+        }
+    });
+};
 
 
 function CourseVideoPost(action) {
@@ -3744,6 +3807,78 @@ function SendVideoDataToController(data) {
         error: function (ex) {
             $("#loader").fadeOut(3000);
             errorAlert("Error occured try again");
+        }
+    });
+}
+function EditTecher() {
+    var defaultBtnValue = $('#submit_btn').html();
+    $('#submit_btn').html("Please wait...");
+    $('#submit_btn').attr("disabled", true);
+    var data = {};
+    data.Id = $('#edit_teacher_id').val();
+    data.FirstName = $('#edit_teacher_first_name').val();
+    data.LastName = $('#edit_teacher_last_name').val();
+    data.PhoneNumber = $('#edit_teacher_phone_number').val();
+    data.Email = $('#edit_teacher_email').val();
+    data.Address = $('#edit_teacher_address').val();
+    let teacherDetails = JSON.stringify(data);
+    $.ajax({
+        type: 'Post',
+        url: '/Admin/EditTecher',
+        dataType: 'json',
+        data:
+        {
+            teacherDetails: teacherDetails,
+        },
+        success: function (result) {
+            if (!result.isError) {
+                var url = '/Admin/Teacher';
+                successAlertWithRedirect(result.msg, url);
+                $('#submit_btn').html(defaultBtnValue);
+            }
+            else {
+                $('#submit_btn').html(defaultBtnValue);
+                $('#submit_btn').attr("disabled", false);
+                errorAlert(result.msg);
+            }
+        },
+        error: function (ex) {
+            $('#submit_btn').html(defaultBtnValue);
+            $('#submit_btn').attr("disabled", false);
+            errorAlert("An error has occurred, try again. Please contact support if the error persists");
+        }
+    });
+}
+
+function DeleteTecher() {
+    var defaultBtnValue = $('#delet_btn').html();
+    $('#delet_btn').html("Please wait...");
+    $('#delet_btn').attr("disabled", true);
+    var id = $('#delete_techer_Id').val();
+    $.ajax({
+        type: 'POST',
+        url: '/Admin/DeleteTecher',
+        dataType: 'json',
+        data:
+        {
+            techerId: id,
+        },
+        success: function (result) {
+            if (!result.isError) {
+                var url = "/Admin/Teacher";
+                successAlertWithRedirect(result.msg, url);
+                $('#delet_btn').html(defaultBtnValue);
+            }
+            else {
+                $('#delet_btn').html(defaultBtnValue);
+                $('#delet_btn').attr("disabled", false);
+                errorAlert(result.msg);
+            }
+        },
+        error: function (ex) {
+            $('#delet_btn').html(defaultBtnValue);
+            $('#delet_btn').attr("disabled", false);
+            errorAlert("Please fill the form correctly");
         }
     });
 }

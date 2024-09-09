@@ -307,30 +307,27 @@ namespace Logic.Helpers
             }
             return new List<ApplicationUser>();
         }
-        public List<ApplicationUserViewModel> GetTeacher()
+        public List<ApplicationUserViewModel> GetTeacher(Guid? companyId)
         {
-            var loggedInUser = Session.GetCurrentUser();
-
             return _context.ApplicationUsers
-                 .Where(x => !x.IsDeactivated && x.CompanyId == loggedInUser.CompanyId && x.IsActivated && (x.Role == "Techer"))
-                 .Include(y => y.Company)
-
-             .Select(s => new ApplicationUserViewModel
-             {
-                 Id = s.Id,
-                 Address = s.Address,
-                 Status = s.Status,
-                 CompanyId = s.CompanyId,
-                 Email = s.Email,
-                 UserName = s.UserName,
-                 FirstName = s.FirstName,
-                 LastName = s.LastName,
-                 FullName = s.FullName,
-                 Role = s.Role,
-                 PhoneNumber = s.PhoneNumber,
-                 IsProgram = s.IsProgram,
-                 IsAdmin = false,
-             }).ToList();
+            .Where(x => !x.IsDeactivated && x.CompanyId == companyId && x.IsActivated && (x.Role == "Techer"))
+            .Include(y => y.Company)
+            .Select(s => new ApplicationUserViewModel
+            {
+                Id = s.Id,
+                Address = s.Address,
+                Status = s.Status,
+                CompanyId = s.CompanyId,
+                Email = s.Email,
+                UserName = s.UserName,
+                FirstName = s.FirstName,
+                LastName = s.LastName,
+                FullName = s.FullName,
+                Role = s.Role,
+                PhoneNumber = s.PhoneNumber,
+                IsProgram = s.IsProgram,
+                IsAdmin = false,
+            }).ToList();
         }
         public ApplicationUser FindById(string Id)
         {
@@ -561,6 +558,19 @@ namespace Logic.Helpers
 		public void LogPageStatisticInHangfire(PageStatistics sat)
 		{
 			BackgroundJob.Enqueue(() => SavePageStatistics(sat));
+		}
+		public async Task<Company> FindCompanyByUserId(string id)
+		{
+			return _context.Companies.Where(u => u.CreatedById == id)?.Include(c => c.CreatedBy).FirstOrDefaultAsync().Result;
+		}
+		public ApplicationUser GetTecherById(string? techerId)
+		{
+			var getTecher = _context.ApplicationUsers.FirstOrDefault(t => t.Id == techerId);
+			if (getTecher != null)
+			{
+				return getTecher;
+			}
+			return getTecher;
 		}
 
 	}

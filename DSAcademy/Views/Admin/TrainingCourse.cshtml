@@ -77,7 +77,6 @@
 									@foreach (var course in Model)
 									{
 										<tr>
-											<td></td>
 											<td>@course.Title</td>
 											<td>@course.Amount</td>
 											<td>@course.ProgramStatus</td>
@@ -309,6 +308,24 @@
 			}
 		});
 	}
+	var tables = document.getElementsByTagName('tbody');
+	var table = tables[tables.length - 1];
+	var rows = table.rows;
+	for (var i = 0, td; i < rows.length; i++) {
+		td = document.createElement('td');
+		td.appendChild(document.createTextNode(i + 1));
+		rows[i].insertBefore(td, rows[i].firstChild);
+	}
+	$(document).ready(function () {
+		$('#myInput').keyup(function () {
+			debugger;
+			var value = $("#myInput").val().toLowerCase();
+
+			$("#myTable tr").filter(function () {
+				$(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+			});
+		});
+	});
 </script>
 
 

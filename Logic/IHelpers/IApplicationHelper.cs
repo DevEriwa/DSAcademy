@@ -16,5 +16,6 @@ namespace Logic.IHelpers
         ApplicationUser QualifiedToTakeWrritingInterview(ApplicationUser applicantIdToAccept);
 		Payments SaveProveOfPayment(PaymentViewModel collectedData, string base64, ApplicationUser user);
         Task<bool> CreateCompany(ApplicationUserViewModel companyViewModel, string base64);
+        Task<ApplicationUser> RegisterTeacher(ApplicationUserViewModel applicationUserViewModel);
 	}
 }

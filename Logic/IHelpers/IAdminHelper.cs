@@ -23,6 +23,11 @@ namespace Logic.IHelpers
 		AdminDashboardViewModel? GetAdminDashboardData();
         List<TrainingCourse> GetAllTrainingCourses(Guid? companyId);
         TrainingCourse GetCoursePayment(int courseId, ProgramEnum status);
+		ApplicationUser EditTecher(ApplicationUserViewModel techer);
+		ApplicationUser DeleteTecher(string techerId);
+
+
+
 		Task<string> CreateTrainingVideoAsync(TrainingVideosViewModel videoDetails);
 		Task<string> EditTrainingVideoAsync(TrainingVideosViewModel videoDetails);
 		Task<string> DeleteTrainingVideoAsync(Guid id);

@@ -356,11 +356,12 @@ namespace Logic.Helpers
             if(loggedInUser.Id != null)
             {
                 var date = DateTime.Now;
-                var students = _userHelper.GetStudentListAsync().Result;
+				var userName = _userHelper.FindByEmailAsync(loggedInUser.Email).Result;
+				var students = _userHelper.GetStudentListAsync().Result;
                 var studentCount = students.Count();
-                var teacherCount = _userHelper.GetTeacher().Count();
+                var teacherCount = _userHelper.GetTeacher(userName.CompanyId).Count();
                 var courseCount = _userHelper.GetAllTrainingCourseFromDB().Count();
-                var userName = _userHelper.FindByEmailAsync(loggedInUser.Email).Result;
+               
                 var allstudents = _context.ApplicationUsers
                 .Where(x => !x.IsDeactivated && x.CompanyId == loggedInUser.CompanyId && (x.Role == "Student" || x.Role == "Applicant"))
                 .Include(x => x.Company).ToList();
@@ -445,6 +446,42 @@ namespace Logic.Helpers
                     return adminDashBoard;
                 }
             }
+            return null;
+        }
+		public ApplicationUser EditTecher(ApplicationUserViewModel techer)
+		{
+			var appUser = _context.ApplicationUsers
+				.FirstOrDefault(c => c.Id == techer.Id);
+			if (techer == null)
+			{
+				return null;
+			}
+			appUser.FirstName = techer.FirstName ?? appUser.FirstName;
+			appUser.LastName = techer.LastName ?? appUser.LastName;
+			appUser.Email = techer.Email ?? appUser.Email;
+			appUser.Address = techer.Address ?? appUser.Address;
+			appUser.PhoneNumber = techer.PhoneNumber ?? appUser.PhoneNumber;
+			appUser.IsActivated = true;
+
+			_context.ApplicationUsers.Update(appUser);
+			_context.SaveChanges();
+			return appUser;
+		}
+		public ApplicationUser DeleteTecher(string techerId)
+		{
+			var appUser = _context.ApplicationUsers
+				.FirstOrDefault(c => c.Id == techerId);
+			if (appUser == null)
+			{
+				return null;
+			}			
+			appUser.IsActivated = false;
+			appUser.IsDeactivated = true;
+			_context.ApplicationUsers.Update(appUser);
+			_context.SaveChanges();
+			return appUser;
+		}
+	}
             return null;
         }
 

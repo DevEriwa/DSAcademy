@@ -35,37 +35,6 @@ namespace Logic.Helpers
             _context = context;
         }
 
-        //public async Task<ApplicationUser> RegisterApplicantService(ApplicationUserViewModel applicationUserViewModel)
-        //{
-        //    if (applicationUserViewModel != null)
-        //    {
-        //        var newInstanceOfApplicantModelAboutToBCreated = new ApplicationUser
-        //        {
-        //            FirstName = applicationUserViewModel.FirstName,
-        //            LastName = applicationUserViewModel.LastName,
-        //            Email = applicationUserViewModel.Email,
-        //            PhoneNumber = applicationUserViewModel.PhoneNumber,
-        //            UserName = applicationUserViewModel.Email,
-        //            Address = applicationUserViewModel.Address,
-        //            HasLaptop = applicationUserViewModel.HasLaptop,
-        //            HasAnyProgrammingExp = applicationUserViewModel.HasAnyProgrammingExp,
-        //            ProgrammingLanguagesExps = applicationUserViewModel.ProgrammingLanguagesExps,
-        //            ApplicantResideInEnugu = applicationUserViewModel.ApplicantResideInEnugu,
-        //            ReasonForProgramming = applicationUserViewModel.ReasonForProgramming,
-        //            HowDoYouIntendToCopeStatement = applicationUserViewModel.HowDoYouIntendToCopeStatement,
-        //            Deactivated = false,
-        //            IsAdmin = false,
-        //            Status = ApplicationStatus.Pending,
-        //            DateRegistered = DateTime.Now,
-        //        };
-        //        var result = await _userManager.CreateAsync(newInstanceOfApplicantModelAboutToBCreated, applicationUserViewModel.Password).ConfigureAwait(false);
-        //        if (result.Succeeded)
-        //        {
-        //            return newInstanceOfApplicantModelAboutToBCreated;
-        //        }
-        //    }
-        //    return null;
-        //}
         public async Task<ApplicationUser> RegisterApplicantService(ApplicationUserViewModel applicationUserViewModel, Guid? companyId)
         {
             if (applicationUserViewModel == null)
@@ -356,6 +325,59 @@ namespace Logic.Helpers
 				throw new ApplicationException("An error occurred while saving the payment.", ex);
 			}
 		}
-		
+		public async Task<ApplicationUser> RegisterTeacher(ApplicationUserViewModel applicationUserViewModel)
+		{
+			if (applicationUserViewModel == null)
+			{
+				Console.WriteLine("Application is null.");
+				return null;
+			}
+			var newInstanceOfApplicantModelAboutToBCreated = new ApplicationUser
+			{
+				FirstName = applicationUserViewModel.FirstName,
+				LastName = applicationUserViewModel.LastName,
+				Email = applicationUserViewModel.Email,
+				PhoneNumber = applicationUserViewModel.PhoneNumber,
+				UserName = applicationUserViewModel.Email,
+				Address = applicationUserViewModel.Address,
+				IsDeactivated = false,
+				IsActivated = true,
+				IsAdmin = false,
+				IsProgram = true,
+				Status = ApplicationStatus.Accepted,
+				DateRegistered = DateTime.Now,
+				CompanyId = applicationUserViewModel.CompanyId,
+				Role = "Techer",
+			};
+			try
+			{
+				var result = await _userManager.CreateAsync(newInstanceOfApplicantModelAboutToBCreated, applicationUserViewModel.Password).ConfigureAwait(false);
+				if (result.Succeeded)
+				{
+					return newInstanceOfApplicantModelAboutToBCreated;
+				}
+				else
+				{
+					// Log detailed errors
+					foreach (var error in result.Errors)
+					{
+						Console.WriteLine($"Error Code: {error.Code}, Description: {error.Description}");
+					}
+				}
+			}
+			catch (DbUpdateException dbEx)
+			{
+				// Log detailed DbUpdateException errors
+				Console.WriteLine($"DbUpdateException: {dbEx.InnerException?.Message ?? dbEx.Message}");
+				throw;
+			}
+			catch (Exception ex)
+			{
+				// Log other exceptions
+				Console.WriteLine($"An unexpected error occurred: {ex.InnerException?.Message ?? ex.Message}");
+				throw;
+			}
+			return null;
+		}
 	}
 }

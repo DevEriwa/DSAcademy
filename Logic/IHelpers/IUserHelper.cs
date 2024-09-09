@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace Logic.IHelpers
 {
-    public interface IUserHelper
-    {
+	public interface IUserHelper
+	{
 		Task<UserVerification> CreateUserToken(string userEmail);
 		Task<ApplicationUser> FindByEmailAsync(string email);
-        Task<ApplicationUser> FindByPhoneNumberAsync(string phoneNumber);
-        Task<ApplicationUser> FindByUserNameAsync(string userName);
+		Task<ApplicationUser> FindByPhoneNumberAsync(string phoneNumber);
+		Task<ApplicationUser> FindByUserNameAsync(string userName);
 		List<ApplicationUserViewModel> GetAllOnboardApplicantsFromDB();
 		List<TrainingCourse> GetAllTrainingCourseFromDB();
 		List<string> GetOptListByQuestionIds(int? id);
@@ -29,8 +29,10 @@ namespace Logic.IHelpers
 		Task<UserVerification> GetUserToken(Guid token);
 		TrainingVideo GetVideosById(Guid Id);
 		Task<List<ApplicationUser>> GetStudentListAsync();
-		List<ApplicationUserViewModel> GetTeacher();
+		List<ApplicationUserViewModel> GetTeacher(Guid? companyId);
 		ApplicationUser FindById(string Id);
+		Task<Company> FindCompanyByUserId(string id);
+		ApplicationUser GetTecherById(string? techerId);
 		TrainingVideosViewModel GetTrainingVideos();
 		List<int?> GetListOfCourseIdStudentPaid4(string userID);
 	}

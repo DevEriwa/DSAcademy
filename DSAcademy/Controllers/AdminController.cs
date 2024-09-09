@@ -262,70 +262,119 @@ namespace DSAcademy.Controllers
                 return Json(new { isError = true, msg = "An unexpected error occured " + ex.Message });
             }
         }
-
-
+		[HttpGet]
+		public IActionResult Teacher()
+		{
+			var company = _userHelper.FindByUserNameAsync(User.Identity.Name).Result;
+			var allTeacher =  _userHelper.GetTeacher(company.CompanyId);
+			if (allTeacher != null)
+			{
+				return View(allTeacher);
+			}
+			return View();
+		}
 		[HttpPost]
-		public async Task<JsonResult> TrainingVideoUpload(string collectedVideoData)
+		public async Task<JsonResult> AddTeacher(string teacherDetails)
 		{
 			try
 			{
-				ViewBag.AllCourses = _dropdownHelper.DropdownOfCourses();
-
-				if (collectedVideoData != null)
+				if (teacherDetails != null)
 				{
-					var videoDetails = JsonConvert.DeserializeObject<TrainingVideosViewModel>(collectedVideoData);
-
-					if (videoDetails != null)
+					var addTeacher = JsonConvert.DeserializeObject<ApplicationUserViewModel>(teacherDetails);
+					var emailCheck = await _userHelper.FindByEmailAsync(addTeacher.Email);
+					if (emailCheck != null)
 					{
-						string resultMessage;
-
-						if (videoDetails.ActionType == GeneralAction.CREATE)
+						return Json(new { isError = true, msg = "Email already exists" });
+					}
+					var phoneNumberCheck = await _userHelper.FindByPhoneNumberAsync(addTeacher.PhoneNumber);
+					if (phoneNumberCheck != null)
+					{
+						return Json(new { isError = true, msg = "PhoneNumber already exists" });
+					}
+					var user = _userHelper.FindByEmailAsync(User.Identity.Name).Result;
+					var company = await _userHelper.FindCompanyByUserId(user.Id);
+					addTeacher.CompanyId = company.Id;
+					var newTeacher = await _applicationHelper.RegisterTeacher(addTeacher);
+					if (newTeacher != null)
+					{
+						var addToRole = _userManager.AddToRoleAsync(newTeacher, "Techer").Result;
+						var userToken = await  _emailHelper.CreateUserToken(addTeacher.Email);
+						if (addToRole.Succeeded & userToken != null)
 						{
-							resultMessage = await _adminHelper.CreateTrainingVideoAsync(videoDetails);
+							string linkToClick = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/Accounts/EmailVerified?token={userToken.Token}";
+							_emailHelper.TeacherVerificationEmail(addTeacher.Email, linkToClick);
+							return Json(new { isError = false, msg = "Registeration successful" });
 						}
-						else if (videoDetails.ActionType == GeneralAction.EDIT)
-						{
-							resultMessage = await _adminHelper.EditTrainingVideoAsync(videoDetails);
-						}
-						else if (videoDetails.ActionType == GeneralAction.DELETE)
-						{
-							resultMessage = await _adminHelper.DeleteTrainingVideoAsync(videoDetails.Id);
-						}
-						else
-						{
-							return Json(new { isError = true, msg = "Invalid Action Type" });
-						}
-
-						return Json(new { isError = false, msg = resultMessage });
 					}
 				}
-
-				return Json(new { isError = true, msg = "Failed" });
+				return Json(new { isError = true, msg = "Error occurred" });
 			}
-			catch (Exception ex)
+			catch (Exception exp)
 			{
-				return Json(new { isError = true, msg = "An unexpected error occurred: " + ex.Message });
+				throw exp;
 			}
 		}
-
 		[HttpGet]
-		public JsonResult GetCourseDescriptionById(int? id)
+		public JsonResult GetTecherById(string? techerId)
 		{
 			try
 			{
-				if (id != null)
+				if (techerId != null)
 				{
-					var courseDescription = _userHelper.GetTrainingCourseById(id).Description;
-					return Json(courseDescription);
+					var editedTecher = _userHelper.GetTecherById(techerId);
+					return Json(editedTecher);
 				}
 				return Json(new { isError = true, msg = "Failed" });
-
 			}
 			catch (Exception ex)
 			{
 				return Json(new { isError = true, msg = "An unexpected error occured " + ex.Message });
 			}
 		}
+		[HttpPost]
+		public JsonResult EditTecher(string teacherDetails)
+		{
+			try
+			{
+				if (teacherDetails != null)
+				{
+					var techer = JsonConvert.DeserializeObject<ApplicationUserViewModel>(teacherDetails);
+                    if (techer != null)
+					{
+						var techerInfor = _adminHelper.EditTecher(techer);
+						if (techerInfor != null)
+						{
+							return Json(new { isError = false, msg = "Update successfully" });
+						}
+					}
+				}
+				return Json(new { isError = true, msg = "Failed" });
+			}
+			catch (Exception ex)
+			{
+				throw ex;
+			}
+		}
 
+		[HttpPost]
+		public JsonResult DeleteTecher(string techerId)
+		{
+			try
+			{
+				if (techerId != null)
+				{
+					var techerInfor = _adminHelper.DeleteTecher(techerId);
+					if (techerInfor != null)
+					{
+						return Json(new { isError = false, msg = "Deleted successfully" });
+					}
+				}
+				return Json(new { isError = true, msg = "Failed" });
+			}
+			catch (Exception ex)
+			{
+				throw ex;
+			}
+		}
 	}
 }
