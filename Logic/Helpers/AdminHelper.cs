@@ -481,11 +481,6 @@ namespace Logic.Helpers
 			_context.SaveChanges();
 			return appUser;
 		}
-	}
-            return null;
-        }
-
-
 		public async Task<string> HandleFileUploadAsync(IFormFile uploadedFile)
 		{
 			if (uploadedFile != null && uploadedFile.Length > 0)
@@ -503,7 +498,6 @@ namespace Logic.Helpers
 
 			return null;
 		}
-
 		public async Task<string> CreateTrainingVideoAsync(TrainingVideosViewModel videoDetails/*, IFormFile uploadedFile*/)
 		{
 			//var filePath = await HandleFileUploadAsync(uploadedFile);
@@ -558,6 +552,55 @@ namespace Logic.Helpers
 			}
 
 			return "Video Not Found";
+		}
+
+		//PAYMENT ACCEPT POST SERVICE
+		public Payments ApproveSelectedPayment(Payments paymentData)
+		{
+			if (paymentData != null)
+			{
+				var paymentDetails = _userHelper.GetPaymentById(paymentData.Id);
+
+				paymentDetails.Status = PaymentStatus.Approved;
+
+				var approved = _context.Payments.Update(paymentDetails);
+				_context.SaveChanges();
+
+				if (approved != null)
+				{
+					_emailHelper.SendPaymentAprovalMsg(paymentDetails.User, paymentDetails.Courses.Title);
+				}
+
+				return paymentDetails;
+			}
+			else
+			{
+				return null;
+			}
+		}
+		//PAYMENT DECLINE POST SERVICE
+		public Payments DeclineSelectedPaymment(Payments paymentData)
+		{
+			if (paymentData != null)
+			{
+				var paymentDetails = _userHelper.GetPaymentById(paymentData.Id);
+
+				paymentDetails.Status = PaymentStatus.Declined;
+
+				var declined = _context.Payments.Update(paymentDetails);
+				_context.SaveChanges();
+
+				if (declined != null)
+				{
+					_emailHelper.SendPaymentDeclineMsg(paymentDetails.User, paymentDetails.Courses.Title);
+				}
+
+				return paymentDetails;
+			}
+			else
+			{
+				return null;
+			}
 		}
 	}
 }

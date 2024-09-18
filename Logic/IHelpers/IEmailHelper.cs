@@ -20,6 +20,7 @@ namespace Logic.IHelpers
         bool VerificationEmail(string applicantEmail, string linkToClick);
         bool SendEmailToStudentAndCompanyForProofOfPayment(string studentEmail, string companyEmail, string companyName);
         bool TeacherVerificationEmail(string applicantEmail, string linkToClick);
-
+		bool SendPaymentAprovalMsg(ApplicationUser userDetail, string course);
+		bool SendPaymentDeclineMsg(ApplicationUser userDetail, string course);
 	}
 }

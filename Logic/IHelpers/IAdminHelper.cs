@@ -25,11 +25,10 @@ namespace Logic.IHelpers
         TrainingCourse GetCoursePayment(int courseId, ProgramEnum status);
 		ApplicationUser EditTecher(ApplicationUserViewModel techer);
 		ApplicationUser DeleteTecher(string techerId);
-
-
-
 		Task<string> CreateTrainingVideoAsync(TrainingVideosViewModel videoDetails);
 		Task<string> EditTrainingVideoAsync(TrainingVideosViewModel videoDetails);
 		Task<string> DeleteTrainingVideoAsync(Guid id);
+		Payments ApproveSelectedPayment(Payments paymentData);
+		Payments DeclineSelectedPaymment(Payments paymentData);
 	}
 }

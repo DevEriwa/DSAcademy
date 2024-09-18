@@ -376,5 +376,77 @@ namespace DSAcademy.Controllers
 				throw ex;
 			}
 		}
+
+		public JsonResult GetPaymentById(int? Id)
+		{
+			try
+			{
+				if (Id != null)
+				{
+					var payment4Action = _userHelper.GetPaymentById(Id);
+					return Json(payment4Action);
+				}
+				return Json(new { isError = true, msg = "Failed" });
+
+			}
+			catch (Exception ex)
+			{
+
+				return Json(new { isError = true, msg = "An unexpected error occured " + ex.Message });
+			}
+		}
+
+
+		[HttpGet]
+		public IActionResult Payments()
+		{
+			var username = User.Identity.Name;
+			ViewBag.Layout = _applicationHelper.GetUserLayout(username).FirstOrDefault();
+			var payment = _userHelper.GetPaymentList();
+			return View(payment);
+		}
+
+		// POST ACTION FOR ALL TRAINING COST SETUP
+		[HttpPost]
+		public JsonResult PaymentPostAction(string collectedPaymentID)
+		{
+			try
+			{
+				if (collectedPaymentID != null)
+				{
+					var payment = JsonConvert.DeserializeObject<Payments>(collectedPaymentID);
+
+					if (payment.Status == PaymentStatus.Approved)
+					{
+
+						if (payment.Id > 0)
+						{
+							var paymentActivate = _adminHelper.ApproveSelectedPayment(payment);
+							if (paymentActivate != null)
+							{
+								return Json(new { isError = false, msg = "Approved Successfully" });
+							}
+						}
+
+					}
+					else if (payment.Status == PaymentStatus.Declined)
+					{
+						if (payment.Id != null)
+						{
+							var paymentToDecline = _adminHelper.DeclineSelectedPaymment(payment);
+							if (paymentToDecline != null)
+							{
+								return Json(new { isError = false, msg = "Declined Successfully" });
+							}
+						}
+					}
+				}
+				return Json(new { isError = true, msg = "Failed" });
+			}
+			catch (Exception ex)
+			{
+				return Json(new { isError = true, msg = "An unexpected error occured " + ex.Message });
+			}
+		}
 	}
 }

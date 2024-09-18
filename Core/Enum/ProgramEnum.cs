@@ -10,6 +10,12 @@ namespace Core.Enum
 		Backend = 2,
 		[Description("Full-Stack Developer")]
 		FullStack = 3,
+		[Description("Digital Marketing")]
+		DigitalMarketing = 4,
+		[Description("Social Media Marketing")]
+		SocialMediaMarketing  = 5,
+		[Description("Website Disign")]
+		WebsiteDisign = 5,
 	}
 	public enum CompanySettings
 	{
