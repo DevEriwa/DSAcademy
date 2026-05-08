@@ -1,4 +1,4 @@
-﻿using Core.Models;
+using Core.Models;
 using Core.ViewModels;
 using Logic;
 using Microsoft.AspNetCore.Http;
@@ -116,7 +116,7 @@ public class Session
             var superAdmin = loggedInUser.Roles.Contains(Constants.SuperAdminRole);
             if (superAdmin)
             {
-                return Constants.AdminLayout;
+                return Constants.SuperAdminLayout; // ← SuperAdmin gets their own layout
             }
             else if (loggedInUser.Roles.Contains(Constants.AdminRole))
             {
@@ -144,31 +144,39 @@ public class Session
     public static string GetUserDashboardPage(bool isProgram)
     {
         var user = GetCurrentUser();
+
+        // SuperAdmin always goes to their own dashboard regardless of isProgram
+        if (user?.Roles != null && user.Roles.Contains(Constants.SuperAdminRole))
+        {
+            return "/SuperAdmin/Index";
+        }
+
         if (isProgram == false)
         {
-			var userRole = user.Role;
-			if (userRole != null)
-			{
-				if (userRole == "Student" || userRole == "Applicant")
-				{
-					return "/Accounts/Program";
-				}
-			}
-		}else if (isProgram == true)
+            var userRole = user?.Role;
+            if (userRole != null)
+            {
+                if (userRole == "Student" || userRole == "Applicant")
+                {
+                    return "/Accounts/Program";
+                }
+            }
+        }
+        else if (isProgram == true)
         {
-			var userRole = user.Role;
-			if (userRole != null)
-			{
-				if (userRole == "SuperAdmin" || userRole == "Admin")
-				{
-					return "/Admin/Index";
-				}
-				else
-				{
-					return "/Student/Index";
-				}
-			}
-		}
+            var userRole = user?.Role;
+            if (userRole != null)
+            {
+                if (userRole == "Admin")
+                {
+                    return "/Admin/Index";
+                }
+                else
+                {
+                    return "/Student/Index";
+                }
+            }
+        }
         return null;
     }
 

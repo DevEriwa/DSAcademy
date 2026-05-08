@@ -1,4 +1,4 @@
-﻿using Core.Config;
+using Core.Config;
 using Core.Db;
 using Core.Enum;
 using Core.Models;
@@ -24,18 +24,22 @@ namespace Logic.Helpers
 		private readonly AppDbContext _context;
 		private readonly IEmailHelper _emailHelper;
 		private readonly IGeneralConfiguration _generalConfiguration;
+		private readonly INotificationHelper _notificationHelper;
+
 		public AdminHelper(
-			IUserHelper userHelper, 
+			IUserHelper userHelper,
 			UserManager<ApplicationUser> userManager,
-			AppDbContext context, 
-			IEmailHelper emailHelper, 
-			IGeneralConfiguration generalConfiguration)
+			AppDbContext context,
+			IEmailHelper emailHelper,
+			IGeneralConfiguration generalConfiguration,
+			INotificationHelper notificationHelper)
 		{
 			_userHelper = userHelper;
 			_userManager = userManager;
 			_context = context;
 			_emailHelper = emailHelper;
 			_generalConfiguration = generalConfiguration;
+			_notificationHelper = notificationHelper;
 		}
 
 		public TrainingCourse AddTrainignCostServices(TrainingCourseViewModel collectedData, string base64)
@@ -560,23 +564,24 @@ namespace Logic.Helpers
 			if (paymentData != null)
 			{
 				var paymentDetails = _userHelper.GetPaymentById(paymentData.Id);
-
 				paymentDetails.Status = PaymentStatus.Approved;
-
 				var approved = _context.Payments.Update(paymentDetails);
 				_context.SaveChanges();
-
 				if (approved != null)
 				{
 					_emailHelper.SendPaymentAprovalMsg(paymentDetails.User, paymentDetails.Courses.Title);
+					// ── In-app notification to student ──────────────────────
+					_notificationHelper.SendAsync(
+						paymentDetails.UserId,
+						paymentDetails.User?.CompanyId,
+						"Payment Approved ✓",
+						$"Your payment for '{paymentDetails.Courses?.Title}' has been approved.",
+						"bi bi-check-circle text-success",
+						"/Student/PaymentHistory").Wait();
 				}
-
 				return paymentDetails;
 			}
-			else
-			{
-				return null;
-			}
+			return null;
 		}
 		//PAYMENT DECLINE POST SERVICE
 		public Payments DeclineSelectedPaymment(Payments paymentData)
@@ -584,23 +589,69 @@ namespace Logic.Helpers
 			if (paymentData != null)
 			{
 				var paymentDetails = _userHelper.GetPaymentById(paymentData.Id);
-
 				paymentDetails.Status = PaymentStatus.Declined;
-
 				var declined = _context.Payments.Update(paymentDetails);
 				_context.SaveChanges();
-
 				if (declined != null)
 				{
 					_emailHelper.SendPaymentDeclineMsg(paymentDetails.User, paymentDetails.Courses.Title);
+					// ── In-app notification to student ──────────────────────
+					_notificationHelper.SendAsync(
+						paymentDetails.UserId,
+						paymentDetails.User?.CompanyId,
+						"Payment Declined",
+						$"Your payment for '{paymentDetails.Courses?.Title}' was declined. Please contact your school admin.",
+						"bi bi-x-circle text-danger",
+						"/Student/PaymentHistory").Wait();
 				}
-
 				return paymentDetails;
 			}
-			else
+			return null;
+		}
+
+		// ─── Reporting ────────────────────────────────────────────────────────────
+		public SchoolReportViewModel GetSchoolReport(Guid companyId)
+		{
+			var company = _context.Companies.FirstOrDefault(c => c.Id == companyId);
+			var students = _userManager.Users
+				.Where(u => u.CompanyId == companyId && !u.IsAdmin).ToList();
+			var payments = _context.Payments
+				.Where(p => p.CompanyId == companyId)
+				.Include(p => p.Courses)
+				.Include(p => p.User)
+				.OrderByDescending(p => p.DateCreated)
+				.ToList();
+			var courses = _context.TrainingCourse
+				.Where(c => c.CompanyId == companyId && !c.IsDeleted && c.IsActive).ToList();
+
+			// Enrollment by month (last 6 months)
+			var sixMonthsAgo = DateTime.Now.AddMonths(-6);
+			var enrollmentByMonth = Enumerable.Range(0, 6)
+				.Select(i => DateTime.Now.AddMonths(-i))
+				.OrderBy(d => d)
+				.Select(d => new MonthCount
+				{
+					Month = d.ToString("MMM yyyy"),
+					Count = students.Count(u =>
+						u.DateRegistered.Year == d.Year &&
+						u.DateRegistered.Month == d.Month)
+				}).ToList();
+
+			return new SchoolReportViewModel
 			{
-				return null;
-			}
+				CompanyId = companyId,
+				SchoolName = company?.Name,
+				TotalStudents = students.Count,
+				ActiveStudents = students.Count(u => u.IsActivated && !u.IsDeactivated),
+				InactiveStudents = students.Count(u => u.IsDeactivated),
+				TotalPayments = payments.Count,
+				ApprovedPayments = payments.Count(p => p.Status == PaymentStatus.Approved),
+				PendingPayments = payments.Count(p => p.Status == PaymentStatus.Pending),
+				DeclinedPayments = payments.Count(p => p.Status == PaymentStatus.Declined),
+				TotalCourses = courses.Count,
+				RecentPayments = payments.Take(10).ToList(),
+				EnrollmentByMonth = enrollmentByMonth
+			};
 		}
 	}
 }

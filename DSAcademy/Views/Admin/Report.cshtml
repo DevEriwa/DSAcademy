@@ -1,0 +1,217 @@
+@model Core.ViewModels.SchoolReportViewModel
+@{
+    ViewData["Title"] = "School Report";
+    Layout = "~/Views/Shared/_CompanyAdminLayout.cshtml";
+}
+
+<div class="pagetitle d-flex justify-content-between align-items-start flex-wrap gap-2">
+    <div>
+        <h1>School Report</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-action="Index">Home</a></li>
+                <li class="breadcrumb-item active">Report</li>
+            </ol>
+        </nav>
+    </div>
+    <a asp-action="ExportReport" asp-controller="Admin"
+       class="btn btn-outline-success align-self-start">
+        <i class="bi bi-download me-1"></i> Export CSV
+    </a>
+</div>
+
+<section class="section">
+    <!-- Stat Cards -->
+    <div class="row">
+        <div class="col-xl-3 col-md-6">
+            <div class="card info-card students-card">
+                <div class="card-body">
+                    <h5 class="card-title">Students</h5>
+                    <div class="d-flex align-items-center">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                            <i class="bi bi-people"></i>
+                        </div>
+                        <div class="ps-3">
+                            <h6>@Model.TotalStudents</h6>
+                            <span class="text-success small fw-bold">@Model.ActiveStudents Active</span>
+                            <span class="text-muted small"> | @Model.InactiveStudents Inactive</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card info-card revenue-card">
+                <div class="card-body">
+                    <h5 class="card-title">Payments</h5>
+                    <div class="d-flex align-items-center">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                            <i class="bi bi-credit-card"></i>
+                        </div>
+                        <div class="ps-3">
+                            <h6>@Model.TotalPayments</h6>
+                            <span class="text-success small fw-bold">@Model.ApprovedPayments Approved</span>
+                            <span class="text-warning small"> | @Model.PendingPayments Pending</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card info-card">
+                <div class="card-body">
+                    <h5 class="card-title">Courses</h5>
+                    <div class="d-flex align-items-center">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                            <i class="bi bi-book"></i>
+                        </div>
+                        <div class="ps-3">
+                            <h6>@Model.TotalCourses</h6>
+                            <span class="text-muted small">Active courses</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card info-card" style="border-left: 4px solid #dc3545;">
+                <div class="card-body">
+                    <h5 class="card-title">Declined</h5>
+                    <div class="d-flex align-items-center">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="background:#fde8ea;">
+                            <i class="bi bi-x-circle text-danger"></i>
+                        </div>
+                        <div class="ps-3">
+                            <h6>@Model.DeclinedPayments</h6>
+                            <span class="text-muted small">Payments declined</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Enrollment Chart -->
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Student Enrollment <span class="text-muted fw-light">(Last 6 Months)</span></h5>
+                    <canvas id="enrollmentChart" style="max-height:240px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Breakdown Chart -->
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Payment Status Breakdown</h5>
+                    <canvas id="paymentChart" style="max-height:240px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Payments Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Recent Payments</h5>
+                    @if (Model.RecentPayments.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Student</th>
+                                        <th>Course</th>
+                                        <th>Invoice</th>
+                                        <th>Type</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{ int i = 1; }
+                                    @foreach (var p in Model.RecentPayments)
+                                    {
+                                        <tr>
+                                            <td>@i</td>
+                                            <td>@(p.User?.FullName ?? "—")</td>
+                                            <td>@(p.Courses?.Title ?? "—")</td>
+                                            <td><code>@p.InvoiceNumber</code></td>
+                                            <td>@p.Source</td>
+                                            <td>
+                                                @switch (p.Status)
+                                                {
+                                                    case Core.Enum.PaymentStatus.Approved:
+                                                        <span class="badge bg-success">Approved</span>
+                                                        break;
+                                                    case Core.Enum.PaymentStatus.Declined:
+                                                        <span class="badge bg-danger">Declined</span>
+                                                        break;
+                                                    default:
+                                                        <span class="badge bg-warning text-dark">Pending</span>
+                                                        break;
+                                                }
+                                            </td>
+                                            <td>@p.DateCreated.ToString("dd MMM yyyy")</td>
+                                        </tr>
+                                        i++;
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center py-3">No payment records yet.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Enrollment by Month (Bar Chart)
+    var months = [@Html.Raw(string.Join(",", Model.EnrollmentByMonth.Select(m => $"'{m.Month}'")))];
+    var counts = [@string.Join(",", Model.EnrollmentByMonth.Select(m => m.Count))];
+
+    new Chart(document.getElementById('enrollmentChart'), {
+        type: 'bar',
+        data: {
+            labels: months,
+            datasets: [{
+                label: 'New Students',
+                data: counts,
+                backgroundColor: 'rgba(13, 110, 253, 0.7)',
+                borderRadius: 6
+            }]
+        },
+        options: { responsive: true, plugins: { legend: { display: false } } }
+    });
+
+    // Payment Breakdown (Doughnut Chart)
+    new Chart(document.getElementById('paymentChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Approved', 'Pending', 'Declined'],
+            datasets: [{
+                data: [@Model.ApprovedPayments, @Model.PendingPayments, @Model.DeclinedPayments],
+                backgroundColor: ['#198754', '#ffc107', '#dc3545'],
+                hoverOffset: 8
+            }]
+        },
+        options: { responsive: true, cutout: '65%' }
+    });
+</script>
+}

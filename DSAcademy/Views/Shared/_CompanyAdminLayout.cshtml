@@ -1,4 +1,4 @@
-﻿@inject Logic.IHelpers.IUserHelper _userHelper;
+@inject Logic.IHelpers.IUserHelper _userHelper;
 
 
 @{
@@ -203,79 +203,26 @@
                     </a>
                 </li><!-- End Search Icon-->
 
-                <li class="nav-item dropdown">
-
-                    <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+                <li class="nav-item dropdown" id="notif-nav-item">
+                    <a class="nav-link nav-icon" href="#" id="notifBell" data-bs-toggle="dropdown">
                         <i class="bi bi-bell"></i>
-                        <span class="badge bg-primary badge-number">4</span>
-                    </a><!-- End Notification Icon -->
+                        <span class="badge bg-danger badge-number d-none" id="notifCount"></span>
+                    </a>
 
-                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
-                        <li class="dropdown-header">
-                            You have 4 new notifications
-                            <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications" style="min-width:320px;">
+                        <li class="dropdown-header d-flex justify-content-between align-items-center">
+                            <span id="notifHeader">Notifications</span>
+                            <a href="#" id="markAllRead" class="small text-primary ms-2">Mark all read</a>
                         </li>
-                        <li>
-                            <hr class="dropdown-divider">
+                        <li><hr class="dropdown-divider"></li>
+                        <div id="notifList">
+                            <li class="notification-item text-muted small px-3 py-2">Loading...</li>
+                        </div>
+                        <li><hr class="dropdown-divider"></li>
+                        <li class="dropdown-footer text-center">
+                            <a href="#" onclick="loadNotifications()">Refresh</a>
                         </li>
-
-                        <li class="notification-item">
-                            <i class="bi bi-exclamation-circle text-warning"></i>
-                            <div>
-                                <h4>Lorem Ipsum</h4>
-                                <p>Quae dolorem earum veritatis oditseno</p>
-                                <p>30 min. ago</p>
-                            </div>
-                        </li>
-
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-
-                        <li class="notification-item">
-                            <i class="bi bi-x-circle text-danger"></i>
-                            <div>
-                                <h4>Atque rerum nesciunt</h4>
-                                <p>Quae dolorem earum veritatis oditseno</p>
-                                <p>1 hr. ago</p>
-                            </div>
-                        </li>
-
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-
-                        <li class="notification-item">
-                            <i class="bi bi-check-circle text-success"></i>
-                            <div>
-                                <h4>Sit rerum fuga</h4>
-                                <p>Quae dolorem earum veritatis oditseno</p>
-                                <p>2 hrs. ago</p>
-                            </div>
-                        </li>
-
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-
-                        <li class="notification-item">
-                            <i class="bi bi-info-circle text-primary"></i>
-                            <div>
-                                <h4>Dicta reprehenderit</h4>
-                                <p>Quae dolorem earum veritatis oditseno</p>
-                                <p>4 hrs. ago</p>
-                            </div>
-                        </li>
-
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li class="dropdown-footer">
-                            <a href="#">Show all notifications</a>
-                        </li>
-
-                    </ul><!-- End Notification Dropdown Items -->
-
+                    </ul>
                 </li><!-- End Notification Nav -->
 
                 <li class="nav-item dropdown">
@@ -438,8 +385,8 @@
                 </a>
                 <ul id="icons-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                     <li>
-                        <a>
-                            <i class="bi bi-circle"></i><span>Profile</span>
+                        <a asp-action="SchoolSettings" asp-controller="Admin">
+                            <i class="bi bi-circle"></i><span>School Settings</span>
                         </a>
                     </li>
                     <li>
@@ -450,6 +397,13 @@
                    
                 </ul>
             </li><!-- End Icons Nav -->
+
+            <li class="nav-item">
+                <a class="nav-link collapsed" asp-action="Report" asp-controller="Admin">
+                    <i class="bi bi-bar-chart-line"></i>
+                    <span>Reports</span>
+                </a>
+            </li><!-- End Reports Nav -->
 
             <li class="nav-item">
                 <a class="nav-link collapsed" asp-action="LogOut" asp-controller="Accounts">
@@ -507,6 +461,59 @@
     <script src="~/edu/assets/css/js/sweetalert.min.js"></script>
     <script src="~/edu/assets/css/js/sweetalert2.all.min.js"></script>
 
-	@await RenderSectionAsync("Scripts", required: false)
+    @await RenderSectionAsync("Scripts", required: false)
+
+    <script>
+        // ── Notification Bell ────────────────────────────────────────────────
+        function loadNotifications() {
+            $.get('/Notifications/GetUnread', function (res) {
+                var countEl = $('#notifCount');
+                var listEl = $('#notifList');
+                var headerEl = $('#notifHeader');
+
+                if (res.count > 0) {
+                    countEl.text(res.count).removeClass('d-none');
+                    headerEl.text('You have ' + res.count + ' unread notification' + (res.count > 1 ? 's' : ''));
+                } else {
+                    countEl.addClass('d-none');
+                    headerEl.text('No new notifications');
+                }
+
+                if (res.items.length === 0) {
+                    listEl.html('<li class="notification-item text-muted small px-3 py-2 text-center">You\'re all caught up ✓</li>');
+                    return;
+                }
+
+                var html = '';
+                $.each(res.items, function (i, n) {
+                    var url = n.actionUrl ? n.actionUrl : '#';
+                    html += '<li class="notification-item" onclick="markRead(' + n.id + ', \'' + url + '\')" style="cursor:pointer;">' +
+                        '<i class="' + n.icon + '"></i>' +
+                        '<div><h4>' + n.title + '</h4>' +
+                        '<p class="mb-0">' + n.message + '</p>' +
+                        '<p class="text-muted" style="font-size:.75rem;">' + n.date + '</p></div>' +
+                        '</li><li><hr class="dropdown-divider"></li>';
+                });
+                listEl.html(html);
+            });
+        }
+
+        function markRead(id, url) {
+            $.post('/Notifications/MarkRead', { id: id }, function () {
+                loadNotifications();
+                if (url && url !== '#') location.href = url;
+            });
+        }
+
+        $('#markAllRead').on('click', function (e) {
+            e.preventDefault();
+            $.post('/Notifications/MarkAllRead', function () { loadNotifications(); });
+        });
+
+        // Load on bell click + auto-refresh every 60s
+        $('#notifBell').on('click', function () { loadNotifications(); });
+        loadNotifications();
+        setInterval(loadNotifications, 60000);
+    </script>
 </body>
 </html>

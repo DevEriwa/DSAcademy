@@ -1,4 +1,4 @@
-﻿using Core.Db;
+using Core.Db;
 using Core.Enum;
 using Core.Models;
 using Core.ViewModels;
@@ -32,12 +32,14 @@ namespace Logic.Helpers
         }
         public List<TrainingCourse> GetAllTrainingCourseDB()
         {
-            var allTrainingCourse = _context.TrainingCourse.Where(t => !t.IsDeleted && t.IsActive).ToList();
-            if (allTrainingCourse.Any())
-            {
-                return allTrainingCourse;
-            }
-            return allTrainingCourse;
+            var currentUser = Session.GetCurrentUser();
+            var query = _context.TrainingCourse.Where(t => !t.IsDeleted && t.IsActive);
+
+            // Scope to student's own school — never expose other tenants' courses
+            if (currentUser?.CompanyId != null)
+                query = query.Where(t => t.CompanyId == currentUser.CompanyId);
+
+            return query.ToList();
         }
 
 

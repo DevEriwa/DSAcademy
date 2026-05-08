@@ -1,4 +1,4 @@
-﻿using Core.Db;
+using Core.Db;
 using Core.Enum;
 using Core.Models;
 using Core.ViewModels;
@@ -13,8 +13,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DSAcademy.Controllers
 {
-	//[SessionTimeout]
-	//[Authorize(Roles = "Admin,SuperAdmin")]
+    [Authorize(Roles = "Admin")]
 	public class AdminController : Controller
     {
 		private readonly IUserHelper _userHelper;
@@ -26,6 +25,7 @@ namespace DSAcademy.Controllers
 		private readonly UserManager<ApplicationUser> _userManager;
 		private readonly AppDbContext _context;
 		private readonly IEmailHelper _emailHelper;
+		private readonly INotificationHelper _notificationHelper;
 		private const string Create_Training_Cost_ActionType = "CreateTrainingCourse";
 		private const string Edit_Training_Cost_ActionType = "EditTrainingCourse";
 		private const string Activate_Training_Cost_ActionType = "ActivateTrainingCourse";
@@ -39,7 +39,8 @@ namespace DSAcademy.Controllers
             IDropdownHelper dropdownHelper,
             SignInManager<ApplicationUser> signInManager,
             UserManager<ApplicationUser> userManager,
-            AppDbContext context)
+            AppDbContext context,
+            INotificationHelper notificationHelper)
         {
             _userHelper = userHelper;
             _studentHelper = studentHelper;
@@ -49,6 +50,7 @@ namespace DSAcademy.Controllers
             _signInManager = signInManager;
             _userManager = userManager;
             _context = context;
+            _notificationHelper = notificationHelper;
         }
 
         [HttpGet]
@@ -446,6 +448,123 @@ namespace DSAcademy.Controllers
 			catch (Exception ex)
 			{
 				return Json(new { isError = true, msg = "An unexpected error occured " + ex.Message });
+			}
+		}
+
+		// ─── School Settings (read own settings, scoped to tenant) ───────────
+		[HttpGet]
+		public IActionResult SchoolSettings()
+		{
+			var user = _userHelper.FindByEmailAsync(User.Identity.Name).Result;
+			if (user?.CompanyId == null) return RedirectToAction("Index");
+
+			var settings = _context.CompanySettings
+				.Include(s => s.Company)
+				.FirstOrDefault(s => s.CompanyId == user.CompanyId);
+
+			if (settings == null) return RedirectToAction("Index");
+
+			var vm = new CompanySettingViewModel
+			{
+				CompanyId = settings.CompanyId,
+				CompanyName = settings.Company?.Name ?? string.Empty,
+				EnableSMS = settings.EnableSMS,
+				EnableBasePackage = settings.EnableBasePackage,
+				EnableCustomInvoice = settings.EnableCustomInvoice,
+				DashboardUrl = settings.DashboardUrl,
+				PrimaryColor = settings.PrimaryColor,
+				SecondaryColor = settings.SecondaryColor,
+				SidebarColor = settings.SidebarColor,
+				FontFamily = settings.FontFamily,
+				DarkMode = settings.DarkMode
+			};
+			return View(vm);
+		}
+
+		// ─── Student Activation / Deactivation ───────────────────────────────
+		[HttpPost]
+		public JsonResult ToggleStudentStatus(string studentId, bool deactivate)
+		{
+			try
+			{
+				if (string.IsNullOrEmpty(studentId))
+					return Json(new { isError = true, msg = "Invalid student ID." });
+
+				var loggedInUser = _userHelper.FindByEmailAsync(User.Identity.Name).Result;
+				var student = _context.ApplicationUsers
+					.FirstOrDefault(u => u.Id == studentId && u.CompanyId == loggedInUser.CompanyId);
+
+				if (student == null)
+					return Json(new { isError = true, msg = "Student not found." });
+
+				student.IsDeactivated = deactivate;
+				student.IsActivated = !deactivate;
+				_context.ApplicationUsers.Update(student);
+				_context.SaveChanges();
+
+				var msg = deactivate ? "Student deactivated successfully." : "Student activated successfully.";
+				return Json(new { isError = false, msg });
+			}
+			catch (Exception ex)
+			{
+				return Json(new { isError = true, msg = $"Error: {ex.Message}" });
+			}
+		}
+
+		// ─── Reports ─────────────────────────────────────────────────────────────
+		[HttpGet]
+		public IActionResult Report()
+		{
+			var user = Session.GetCurrentUser();
+			if (user?.CompanyId == null)
+				return RedirectToAction("Index");
+
+			var report = _adminHelper.GetSchoolReport(user.CompanyId.Value);
+			return View(report);
+		}
+
+		[HttpGet]
+		public IActionResult ExportReport()
+		{
+			var user = Session.GetCurrentUser();
+			if (user?.CompanyId == null)
+				return RedirectToAction("Index");
+
+			var report = _adminHelper.GetSchoolReport(user.CompanyId.Value);
+
+			var sb = new System.Text.StringBuilder();
+			sb.AppendLine("Invoice No,Student,Course,Payment Type,Status,Date");
+			foreach (var p in report.RecentPayments)
+			{
+				sb.AppendLine($"\"{p.InvoiceNumber}\",\"{p.User?.FullName}\",\"{p.Courses?.Title}\",{p.Source},{p.Status},{p.DateCreated:yyyy-MM-dd}");
+			}
+
+			var bytes = System.Text.Encoding.UTF8.GetBytes(sb.ToString());
+			return File(bytes, "text/csv", $"SchoolReport_{DateTime.Now:yyyyMMdd}.csv");
+		}
+
+		// ─── Broadcast to Students ───────────────────────────────────────────
+		[HttpPost]
+		public async Task<JsonResult> BroadcastToStudents(string title, string message)
+		{
+			try
+			{
+				if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(message))
+					return Json(new { isError = true, msg = "Title and message are required." });
+
+				var user = Session.GetCurrentUser();
+				if (user?.CompanyId == null)
+					return Json(new { isError = true, msg = "School context not found." });
+
+				await _notificationHelper.SendToCompanyAsync(
+					user.CompanyId.Value, title, message,
+					"bi bi-megaphone");
+
+				return Json(new { isError = false, msg = $"Announcement sent to all students successfully." });
+			}
+			catch (Exception ex)
+			{
+				return Json(new { isError = true, msg = $"Error: {ex.Message}" });
 			}
 		}
 	}

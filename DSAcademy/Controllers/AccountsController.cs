@@ -1,4 +1,4 @@
-﻿using Core.Db;
+using Core.Db;
 using Core.Enum;
 using Core.Models;
 using Core.ViewModels;
@@ -20,6 +20,7 @@ namespace DSAcademy.Controllers
         private readonly IEmailHelper _emailHelper;
         private readonly IDropdownHelper _dropdownHelper;
         private readonly IAdminHelper _adminHelper;
+        private readonly INotificationHelper _notificationHelper;
 
         public AccountsController(AppDbContext context,
             UserManager<ApplicationUser> userManager,
@@ -28,7 +29,8 @@ namespace DSAcademy.Controllers
             IApplicationHelper applicationHelper,
             IEmailHelper emailHelper,
             IDropdownHelper dropdownHelper,
-            IAdminHelper adminHelper)
+            IAdminHelper adminHelper,
+            INotificationHelper notificationHelper)
         {
             _context = context;
             _userManager = userManager;
@@ -38,6 +40,7 @@ namespace DSAcademy.Controllers
             _emailHelper = emailHelper;
             _dropdownHelper = dropdownHelper;
             _adminHelper = adminHelper;
+            _notificationHelper = notificationHelper;
         }
 
 
@@ -126,6 +129,16 @@ namespace DSAcademy.Controllers
                         string linkToClick = HttpContext.Request.Scheme.ToString() + "://"
                         + HttpContext.Request.Host.ToString() + "/Accounts/EmailVerified?token=" + userToken.Token;
                         _emailHelper.VerificationEmail(newApplicant.Email, linkToClick);
+
+                        // ── Welcome in-app notification ──────────────────────────────
+                        await _notificationHelper.SendAsync(
+                            returndResultFrmRegisterService.Id,
+                            companyId,
+                            "Welcome to DSAcademy! 🎉",
+                            "Your account has been created. Please verify your email to get started.",
+                            "bi bi-mortarboard",
+                            "/Student/Index");
+
                         return Json(new { isError = false, msg = "Registeration successful, Check your mail to complete application" });
                     }
                 }
@@ -173,7 +186,7 @@ namespace DSAcademy.Controllers
                                         applicationUserViewModel.Role = Session.Constants.StudentRole;
                                         break;
                                     case "SuperAdmin":
-                                        applicationUserViewModel.Role = Session.Constants.AdminRole;
+                                        applicationUserViewModel.Role = Session.Constants.SuperAdminRole;
                                         break;
                                     case "Applicant":
                                         applicationUserViewModel.Role = Session.Constants.ApplicantRole;

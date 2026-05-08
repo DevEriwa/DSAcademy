@@ -1,0 +1,92 @@
+@model Core.ViewModels.ApplicationUserViewModel
+@{
+    ViewData["Title"] = "My Profile";
+    Layout = "~/Views/Shared/_StudentLayout.cshtml";
+}
+<div class="ttr-wrapper">
+    <div class="container-fluid">
+        <div class="db-breadcrumb">
+            <h4 class="breadcrumb-title">My Profile</h4>
+            <ul class="db-breadcrumb-list">
+                <li><a asp-controller="Student" asp-action="Index"><i class="fa fa-home"></i> Home</a></li>
+                <li>My Profile</li>
+            </ul>
+        </div>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show">
+                <i class="ti-check me-2"></i>@TempData["Success"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="widget-box">
+                    <div class="wc-title">
+                        <h4><i class="ti-user me-2"></i> Personal Information</h4>
+                    </div>
+                    <div class="widget-inner p-4">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">First Name</label>
+                                <input type="text" id="firstName" class="form-control" value="@Model.FirstName" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Last Name</label>
+                                <input type="text" id="lastName" class="form-control" value="@Model.LastName" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Email Address</label>
+                                <input type="email" class="form-control" value="@Model.Email" disabled />
+                                <small class="text-muted">Email cannot be changed</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Phone Number</label>
+                                <input type="text" id="phoneNumber" class="form-control" value="@Model.PhoneNumber" />
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Address</label>
+                                <input type="text" id="address" class="form-control" value="@Model.Address" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Username</label>
+                                <input type="text" class="form-control" value="@Model.UserName" disabled />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Date Registered</label>
+                                <input type="text" class="form-control" value="@Model.DateRegister.ToString("dd MMM yyyy")" disabled />
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <button class="btn btn-primary px-4" onclick="saveProfile()">
+                                <i class="ti-save me-2"></i> Save Changes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    function saveProfile() {
+        var data = {
+            FirstName: $('#firstName').val(),
+            LastName: $('#lastName').val(),
+            PhoneNumber: $('#phoneNumber').val(),
+            Address: $('#address').val()
+        };
+        $.post('/Student/UpdateProfile', { profileData: JSON.stringify(data) }, function (res) {
+            if (!res.isError) {
+                successAlert(res.msg);
+            } else {
+                errorAlert(res.msg);
+            }
+        });
+    }
+</script>
+}

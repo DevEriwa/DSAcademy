@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — DSAcademy Super Admin</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <!-- NiceAdmin CSS -->
+    <link href="~/niceadmin/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet" />
+    <link href="~/niceadmin/assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet" />
+    <link href="~/niceadmin/assets/css/style.css" rel="stylesheet" />
+
+    <!-- SweetAlert -->
+    <link href="~/edu/assets/css/css/sweetalert2.min.css" rel="stylesheet" />
+
+    <style>
+        /* ── SuperAdmin brand overrides ─────────────────────────── */
+        :root {
+            --sa-primary:   #1a0533;
+            --sa-accent:    #9b59b6;
+            --sa-gold:      #f39c12;
+            --sa-sidebar-w: 260px;
+        }
+        #sidebar { background: var(--sa-primary) !important; }
+        #sidebar .nav-link { color: rgba(255,255,255,0.75) !important; }
+        #sidebar .nav-link:hover,
+        #sidebar .nav-link.active { color: var(--sa-gold) !important; background: rgba(255,255,255,0.07) !important; }
+        #sidebar .nav-link i { color: var(--sa-accent); }
+        .header { background: var(--sa-primary) !important; border-bottom: 2px solid var(--sa-accent); }
+        .superadmin-badge {
+            background: var(--sa-gold);
+            color: #111;
+            font-size: 0.65rem;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 20px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            vertical-align: middle;
+            margin-left: 6px;
+        }
+    </style>
+
+    <script>
+        function errorAlert(msg) { Swal.fire({ icon:'error', text:msg, confirmButtonColor:'#9b59b6' }); }
+        function successAlert(msg) { Swal.fire({ icon:'success', text:msg, confirmButtonColor:'#9b59b6' }); }
+        function successAlertWithRedirect(msg, url) {
+            Swal.fire({ icon:'success', text:msg, confirmButtonColor:'#9b59b6', timer:2000 }).then(() => location.href = url);
+        }
+    </script>
+</head>
+<body>
+
+    <!-- ── Header ──────────────────────────────────────────────── -->
+    <header id="header" class="header fixed-top d-flex align-items-center px-4">
+        <div class="d-flex align-items-center justify-content-between flex-grow-1">
+            <a class="logo d-flex align-items-center text-decoration-none" asp-controller="SuperAdmin" asp-action="Index">
+                <span class="fw-bold text-white fs-5">
+                    DSAcademy
+                    <span class="superadmin-badge">Super Admin</span>
+                </span>
+            </a>
+
+            <nav class="header-nav ms-auto">
+                <ul class="d-flex align-items-center list-unstyled mb-0">
+                    <li class="nav-item dropdown pe-3">
+                        <a class="nav-link nav-profile d-flex align-items-center pe-0 text-white" href="#" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle fs-4 me-2"></i>
+                            <span class="d-none d-md-block">@User.Identity?.Name</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+                            <li class="dropdown-header">
+                                <h6 class="mb-0">@User.Identity?.Name</h6>
+                                <span class="text-muted small">Super Administrator</span>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" asp-action="LogOut" asp-controller="Accounts">
+                                    <i class="bi bi-box-arrow-right me-2"></i>Sign Out
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- ── Sidebar ─────────────────────────────────────────────── -->
+    <aside id="sidebar" class="sidebar">
+        <ul class="sidebar-nav" id="sidebar-nav">
+
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="SuperAdmin" asp-action="Index">
+                    <i class="bi bi-speedometer2"></i>
+                    <span>SA Dashboard</span>
+                </a>
+            </li>
+
+            <li class="nav-heading text-uppercase px-3 pt-3 pb-1" style="color:rgba(255,255,255,0.35); font-size:0.7rem;">
+                Schools Management
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-target="#schools-nav" data-bs-toggle="collapse" href="#">
+                    <i class="bi bi-building"></i><span>Schools</span>
+                    <i class="bi bi-chevron-down ms-auto"></i>
+                </a>
+                <ul id="schools-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+                    <li>
+                        <a asp-controller="SuperAdmin" asp-action="Schools">
+                            <i class="bi bi-circle"></i><span>All Schools</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-controller="SuperAdmin" asp-action="CreateSchool">
+                            <i class="bi bi-circle"></i><span>Add New School</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+            <li class="nav-heading text-uppercase px-3 pt-3 pb-1" style="color:rgba(255,255,255,0.35); font-size:0.7rem;">
+                Platform
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="/DSAcademyHangfire" target="_blank">
+                    <i class="bi bi-gear-wide-connected"></i>
+                    <span>Background Jobs</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="SuperAdmin" asp-action="Report">
+                    <i class="bi bi-bar-chart-line"></i>
+                    <span>Platform Reports</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link collapsed" asp-action="LogOut" asp-controller="Accounts">
+                    <i class="bi bi-box-arrow-in-right"></i>
+                    <span>Sign Out</span>
+                </a>
+            </li>
+
+        </ul>
+    </aside>
+
+    <!-- ── Main Content ────────────────────────────────────────── -->
+    <main id="main" class="main">
+        @RenderBody()
+    </main>
+
+    <!-- ── Footer ──────────────────────────────────────────────── -->
+    <footer id="footer" class="footer">
+        <div class="copyright text-center">
+            &copy; @DateTime.Now.Year <strong>DSAcademy</strong> — Super Admin Portal
+        </div>
+    </footer>
+
+    <a href="#" class="back-to-top d-flex align-items-center justify-content-center">
+        <i class="bi bi-arrow-up-short"></i>
+    </a>
+
+    <!-- Scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/niceadmin/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/niceadmin/assets/js/main.js"></script>
+    <script src="~/edu/assets/css/js/sweetalert2.all.min.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

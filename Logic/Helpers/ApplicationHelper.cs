@@ -1,4 +1,4 @@
-﻿using Core.Db;
+using Core.Db;
 using Core.Enum;
 using Core.Models;
 using Core.ViewModels;
@@ -185,17 +185,16 @@ namespace Logic.Helpers
             var userRole = _userManager.GetRolesAsync(userr).Result.FirstOrDefault();
             if (userRole != null)
             {
-                if (userRole == "SuperAdmin" || userRole == "Admin")
-                {
+                if (userRole == "SuperAdmin")
+                    return "/SuperAdmin/Index";
+
+                if (userRole == "Admin")
                     return "/Admin/Index";
 
-                }
-                else
-                {
-                    return "/Student/Index";
-                }
+                // Student / Applicant
+                return "/Student/Index";
             }
-            return null;
+            return "/Accounts/Login";
         }
 
         public async Task<ApplicationUser> AuthenticateUser(string email, string password)
@@ -305,6 +304,10 @@ namespace Logic.Helpers
 				throw new ArgumentNullException(nameof(collectedData), "Collected data cannot be null");
 			try
 			{
+				var course = collectedData?.CourseId != null
+					? _context.TrainingCourse.FirstOrDefault(c => c.Id == collectedData.CourseId)
+					: null;
+
 				var newPayment = new Payments
 				{
 					ProveOfPayment = base64,
@@ -315,6 +318,7 @@ namespace Logic.Helpers
 					CourseId = collectedData?.CourseId,
                     CompanyId = user?.CompanyId,
                     Name = collectedData?.Name,
+					Amount = course?.Amount ?? 0m,
 				};
 				_context.Payments.Add(newPayment);
 				_context.SaveChanges();

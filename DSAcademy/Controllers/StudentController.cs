@@ -1,4 +1,4 @@
-﻿using Core.Config;
+using Core.Config;
 using Core.Db;
 using Core.Models;
 using Core.ViewModels;
@@ -6,6 +6,7 @@ using Logic.IHelpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NETCore.MailKit.Core;
 using Newtonsoft.Json;
 using static Logic.AppHttpContext;
@@ -13,7 +14,7 @@ using static Logic.AppHttpContext;
 namespace DSAcademy.Controllers
 {
     [SessionTimeout]
-    [Authorize]
+    [Authorize(Roles = "Student")]
     public class StudentController : Controller
     {
         private readonly AppDbContext _context;
@@ -267,6 +268,66 @@ namespace DSAcademy.Controllers
 				}
 			}
 			return View(newListVideos);
+		}
+
+		// ─── Payment History ─────────────────────────────────────────────────
+		[HttpGet]
+		public IActionResult PaymentHistory()
+		{
+			var userId = Session.GetCurrentUser().Id;
+			var payments = _context.Payments
+				.Where(p => p.UserId == userId)
+				.Include(p => p.Courses)
+				.OrderByDescending(p => p.DateCreated)
+				.ToList();
+			return View(payments);
+		}
+
+		// ─── My Profile ───────────────────────────────────────────────────────
+		[HttpGet]
+		public async Task<IActionResult> MyProfile()
+		{
+			var user = await _userHelper.FindByEmailAsync(User.Identity.Name);
+			if (user == null) return RedirectToAction("Index");
+			var vm = new ApplicationUserViewModel
+			{
+				Id = user.Id,
+				FirstName = user.FirstName,
+				LastName = user.LastName,
+				Email = user.Email,
+				PhoneNumber = user.PhoneNumber,
+				Address = user.Address,
+				UserName = user.UserName,
+				DateRegister = user.DateRegistered
+			};
+			return View(vm);
+		}
+
+		[HttpPost]
+		public async Task<JsonResult> UpdateProfile(string profileData)
+		{
+			try
+			{
+				if (string.IsNullOrWhiteSpace(profileData))
+					return Json(new { isError = true, msg = "No data received." });
+
+				var vm = JsonConvert.DeserializeObject<ApplicationUserViewModel>(profileData);
+				var user = await _userHelper.FindByEmailAsync(User.Identity.Name);
+				if (user == null)
+					return Json(new { isError = true, msg = "User not found." });
+
+				user.FirstName = vm.FirstName ?? user.FirstName;
+				user.LastName = vm.LastName ?? user.LastName;
+				user.PhoneNumber = vm.PhoneNumber ?? user.PhoneNumber;
+				user.Address = vm.Address ?? user.Address;
+				_context.ApplicationUsers.Update(user);
+				_context.SaveChanges();
+				return Json(new { isError = false, msg = "Profile updated successfully." });
+			}
+			catch (Exception ex)
+			{
+				return Json(new { isError = true, msg = $"Error: {ex.Message}" });
+			}
 		}
 	}
 }

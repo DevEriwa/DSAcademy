@@ -1,4 +1,4 @@
-﻿using Core.Db;
+using Core.Db;
 using Core.Enum;
 using Core.Models;
 using Core.ViewModels;
@@ -186,6 +186,74 @@ namespace Logic.Helpers
 				}
 			}
 			return setting;
+		}
+
+		// ─── In-App Notification Methods ─────────────────────────────────────
+
+		public async Task SendAsync(string userId, Guid? companyId, string title, string message,
+			string icon = "bi bi-bell", string? actionUrl = null)
+		{
+			var n = new AppNotification
+			{
+				UserId = userId,
+				CompanyId = companyId,
+				Title = title,
+				Message = message,
+				Icon = icon,
+				ActionUrl = actionUrl,
+				DateCreated = DateTime.Now
+			};
+			_context.AppNotifications.Add(n);
+			await _context.SaveChangesAsync();
+		}
+
+		public async Task SendToCompanyAsync(Guid companyId, string title, string message,
+			string icon = "bi bi-bell", string? actionUrl = null)
+		{
+			var users = _context.ApplicationUsers
+				.Where(u => u.CompanyId == companyId && !u.IsDeactivated)
+				.Select(u => u.Id)
+				.ToList();
+
+			var notifications = users.Select(uid => new AppNotification
+			{
+				UserId = uid,
+				CompanyId = companyId,
+				Title = title,
+				Message = message,
+				Icon = icon,
+				ActionUrl = actionUrl,
+				DateCreated = DateTime.Now
+			}).ToList();
+
+			_context.AppNotifications.AddRange(notifications);
+			await _context.SaveChangesAsync();
+		}
+
+		public List<AppNotification> GetUnread(string userId)
+		{
+			return _context.AppNotifications
+				.Where(n => n.UserId == userId && !n.IsRead)
+				.OrderByDescending(n => n.DateCreated)
+				.Take(15)
+				.ToList();
+		}
+
+		public int GetUnreadCount(string userId)
+			=> _context.AppNotifications.Count(n => n.UserId == userId && !n.IsRead);
+
+		public async Task MarkAllReadAsync(string userId)
+		{
+			var unread = _context.AppNotifications
+				.Where(n => n.UserId == userId && !n.IsRead).ToList();
+			unread.ForEach(n => n.IsRead = true);
+			await _context.SaveChangesAsync();
+		}
+
+		public async Task MarkReadAsync(int notificationId)
+		{
+			var n = _context.AppNotifications.FirstOrDefault(x => x.Id == notificationId);
+			if (n != null) { n.IsRead = true; await _context.SaveChangesAsync(); }
 		}
 	}
 }

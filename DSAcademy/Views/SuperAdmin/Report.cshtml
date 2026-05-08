@@ -1,0 +1,193 @@
+@model Core.ViewModels.PlatformReportViewModel
+@{
+    ViewData["Title"] = "Platform Report";
+    Layout = "~/Views/Shared/_SuperAdminLayout.cshtml";
+}
+
+<div class="pagetitle">
+    <h1>Platform Report</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item active">Platform Report</li>
+        </ol>
+    </nav>
+</div>
+
+<section class="section">
+
+    <!-- Top Stats -->
+    <div class="row g-3 mb-4">
+        <div class="col-xl-2 col-md-4 col-6">
+            <div class="card text-center h-100 border-0 shadow-sm">
+                <div class="card-body py-4">
+                    <i class="bi bi-building fs-1 text-primary"></i>
+                    <h3 class="mt-2 mb-0 fw-bold">@Model.TotalSchools</h3>
+                    <p class="text-muted small mb-0">Total Schools</p>
+                    <span class="badge bg-success">@Model.ActiveSchools Active</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 col-6">
+            <div class="card text-center h-100 border-0 shadow-sm">
+                <div class="card-body py-4">
+                    <i class="bi bi-people fs-1 text-info"></i>
+                    <h3 class="mt-2 mb-0 fw-bold">@Model.TotalStudents</h3>
+                    <p class="text-muted small mb-0">Total Students</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 col-6">
+            <div class="card text-center h-100 border-0 shadow-sm">
+                <div class="card-body py-4">
+                    <i class="bi bi-credit-card fs-1 text-success"></i>
+                    <h3 class="mt-2 mb-0 fw-bold">@Model.TotalPayments</h3>
+                    <p class="text-muted small mb-0">Total Payments</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 col-6">
+            <div class="card text-center h-100 border-0 shadow-sm">
+                <div class="card-body py-4">
+                    <i class="bi bi-check-circle fs-1 text-success"></i>
+                    <h3 class="mt-2 mb-0 fw-bold">@Model.ApprovedPayments</h3>
+                    <p class="text-muted small mb-0">Approved</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 col-6">
+            <div class="card text-center h-100 border-0 shadow-sm">
+                <div class="card-body py-4">
+                    <i class="bi bi-hourglass-split fs-1 text-warning"></i>
+                    <h3 class="mt-2 mb-0 fw-bold">@Model.PendingPayments</h3>
+                    <p class="text-muted small mb-0">Pending</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 col-6">
+            <div class="card text-center h-100 border-0 shadow-sm">
+                <div class="card-body py-4">
+                    <i class="bi bi-book fs-1 text-secondary"></i>
+                    <h3 class="mt-2 mb-0 fw-bold">@Model.TotalCourses</h3>
+                    <p class="text-muted small mb-0">Courses</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row g-3 mb-4">
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Schools by Status</h5>
+                    <canvas id="schoolStatusChart" style="max-height:220px;"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Students per School <span class="text-muted fw-light small">(Top 10)</span></h5>
+                    <canvas id="studentsPerSchoolChart" style="max-height:220px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- School Breakdown Table -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="card-title mb-0">School Breakdown</h5>
+                <a asp-action="ExportReport" asp-controller="SuperAdmin"
+                   class="btn btn-sm btn-outline-success">
+                    <i class="bi bi-download me-1"></i> Export CSV
+                </a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>School Name</th>
+                            <th>Status</th>
+                            <th class="text-center">Students</th>
+                            <th class="text-center">Approved</th>
+                            <th class="text-center">Pending</th>
+                            <th class="text-center">Courses</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{ int i = 1; }
+                        @foreach (var s in Model.SchoolBreakdown)
+                        {
+                            <tr>
+                                <td>@i</td>
+                                <td class="fw-semibold">@s.SchoolName</td>
+                                <td>
+                                    @if (s.IsActive)
+                                    {
+                                        <span class="badge bg-success">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Inactive</span>
+                                    }
+                                </td>
+                                <td class="text-center">@s.TotalStudents</td>
+                                <td class="text-center text-success fw-bold">@s.ApprovedPayments</td>
+                                <td class="text-center text-warning fw-bold">@s.PendingPayments</td>
+                                <td class="text-center">@s.TotalCourses</td>
+                            </tr>
+                            i++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Schools Active vs Inactive — Doughnut
+    new Chart(document.getElementById('schoolStatusChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Active', 'Inactive'],
+            datasets: [{
+                data: [@Model.ActiveSchools, @(Model.TotalSchools - Model.ActiveSchools)],
+                backgroundColor: ['#198754', '#dee2e6'],
+                hoverOffset: 6
+            }]
+        },
+        options: { responsive: true, cutout: '60%' }
+    });
+
+    // Students per School — Horizontal Bar (top 10)
+    var labels = [@Html.Raw(string.Join(",", Model.SchoolBreakdown.Take(10).Select(s => $"'{s.SchoolName}'")))];
+    var data   = [@string.Join(",", Model.SchoolBreakdown.Take(10).Select(s => s.TotalStudents))];
+
+    new Chart(document.getElementById('studentsPerSchoolChart'), {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Students',
+                data: data,
+                backgroundColor: 'rgba(13,110,253,0.75)',
+                borderRadius: 5
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: { x: { beginAtZero: true } }
+        }
+    });
+</script>
+}

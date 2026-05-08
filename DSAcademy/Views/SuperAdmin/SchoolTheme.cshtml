@@ -1,0 +1,180 @@
+@model Core.ViewModels.CompanySettingViewModel
+@{
+    ViewData["Title"] = "School Theme Settings";
+    Layout = "~/Views/Shared/_SuperAdminLayout.cshtml";
+}
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1><i class="bi bi-palette me-2"></i> Theme Settings — @Model.CompanyName</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-controller="SuperAdmin" asp-action="Index">Dashboard</a></li>
+                <li class="breadcrumb-item"><a asp-controller="SuperAdmin" asp-action="Schools">Schools</a></li>
+                <li class="breadcrumb-item active">Theme</li>
+            </ol>
+        </nav>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="bi bi-check-circle me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row g-4">
+        <!-- ── Theme Form ──────────────────────────────────────────── -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-brush me-2"></i>Colour & Font Settings</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-controller="SuperAdmin" asp-action="SchoolTheme" method="post" id="themeForm">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="CompanyId" />
+                        <input type="hidden" asp-for="CompanyName" />
+
+                        <div class="mb-3">
+                            <label asp-for="PrimaryColor" class="form-label fw-semibold">Primary Colour (Navbar / Buttons)</label>
+                            <div class="input-group">
+                                <input type="color" id="primaryPicker" class="form-control form-control-color"
+                                       value="@Model.PrimaryColor" oninput="syncColor('primaryPicker','PrimaryColor')" style="width:60px;">
+                                <input asp-for="PrimaryColor" class="form-control font-monospace" id="PrimaryColor"
+                                       oninput="syncPicker('PrimaryColor','primaryPicker')" maxlength="7" />
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="SecondaryColor" class="form-label fw-semibold">Secondary Colour (Highlights / Badges)</label>
+                            <div class="input-group">
+                                <input type="color" id="secondaryPicker" class="form-control form-control-color"
+                                       value="@Model.SecondaryColor" oninput="syncColor('secondaryPicker','SecondaryColor')" style="width:60px;">
+                                <input asp-for="SecondaryColor" class="form-control font-monospace" id="SecondaryColor"
+                                       oninput="syncPicker('SecondaryColor','secondaryPicker')" maxlength="7" />
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="SidebarColor" class="form-label fw-semibold">Sidebar Colour</label>
+                            <div class="input-group">
+                                <input type="color" id="sidebarPicker" class="form-control form-control-color"
+                                       value="@Model.SidebarColor" oninput="syncColor('sidebarPicker','SidebarColor')" style="width:60px;">
+                                <input asp-for="SidebarColor" class="form-control font-monospace" id="SidebarColor"
+                                       oninput="syncPicker('SidebarColor','sidebarPicker')" maxlength="7" />
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="FontFamily" class="form-label fw-semibold">Font Family</label>
+                            <select asp-for="FontFamily" class="form-select" id="fontSelect" onchange="updatePreviewFont(this.value)">
+                                <option value="Outfit">Outfit (Modern)</option>
+                                <option value="Roboto">Roboto (Clean)</option>
+                                <option value="Inter">Inter (Sharp)</option>
+                                <option value="Poppins">Poppins (Friendly)</option>
+                                <option value="Lato">Lato (Classic)</option>
+                                <option value="Montserrat">Montserrat (Bold)</option>
+                                <option value="Open Sans">Open Sans (Neutral)</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="form-check form-switch">
+                                <input asp-for="DarkMode" class="form-check-input" type="checkbox" role="switch" id="darkModeSwitch" />
+                                <label class="form-check-label fw-semibold" for="darkModeSwitch">Enable Dark Mode Dashboard</label>
+                            </div>
+                        </div>
+
+                        <hr />
+                        <h6 class="fw-bold mb-3">Module Settings</h6>
+                        <div class="row g-2 mb-4">
+                            <div class="col-6">
+                                <div class="form-check">
+                                    <input asp-for="EnableSMS" class="form-check-input" type="checkbox" />
+                                    <label asp-for="EnableSMS" class="form-check-label">Enable SMS</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-check">
+                                    <input asp-for="EnableCustomInvoice" class="form-check-input" type="checkbox" />
+                                    <label asp-for="EnableCustomInvoice" class="form-check-label">Custom Invoice</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-check">
+                                    <input asp-for="EnableBasePackage" class="form-check-input" type="checkbox" />
+                                    <label asp-for="EnableBasePackage" class="form-check-label">Base Package</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-save me-2"></i> Save Settings
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Live Preview ────────────────────────────────────────── -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-eye me-2"></i>Live Preview</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div id="previewBox" style="border-radius:12px; overflow:hidden; box-shadow:0 4px 24px rgba(0,0,0,0.12);">
+                        <!-- Sidebar Preview -->
+                        <div id="previewSidebar" style="background:@Model.SidebarColor; padding:20px 16px; min-height:280px;">
+                            <div style="color:#FFB300; font-weight:800; font-size:1rem; font-family:@Model.FontFamily,sans-serif; margin-bottom:20px;">
+                                @Model.CompanyName
+                            </div>
+                            <div style="color:rgba(255,255,255,0.7); font-size:0.85rem; font-family:@Model.FontFamily,sans-serif;">
+                                <div style="padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.1);">🏠 Dashboard</div>
+                                <div style="padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.1);">👩‍🎓 Students</div>
+                                <div style="padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.1);">📚 Courses</div>
+                                <div style="padding:8px 0;">💳 Payments</div>
+                            </div>
+                        </div>
+                        <!-- Top bar Preview -->
+                        <div id="previewTopbar" style="background:@Model.PrimaryColor; padding:10px 16px; display:flex; justify-content:space-between; align-items:center;">
+                            <span style="color:#fff; font-weight:700; font-family:@Model.FontFamily,sans-serif; font-size:0.9rem;">Admin Panel</span>
+                            <span id="previewBadge" style="background:@Model.SecondaryColor; color:#111; border-radius:20px; padding:2px 12px; font-size:0.75rem; font-weight:700; font-family:@Model.FontFamily,sans-serif;">Active</span>
+                        </div>
+                    </div>
+                    <p class="text-muted small mt-3 text-center">Preview updates live as you change settings.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+@section Scripts {
+<script>
+    function syncColor(pickerId, inputId) {
+        document.getElementById(inputId).value = document.getElementById(pickerId).value;
+        updatePreview();
+    }
+    function syncPicker(inputId, pickerId) {
+        const val = document.getElementById(inputId).value;
+        if (/^#[0-9A-Fa-f]{6}$/.test(val))
+            document.getElementById(pickerId).value = val;
+        updatePreview();
+    }
+    function updatePreviewFont(font) { updatePreview(); }
+    function updatePreview() {
+        const primary = document.getElementById('PrimaryColor').value || '#0A192F';
+        const secondary = document.getElementById('SecondaryColor').value || '#FFB300';
+        const sidebar = document.getElementById('SidebarColor').value || '#112B50';
+        const font = document.getElementById('FontFamily')?.value || 'Outfit';
+
+        document.getElementById('previewSidebar').style.background = sidebar;
+        document.getElementById('previewTopbar').style.background = primary;
+        document.getElementById('previewBadge').style.background = secondary;
+        document.querySelectorAll('#previewBox [style*="font-family"]').forEach(el => {
+            el.style.fontFamily = font + ',sans-serif';
+        });
+    }
+</script>
+}

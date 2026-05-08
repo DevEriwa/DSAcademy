@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -40,5 +40,20 @@ namespace Core.ViewModels
 		[Display(Name = "Enable Supplier")]
 		public bool EnableSupplier { get; set; }
 
+		// ── Theme / Branding ──────────────────────────────────────────────
+		[Display(Name = "Primary Color")]
+		public string? PrimaryColor { get; set; } = "#0A192F";
+
+		[Display(Name = "Secondary Color")]
+		public string? SecondaryColor { get; set; } = "#FFB300";
+
+		[Display(Name = "Sidebar Color")]
+		public string? SidebarColor { get; set; } = "#112B50";
+
+		[Display(Name = "Font Family")]
+		public string? FontFamily { get; set; } = "Outfit";
+
+		[Display(Name = "Dark Mode")]
+		public bool DarkMode { get; set; } = false;
 	}
 }

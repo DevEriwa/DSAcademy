@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 	<meta charset="utf-8" />
@@ -17,6 +17,7 @@
 	<link href="~/edu/assets/css/style.css" rel="stylesheet" />
     <link href="~/edu/assets/css/color/color-1.css" rel="stylesheet" />
     <link href="~/edu/assets/css/css/sweetalert2.min.css" rel="stylesheet" />
+    <link href="~/niceadmin/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet" />
 
 	<!-- Revolution Slider CSS -->
 	<link rel="stylesheet" type="text/css" href="~/edu/assets/vendors/revolution/css/layers.css">
@@ -185,10 +186,31 @@
 						<!-- Author Nav ==== -->
 						<div class="secondary-menu">
 							<div class="secondary-inner">
-								<ul>
+								<ul class="d-flex align-items-center list-unstyled mb-0">
+									<!-- ── Notification Bell ────────────────────────────────── -->
+									<li class="me-3" style="position:relative;">
+										<div class="dropdown">
+											<a href="#" id="studentNotifBell" class="dropdown-toggle text-dark" data-bs-toggle="dropdown" style="text-decoration:none;">
+												<i class="bi bi-bell fs-5"></i>
+												<span id="studentNotifCount" class="badge bg-danger rounded-pill d-none"
+													style="position:absolute;top:-4px;right:-6px;font-size:.65rem;"></span>
+											</a>
+											<ul class="dropdown-menu dropdown-menu-end shadow" style="min-width:300px;max-height:420px;overflow-y:auto;">
+												<li class="dropdown-header d-flex justify-content-between align-items-center px-3 py-2">
+													<strong id="studentNotifHeader">Notifications</strong>
+													<a href="#" id="studentMarkAllRead" class="small text-primary">Mark all read</a>
+												</li>
+												<li><hr class="dropdown-divider my-1"></li>
+												<div id="studentNotifList">
+													<li class="px-3 py-2 text-muted small">Loading...</li>
+												</div>
+											</ul>
+										</div>
+									</li>
+									<!-- ── Logout ─────────────────────────────────────── -->
 									<li style="margin-right: 20px;">
 										<a asp-controller="Accounts" asp-action="LogOut" style="text-decoration: none; color: #000;">
-											<i class="fa fa-sign-in" style="margin-right: 5px;background-color: #000000;"></i> LogOut
+											<i class="fa fa-sign-in" style="margin-right: 5px;"></i> LogOut
 										</a>
 									</li>
 								</ul>
@@ -285,13 +307,12 @@
 								<li class="nav-dashboard">
 									<a href="javascript:;" style="text-decoration: none; color: #000;">Dashboard <i class="fa fa-chevron-down"></i></a>
 									<ul class="sub-menu">
-										<li><a href="~/edu/admin/index.html">Dashboard</a></li>
-										<li><a href="~/edu/admin/add-listing.html">Add Listing</a></li>
-										<li><a href="~/edu/admin/bookmark.html">Bookmark</a></li>
-										<li><a href="~/edu/admin/courses.html">Courses</a></li>
-										<li><a href="~/edu/admin/review.html">Review</a></li>
-										<li><a href="~/edu/admin/teacher-profile.html">Teacher Profile</a></li>
-										<li><a href="~/edu/admin/user-profile.html">User Profile</a></li>
+										<li><a asp-controller="Student" asp-action="Index">Dashboard</a></li>
+										<li><a asp-controller="Student" asp-action="StudentCourses">My Courses</a></li>
+										<li><a asp-controller="Student" asp-action="TrainingVideos">My Videos</a></li>
+										<li><a asp-controller="Student" asp-action="PaymentHistory">Payment History</a></li>
+										<li><a asp-controller="Student" asp-action="MyProfile">My Profile</a></li>
+										<li><a asp-action="LogOut" asp-controller="Accounts">Logout</a></li>
 										<li>
 											<a href="javascript:;">Calendar<i class="fa fa-angle-right"></i></a>
 											<ul class="sub-menu">
@@ -557,5 +578,57 @@
 	</script>
 
 	@await RenderSectionAsync("Scripts", required: false)
+
+	<script>
+		// ── Student Notification Bell ──────────────────────────────────────
+		function loadStudentNotifications() {
+			$.get('/Notifications/GetUnread', function (res) {
+				var countEl = $('#studentNotifCount');
+				var listEl = $('#studentNotifList');
+				var headerEl = $('#studentNotifHeader');
+
+				if (res.count > 0) {
+					countEl.text(res.count).removeClass('d-none');
+					headerEl.text(res.count + ' unread');
+				} else {
+					countEl.addClass('d-none');
+					headerEl.text('All caught up ✓');
+				}
+
+				if (res.items.length === 0) {
+					listEl.html('<li class="px-3 py-3 text-muted small text-center">No new notifications</li>');
+					return;
+				}
+
+				var html = '';
+				$.each(res.items, function (i, n) {
+					var url = n.actionUrl ? n.actionUrl : '#';
+					html += '<li class="px-3 py-2 border-bottom" onclick="markStudentRead(' + n.id + ', \'' + url + '\')" style="cursor:pointer;">' +
+						'<div class="d-flex align-items-start gap-2">' +
+						'<i class="' + n.icon + ' mt-1"></i>' +
+						'<div><p class="mb-0 fw-semibold small">' + n.title + '</p>' +
+						'<p class="mb-0 text-muted" style="font-size:.78rem;">' + n.message + '</p>' +
+						'<p class="mb-0 text-muted" style="font-size:.72rem;">' + n.date + '</p></div></div></li>';
+				});
+				listEl.html(html);
+			});
+		}
+
+		function markStudentRead(id, url) {
+			$.post('/Notifications/MarkRead', { id: id }, function () {
+				loadStudentNotifications();
+				if (url && url !== '#') location.href = url;
+			});
+		}
+
+		$('#studentMarkAllRead').on('click', function (e) {
+			e.preventDefault();
+			$.post('/Notifications/MarkAllRead', function () { loadStudentNotifications(); });
+		});
+
+		$('#studentNotifBell').on('click', function () { loadStudentNotifications(); });
+		loadStudentNotifications();
+		setInterval(loadStudentNotifications, 60000);
+	</script>
 </body>
 </html>

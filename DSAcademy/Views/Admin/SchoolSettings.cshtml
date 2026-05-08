@@ -1,0 +1,126 @@
+@model Core.ViewModels.CompanySettingViewModel
+@{
+    ViewData["Title"] = "School Settings";
+    Layout = "~/Views/Shared/_CompanyAdminLayout.cshtml";
+}
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1><i class="bi bi-gear me-2"></i> School Settings</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-controller="Admin" asp-action="Index">Dashboard</a></li>
+                <li class="breadcrumb-item active">Settings</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="row g-4">
+        <!-- School Info -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-building me-2"></i>School Information</h5>
+                </div>
+                <div class="card-body p-4">
+                    <dl class="row">
+                        <dt class="col-sm-4">School Name</dt>
+                        <dd class="col-sm-8 fw-semibold">@Model.CompanyName</dd>
+
+                        <dt class="col-sm-4">Dashboard URL</dt>
+                        <dd class="col-sm-8">
+                            @if (!string.IsNullOrEmpty(Model.DashboardUrl))
+                            {
+                                <a href="@Model.DashboardUrl" target="_blank">@Model.DashboardUrl</a>
+                            }
+                            else { <span class="text-muted">Not configured</span> }
+                        </dd>
+                    </dl>
+                    <div class="alert alert-info mt-3 mb-0" role="alert">
+                        <i class="bi bi-info-circle me-2"></i>
+                        To update school information or branding, please contact your <strong>DSAcademy Super Admin</strong>.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Modules -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-toggles me-2"></i>Active Modules</h5>
+                </div>
+                <div class="card-body p-4">
+                    <p class="text-muted small mb-3">These modules are managed by the platform administrator.</p>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            Base Package
+                            @if (Model.EnableBasePackage)
+                            {
+                                <span class="badge bg-success">Enabled</span>
+                            }
+                            else { <span class="badge bg-secondary">Disabled</span> }
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            SMS Notifications
+                            @if (Model.EnableSMS)
+                            {
+                                <span class="badge bg-success">Enabled</span>
+                            }
+                            else { <span class="badge bg-secondary">Disabled</span> }
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            Web Module
+                            @if (Model.EnableWebModule)
+                            {
+                                <span class="badge bg-success">Enabled</span>
+                            }
+                            else { <span class="badge bg-secondary">Disabled</span> }
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            Custom Invoice
+                            @if (Model.EnableCustomInvoice)
+                            {
+                                <span class="badge bg-success">Enabled</span>
+                            }
+                            else { <span class="badge bg-secondary">Disabled</span> }
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Theme Preview -->
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-palette me-2"></i>Current Theme</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="d-flex flex-wrap gap-4 align-items-center">
+                        <div class="text-center">
+                            <div style="width:50px; height:50px; border-radius:50%; background:@Model.PrimaryColor; margin:0 auto 6px;"></div>
+                            <small class="text-muted">Primary</small><br />
+                            <code class="small">@Model.PrimaryColor</code>
+                        </div>
+                        <div class="text-center">
+                            <div style="width:50px; height:50px; border-radius:50%; background:@Model.SecondaryColor; margin:0 auto 6px;"></div>
+                            <small class="text-muted">Secondary</small><br />
+                            <code class="small">@Model.SecondaryColor</code>
+                        </div>
+                        <div class="text-center">
+                            <div style="width:50px; height:50px; border-radius:50%; background:@Model.SidebarColor; margin:0 auto 6px;"></div>
+                            <small class="text-muted">Sidebar</small><br />
+                            <code class="small">@Model.SidebarColor</code>
+                        </div>
+                        <div class="ms-4">
+                            <p class="mb-1"><strong>Font:</strong> @Model.FontFamily</p>
+                            <p class="mb-0"><strong>Dark Mode:</strong>
+                                @(Model.DarkMode ? "On" : "Off")
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>

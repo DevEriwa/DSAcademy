@@ -1,0 +1,62 @@
+@model Core.ViewModels.CompanyViewModel
+@{
+    ViewData["Title"] = "Create New School";
+    Layout = "~/Views/Shared/_SuperAdminLayout.cshtml";
+}
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1><i class="bi bi-building-add me-2"></i> Create New School</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-controller="SuperAdmin" asp-action="Index">Dashboard</a></li>
+                <li class="breadcrumb-item"><a asp-controller="SuperAdmin" asp-action="Schools">Schools</a></li>
+                <li class="breadcrumb-item active">Create</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-building me-2"></i> School Information</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-controller="SuperAdmin" asp-action="CreateSchool" method="post">
+                        @Html.AntiForgeryToken()
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="Name" class="form-label fw-semibold">School Name <span class="text-danger">*</span></label>
+                                <input asp-for="Name" class="form-control" placeholder="e.g. Greenfield Academy" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Email" class="form-label fw-semibold">Email <span class="text-danger">*</span></label>
+                                <input asp-for="Email" class="form-control" type="email" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Phone" class="form-label fw-semibold">Phone</label>
+                                <input asp-for="Phone" class="form-control" />
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Mobile" class="form-label fw-semibold">Mobile</label>
+                                <input asp-for="Mobile" class="form-control" />
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="CompanyAddress" class="form-label fw-semibold">Address</label>
+                                <input asp-for="CompanyAddress" class="form-control" />
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="CompanyMotto" class="form-label fw-semibold">Motto / Tagline</label>
+                                <input asp-for="CompanyMotto" class="form-control" placeholder="Excellence Through Knowledge" />
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary px-4"><i class="bi bi-check-circle me-2"></i>Create School</button>
+                            <a asp-controller="SuperAdmin" asp-action="Schools" class="btn btn-outline-secondary px-4">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

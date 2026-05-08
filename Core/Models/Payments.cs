@@ -1,4 +1,4 @@
-﻿using Core.Enum;
+using Core.Enum;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Core.Models
@@ -16,5 +16,8 @@ namespace Core.Models
 		[ForeignKey("CompanyId")]
 		public virtual Company? Company { get; set; }
 		public ProgramEnum? ProgramStatus { get; set; }
+
+		/// <summary>Amount paid — copied from Course.Amount at time of payment creation.</summary>
+		public decimal Amount { get; set; } = 0m;
 	}
 }

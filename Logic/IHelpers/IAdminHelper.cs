@@ -1,4 +1,4 @@
-﻿using Core.Enum;
+using Core.Enum;
 using Core.Models;
 using Core.ViewModels;
 using Microsoft.AspNetCore.Http;
@@ -30,5 +30,6 @@ namespace Logic.IHelpers
 		Task<string> DeleteTrainingVideoAsync(Guid id);
 		Payments ApproveSelectedPayment(Payments paymentData);
 		Payments DeclineSelectedPaymment(Payments paymentData);
+		SchoolReportViewModel GetSchoolReport(Guid companyId);
 	}
 }
